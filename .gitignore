@@ -1,8 +1,7 @@
 # Dependencies
 node_modules/
 
-# Sensitive config (DB credentials, API keys)
-includes/db.php
+# Sensitive config (DB credentials, API keys — auto-created by installer)
 includes/config.php
 
 # Uploads
