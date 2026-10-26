@@ -212,52 +212,56 @@ admin_page_start('Pesanan','Kelola pembayaran, status, dan stok digital pembeli.
 </div>
 
 <?php if($detail):?>
-<section class="adm-card order-detail-card">
-    <div class="adm-card-head">
-        <div><h3>Detail <?=e($detail['invoice'])?></h3><p><?=e($detail['buyer_name'])?> · <?=e($detail['buyer_email'])?><?php if(!empty($detail['buyer_whatsapp'])):?> · <?=e($detail['buyer_whatsapp'])?><?php endif;?></p></div>
-        <a class="adm-btn soft" href="<?=e($closeUrl)?>">Tutup Detail</a>
-    </div>
-    <div class="order-detail-grid">
-        <div class="order-info-box"><span>Total</span><b><?=rupiah($detail['total'])?></b></div>
-        <div class="order-info-box"><span>Status</span><b><?=admin_status_badge($detail['status'])?></b></div>
-        <div class="order-info-box"><span>Tanggal</span><b><?=e(!empty($detail['created_at']) ? date('d/m/Y H:i', strtotime($detail['created_at'])).' WIB' : '-')?></b></div>
-        <div class="order-info-box order-password-box">
-            <span>Password Pesanan</span>
-            <?php if($revealedOrderPassword!==''):?>
-                <code><?=e($revealedOrderPassword)?></code>
-            <?php else:?>
-                <small>Password asli tidak tersedia untuk pesanan ini. Pesanan lama yang hanya menyimpan hash tidak dapat ditampilkan ulang.</small>
+<div class="order-detail-modal is-open" id="orderDetailModal" aria-hidden="false" data-close-url="<?=e($closeUrl)?>">
+    <div class="order-detail-panel" role="dialog" aria-modal="true" aria-labelledby="orderDetailTitle">
+        <section class="adm-card order-detail-card">
+            <div class="adm-card-head">
+                <div><h3 id="orderDetailTitle">Detail <?=e($detail['invoice'])?></h3><p><?=e($detail['buyer_name'])?> · <?=e($detail['buyer_email'])?><?php if(!empty($detail['buyer_whatsapp'])):?> · <?=e($detail['buyer_whatsapp'])?><?php endif;?></p></div>
+                <a class="order-detail-close" href="<?=e($closeUrl)?>" data-close-order-detail aria-label="Tutup detail pesanan">×</a>
+            </div>
+            <div class="order-detail-grid">
+                <div class="order-info-box"><span>Total</span><b><?=rupiah($detail['total'])?></b></div>
+                <div class="order-info-box"><span>Status</span><b><?=admin_status_badge($detail['status'])?></b></div>
+                <div class="order-info-box"><span>Tanggal</span><b><?=e(!empty($detail['created_at']) ? date('d/m/Y H:i', strtotime($detail['created_at'])).' WIB' : '-')?></b></div>
+                <div class="order-info-box order-password-box">
+                    <span>Password Pesanan</span>
+                    <?php if($revealedOrderPassword!==''):?>
+                        <code><?=e($revealedOrderPassword)?></code>
+                    <?php else:?>
+                        <small>Password asli tidak tersedia untuk pesanan ini. Pesanan lama yang hanya menyimpan hash tidak dapat ditampilkan ulang.</small>
+                    <?php endif;?>
+                </div>
+            </div>
+            <h3>Pengiriman Otomatis</h3>
+            <div class="order-warranty-list">
+            <?php if($contactDeliveries):foreach($contactDeliveries as $delivery):?>
+                <div class="sale-item order-warranty-item">
+                    <div><b><?=e(strtoupper((string)$delivery['channel']))?></b><p><?=e($delivery['recipient'])?><?php if(!empty($delivery['last_error'])):?> · <?=e($delivery['last_error'])?><?php endif;?></p></div>
+                    <span class="order-warranty-status"><?=admin_status_badge((string)$delivery['status'])?></span>
+                </div>
+            <?php endforeach;else:?><div class="adm-empty"><div><b>Belum ada antrean email / WhatsApp</b><p>Antrean dibuat setelah pesanan berhasil delivered dan kanal pengiriman diaktifkan.</p></div></div><?php endif;?>
+            </div>
+            <h3>Garansi Pesanan</h3>
+            <div class="order-warranty-list">
+            <?php if($warranties):foreach($warranties as $w):?>
+                <div class="sale-item order-warranty-item">
+                    <div><b><?=e($w['product_name'])?> <small>x <?=intval($w['qty'])?></small></b><p><?=e(trim((string)$w['warranty_label']) ?: ((int)$w['warranty_days']>0 ? ((int)$w['warranty_days'].' Hari') : 'Tanpa garansi'))?></p></div>
+                    <span class="order-warranty-status"><?=e(warranty_status_text($w))?></span>
+                </div>
+            <?php endforeach;else:?><div class="adm-empty"><div><b>Belum ada data garansi</b></div></div><?php endif;?>
+            </div>
+            <h3>Item & Stok Digital</h3>
+            <?php if($stocks):foreach($stocks as $stock):$stockContent=(string)($stock['content'] ?? 'Belum terbuka / belum delivered');?>
+                <div class="sale-item order-stock-item">
+                    <div class="order-stock-head"><b><?=e($stock['product_name'])?> <small>x <?=e($stock['qty'])?></small></b><button class="order-copy-btn" type="button" data-copy-order-stock="<?=e($stockContent)?>" title="Salin data stok"><span><?=admin_icon('copy')?></span><b>Salin</b></button></div>
+                    <pre><?=e($stockContent)?></pre>
+                </div>
+            <?php endforeach;else:?>
+                <div class="adm-empty"><div><div class="adm-empty-icon"><?=admin_icon('lock')?></div><b>Stok belum terbuka</b><p>Produk akan diambil dari stok digital setelah pembayaran berhasil.</p></div></div>
             <?php endif;?>
-        </div>
+        </section>
     </div>
-    <h3>Pengiriman Otomatis</h3>
-    <div class="order-warranty-list">
-    <?php if($contactDeliveries):foreach($contactDeliveries as $delivery):?>
-        <div class="sale-item order-warranty-item">
-            <div><b><?=e(strtoupper((string)$delivery['channel']))?></b><p><?=e($delivery['recipient'])?><?php if(!empty($delivery['last_error'])):?> · <?=e($delivery['last_error'])?><?php endif;?></p></div>
-            <span class="order-warranty-status"><?=admin_status_badge((string)$delivery['status'])?></span>
-        </div>
-    <?php endforeach;else:?><div class="adm-empty"><div><b>Belum ada antrean email / WhatsApp</b><p>Antrean dibuat setelah pesanan berhasil delivered dan kanal pengiriman diaktifkan.</p></div></div><?php endif;?>
-    </div>
-    <h3>Garansi Pesanan</h3>
-    <div class="order-warranty-list">
-    <?php if($warranties):foreach($warranties as $w):?>
-        <div class="sale-item order-warranty-item">
-            <div><b><?=e($w['product_name'])?> <small>x <?=intval($w['qty'])?></small></b><p><?=e(trim((string)$w['warranty_label']) ?: ((int)$w['warranty_days']>0 ? ((int)$w['warranty_days'].' Hari') : 'Tanpa garansi'))?></p></div>
-            <span class="order-warranty-status"><?=e(warranty_status_text($w))?></span>
-        </div>
-    <?php endforeach;else:?><div class="adm-empty"><div><b>Belum ada data garansi</b></div></div><?php endif;?>
-    </div>
-    <h3>Item & Stok Digital</h3>
-    <?php if($stocks):foreach($stocks as $stock):$stockContent=(string)($stock['content'] ?? 'Belum terbuka / belum delivered');?>
-        <div class="sale-item order-stock-item">
-            <div class="order-stock-head"><b><?=e($stock['product_name'])?> <small>x <?=e($stock['qty'])?></small></b><button class="order-copy-btn" type="button" data-copy-order-stock="<?=e($stockContent)?>" title="Salin data stok"><span><?=admin_icon('copy')?></span><b>Salin</b></button></div>
-            <pre><?=e($stockContent)?></pre>
-        </div>
-    <?php endforeach;else:?>
-        <div class="adm-empty"><div><div class="adm-empty-icon"><?=admin_icon('lock')?></div><b>Stok belum terbuka</b><p>Produk akan diambil dari stok digital setelah pembayaran berhasil.</p></div></div>
-    <?php endif;?>
-</section>
+</div>
 <?php endif;?>
 
 <form id="ordersBulkForm" method="post" class="bulk-form">
@@ -304,4 +308,27 @@ admin_page_start('Pesanan','Kelola pembayaran, status, dan stok digital pembeli.
     </tbody>
 </table>
 </div>
+<script>
+(function(){
+    /* ── Order-detail modal (server-rendered when ?detail= is present) ── */
+    const modal=document.getElementById('orderDetailModal');
+    if(!modal) return;
+    if(modal.classList.contains('is-open')) document.body.style.overflow='hidden';
+    function closeOrderDetail(){
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden','true');
+        document.body.style.overflow='';
+        const closeUrl=modal.getAttribute('data-close-url')||'orders.php';
+        if(window.history?.replaceState) window.history.replaceState(null,'',closeUrl);
+        else window.location.href=closeUrl;
+    }
+    modal.querySelectorAll('[data-close-order-detail]').forEach(function(el){
+        el.addEventListener('click',function(e){ e.preventDefault(); closeOrderDetail(); });
+    });
+    modal.addEventListener('click',function(e){ if(e.target===modal) closeOrderDetail(); });
+    document.addEventListener('keydown',function(e){
+        if(e.key==='Escape'&&modal.classList.contains('is-open')) closeOrderDetail();
+    });
+})();
+</script>
 <?php admin_page_end(); ?>

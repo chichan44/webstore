@@ -25,7 +25,7 @@
   function closeSidebar(){
     sidebar?.classList.remove('open');
     overlay?.classList.remove('show');
-    if (!doc.querySelector('.product-modal.is-open')) body.style.overflow = '';
+    if (!doc.querySelector('.product-modal.is-open, .stock-modal.is-open, .order-detail-modal.is-open')) body.style.overflow = '';
   }
   toggle?.addEventListener('click', () => {
     if (isMobile()) {
@@ -297,6 +297,13 @@
   const productModal = byId('productFormModal');
   function openProductModal(){
     if (!productModal) return;
+    /* Modal dirender dari ?edit=ID. Kalau form masih berisi data edit,
+       muat ulang ?add=1 supaya "Tambah Produk" selalu membuka form kosong. */
+    const idField = productModal.querySelector('form [name="id"]');
+    if (idField && idField.value) {
+      window.location.href = 'products.php?add=1';
+      return;
+    }
     productModal.classList.add('is-open');
     productModal.setAttribute('aria-hidden','false');
     body.style.overflow = 'hidden';

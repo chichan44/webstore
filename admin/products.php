@@ -721,7 +721,7 @@ body.admin-modern[data-admin-theme="dark"].admin-page-products #adminProductsTab
         <form method="post" enctype="multipart/form-data" class="form-card">
             <?=csrf_field()?><input type="hidden" name="action" value="save"><input type="hidden" name="id" value="<?=e($edit['id'] ?? '')?>">
             <div class="adm-card-head">
-                <div><h3 id="productModalTitle"><?=$edit?'Edit Produk':'Tambah Produk'?></h3><p>Produk adalah induk. Harga, diskon, garansi, dan stok diisi pada tiap varian di bawah.</p></div>
+                <div><h3 id="productModalTitle"><?=!empty($edit['id'])?'Edit Produk':'Tambah Produk'?></h3><p>Produk adalah induk. Harga, diskon, garansi, dan stok diisi pada tiap varian di bawah.</p></div>
                 <button class="product-modal-close" type="button" data-close-product-modal aria-label="Tutup popup">×</button>
             </div>
             <div class="form-grid">

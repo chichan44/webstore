@@ -242,10 +242,10 @@ body.admin-modern.admin-page-stocks .stock-modal{position:fixed;inset:0;z-index:
 body.admin-modern.admin-page-stocks .stock-modal.is-open{display:flex}
 body.admin-modern.admin-page-stocks .stock-modal-panel{width:min(560px,100%);max-height:calc(100vh - 40px);overflow:auto;border:1px solid rgba(255,255,255,.3);border-radius:18px;background:var(--adm-card);box-shadow:0 30px 90px rgba(3,10,23,.3)}
 body.admin-modern.admin-page-stocks .stock-modal-panel .form-card{margin:0;padding:0 20px 20px;border:0;border-radius:18px;box-shadow:none;background:var(--adm-card)}
-body.admin-modern.admin-page-stocks .stock-modal-panel .adm-card-head{position:sticky;top:0;z-index:4;margin:0 -20px 14px;padding:14px 20px;border-radius:18px 18px 0 0;background:var(--adm-card);border-bottom:1px solid var(--adm-border)}
+body.admin-modern.admin-page-stocks .stock-modal-panel .adm-card-head{position:sticky;top:0;z-index:4;margin:0 -20px 14px;padding:14px 58px 12px 20px;border-radius:18px 18px 0 0;background:var(--adm-card);border-bottom:1px solid var(--adm-border)}
 body.admin-modern.admin-page-stocks .stock-modal-panel .adm-card-head h3{font-size:16px;font-weight:820;color:var(--adm-heading)}
 body.admin-modern.admin-page-stocks .stock-modal-panel .adm-card-head p{font-size:12px;color:var(--adm-muted);margin-top:2px}
-body.admin-modern.admin-page-stocks .stock-modal-close{width:34px;height:34px;padding:0;display:grid;place-items:center;border:1px solid var(--adm-border);border-radius:10px;color:var(--adm-muted);background:var(--adm-card-soft);font-size:20px;cursor:pointer;flex:0 0 auto}
+body.admin-modern.admin-page-stocks .stock-modal-close{position:absolute;top:12px;right:18px;width:34px;height:34px;padding:0;display:grid;place-items:center;border:1px solid var(--adm-border);border-radius:10px;color:var(--adm-muted);background:var(--adm-card-soft);font-size:20px;line-height:1;cursor:pointer;z-index:5}
 body.admin-modern.admin-page-stocks .stock-modal .field{margin-top:14px}
 body.admin-modern.admin-page-stocks .stock-modal .field:first-of-type{margin-top:0}
 body.admin-modern.admin-page-stocks .stock-modal .field label{margin:0 0 5px;font-size:11px;font-weight:750;color:var(--adm-heading)}
@@ -288,7 +288,8 @@ body.admin-modern[data-admin-theme="dark"].admin-page-stocks .type-chip.manual{b
     body.admin-modern.admin-page-stocks .stock-modal{padding:10px}
     body.admin-modern.admin-page-stocks .stock-modal-panel{max-height:calc(100vh - 20px);border-radius:14px}
     body.admin-modern.admin-page-stocks .stock-modal-panel .form-card{padding:0 14px 14px}
-    body.admin-modern.admin-page-stocks .stock-modal-panel .adm-card-head{margin:0 -14px 12px;padding:12px 14px;border-radius:14px 14px 0 0}
+    body.admin-modern.admin-page-stocks .stock-modal-panel .adm-card-head{margin:0 -14px 12px;padding:12px 52px 10px 14px;border-radius:14px 14px 0 0}
+    body.admin-modern.admin-page-stocks .stock-modal-close{top:10px;right:12px}
 }
 </style>
 
@@ -380,8 +381,8 @@ body.admin-modern[data-admin-theme="dark"].admin-page-stocks .type-chip.manual{b
         <form method="post" class="form-card">
             <?=csrf_field()?><input type="hidden" name="action" value="add">
             <input type="hidden" name="product_id_filter" value="<?=$fltProductId?>">
-            <div class="adm-card-head" style="display:flex;align-items:flex-start;gap:10px">
-                <div style="flex:1"><h3 id="stockModalTitle">Tambah Stok Digital</h3><p>Satu baris = satu stok yang dikirim otomatis ke varian terpilih.</p></div>
+            <div class="adm-card-head">
+                <div><h3 id="stockModalTitle">Tambah Stok Digital</h3><p>Satu baris = satu stok yang dikirim otomatis ke varian terpilih.</p></div>
                 <button class="stock-modal-close" type="button" data-close-stock-modal aria-label="Tutup">×</button>
             </div>
             <div class="field">

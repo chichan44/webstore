@@ -901,6 +901,23 @@ body.admin-modern .orders-status-filter{display:flex;align-items:center;gap:8px}
 body.admin-modern .orders-status-filter label{color:#66758a;font-size:10px;font-weight:720}
 body.admin-modern .orders-status-filter select{height:39px;min-width:150px;padding:0 32px 0 11px;border:1px solid var(--adm-border);border-radius:10px;color:#34445a;background:#fff;font-size:10px;font-weight:650}
 body.admin-modern .order-detail-card{padding:20px}
+body.admin-modern .order-detail-modal{
+  position:fixed;
+  inset:0;
+  z-index:120;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  overflow:auto;
+  background:rgba(5,14,29,.58);
+  backdrop-filter:blur(8px);
+}
+body.admin-modern .order-detail-modal.is-open{display:flex}
+body.admin-modern .order-detail-panel{width:min(860px,100%);max-height:calc(100vh - 40px);overflow:auto;border:1px solid rgba(255,255,255,.3);border-radius:20px;background:#fff;box-shadow:0 30px 90px rgba(3,10,23,.3)}
+body.admin-modern .order-detail-panel .order-detail-card{margin:0;padding:0 22px 22px;border:0;border-radius:20px;box-shadow:none;background:#fff}
+body.admin-modern .order-detail-panel .adm-card-head{position:sticky;top:0;z-index:4;margin:0 -22px 18px;padding:17px 64px 15px 22px;border-radius:20px 20px 0 0;background:rgba(255,255,255,.97);backdrop-filter:blur(16px)}
+body.admin-modern .order-detail-close{position:absolute;top:14px;right:20px;width:36px;height:36px;padding:0;display:grid;place-items:center;border:1px solid var(--adm-border);border-radius:10px;color:#5d6b7e;background:#f7f9fc;font-size:20px;line-height:1;text-decoration:none;cursor:pointer;z-index:5}
 body.admin-modern .order-detail-grid{margin-bottom:20px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 body.admin-modern .order-info-box{min-height:78px;padding:13px;border:1px solid #e7ecf2;border-radius:13px;background:#f8fafc}
 body.admin-modern .order-info-box>span{display:block;color:var(--adm-muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
@@ -946,8 +963,8 @@ body.admin-modern .product-modal{
 body.admin-modern .product-modal.is-open{display:flex}
 body.admin-modern .product-modal-panel{width:min(940px,100%);max-height:calc(100vh - 40px);overflow:auto;border:1px solid rgba(255,255,255,.3);border-radius:20px;background:#fff;box-shadow:0 30px 90px rgba(3,10,23,.3)}
 body.admin-modern .product-modal-panel .form-card{margin:0;padding:0 22px 22px;border:0;border-radius:20px;box-shadow:none;background:#fff}
-body.admin-modern .product-modal-panel .adm-card-head{position:sticky;top:0;z-index:4;margin:0 -22px 18px;padding:17px 22px;border-radius:20px 20px 0 0;background:rgba(255,255,255,.97);backdrop-filter:blur(16px)}
-body.admin-modern .product-modal-close{width:36px;height:36px;padding:0;display:grid;place-items:center;border:1px solid var(--adm-border);border-radius:10px;color:#5d6b7e;background:#f7f9fc;font-size:20px;cursor:pointer}
+body.admin-modern .product-modal-panel .adm-card-head{position:sticky;top:0;z-index:4;margin:0 -22px 18px;padding:17px 64px 15px 22px;border-radius:20px 20px 0 0;background:rgba(255,255,255,.97);backdrop-filter:blur(16px)}
+body.admin-modern .product-modal-close{position:absolute;top:14px;right:20px;width:36px;height:36px;padding:0;display:grid;place-items:center;border:1px solid var(--adm-border);border-radius:10px;color:#5d6b7e;background:#f7f9fc;font-size:20px;line-height:1;cursor:pointer;z-index:5}
 body.admin-modern .delivery-choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 body.admin-modern .delivery-choice label{min-height:43px;margin:0;padding:9px 10px;display:flex;align-items:center;gap:8px;border:1px solid var(--adm-border-strong);border-radius:11px;background:#fbfcfe;cursor:pointer}
 body.admin-modern .delivery-choice label:has(input:checked){border-color:#a9bfff;background:#f1f5ff}
@@ -1126,7 +1143,10 @@ body.admin-modern[data-admin-theme="dark"] .adm-profile-menu,
 body.admin-modern[data-admin-theme="dark"] .adm-help-panel,
 body.admin-modern[data-admin-theme="dark"] .product-modal-panel,
 body.admin-modern[data-admin-theme="dark"] .product-modal-panel .form-card,
-body.admin-modern[data-admin-theme="dark"] .product-modal-panel .adm-card-head{color:var(--adm-text)!important;border-color:#2b3c53!important;background:rgba(20,32,51,.985)!important}
+body.admin-modern[data-admin-theme="dark"] .product-modal-panel .adm-card-head,
+body.admin-modern[data-admin-theme="dark"] .order-detail-panel,
+body.admin-modern[data-admin-theme="dark"] .order-detail-panel .order-detail-card,
+body.admin-modern[data-admin-theme="dark"] .order-detail-panel .adm-card-head{color:var(--adm-text)!important;border-color:#2b3c53!important;background:rgba(20,32,51,.985)!important}
 body.admin-modern[data-admin-theme="dark"] .adm-notif-head,
 body.admin-modern[data-admin-theme="dark"] .adm-profile-menu-head,
 body.admin-modern[data-admin-theme="dark"] .adm-help-panel-head{border-color:#29394f!important;background:rgba(20,32,51,.98)!important}
@@ -1141,7 +1161,10 @@ body.admin-modern[data-admin-theme="dark"] .dashboard-chart-wrap svg line{stroke
 body.admin-modern[data-admin-theme="dark"] .dashboard-chart-wrap svg circle{fill:#142033}
 body.admin-modern[data-admin-theme="dark"] .adm-btn.soft{color:#a9c2ff!important;border-color:#36517c!important;background:#1b3153!important}
 body.admin-modern[data-admin-theme="dark"] .adm-status{border-color:#3a4b61;background:#243348}
-body.admin-modern[data-admin-theme="dark"] .product-modal{background:rgba(2,7,15,.74)}
+body.admin-modern[data-admin-theme="dark"] .product-modal,
+body.admin-modern[data-admin-theme="dark"] .order-detail-modal{background:rgba(2,7,15,.74)}
+body.admin-modern[data-admin-theme="dark"] .product-modal-close,
+body.admin-modern[data-admin-theme="dark"] .order-detail-close{color:#c4d0e0;background:#1c2c45;border-color:#2b3c53}
 body.admin-modern[data-admin-theme="dark"] .adm-login-card{background:#142033}
 
 
@@ -1322,7 +1345,13 @@ body.adm-login-body .alert.err{margin:0 0 15px;padding:10px 11px;border:1px soli
   body.admin-modern .product-modal{padding:8px}
   body.admin-modern .product-modal-panel{max-height:calc(100vh - 16px);border-radius:16px}
   body.admin-modern .product-modal-panel .form-card{padding:0 14px 16px}
-  body.admin-modern .product-modal-panel .adm-card-head{margin:0 -14px 15px;padding:14px;border-radius:16px 16px 0 0}
+  body.admin-modern .product-modal-panel .adm-card-head{margin:0 -14px 15px;padding:14px 56px 12px 14px;border-radius:16px 16px 0 0}
+  body.admin-modern .product-modal-close{top:11px;right:12px}
+  body.admin-modern .order-detail-modal{padding:8px}
+  body.admin-modern .order-detail-panel{max-height:calc(100vh - 16px);border-radius:16px}
+  body.admin-modern .order-detail-panel .order-detail-card{padding:0 14px 16px}
+  body.admin-modern .order-detail-panel .adm-card-head{margin:0 -14px 15px;padding:14px 56px 12px 14px;border-radius:16px 16px 0 0}
+  body.admin-modern .order-detail-close{top:11px;right:12px}
   body.admin-modern .delivery-choice{grid-template-columns:1fr}
   body.admin-modern .order-detail-grid{grid-template-columns:1fr}
   body.admin-modern .order-password-box{grid-column:auto}

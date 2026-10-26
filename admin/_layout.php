@@ -127,7 +127,7 @@ if (!function_exists('admin_page_start')) {
     <title><?= e($title) ?> - <?= e($brandName) ?></title>
     <?php if ($favicon !== ''): ?><link rel="icon" href="<?= e($favicon) ?>"><?php endif; ?>
     <link rel="stylesheet" href="/assets/css/admin-v9.css?v=20260811-order-pin-removed">
-    <link rel="stylesheet" href="/admin/admin-modern.css?v=20260811-commerce-safety-v1">
+    <link rel="stylesheet" href="/admin/admin-modern.css?v=20261026-admin-modal-fixes">
 </head>
 <body class="admin-modern admin-page-<?= e($pageSlug) ?>" data-admin-page="<?= e($pageSlug) ?>">
 <div class="adm-overlay" id="admOverlay"></div>
@@ -250,7 +250,7 @@ if (!function_exists('admin_page_start')) {
     </section>
 </div>
 <script>window.adminCsrf=<?=json_encode(csrf_token())?>;window.adminIconSun=<?=json_encode(admin_icon('sun'))?>;window.adminIconMoon=<?=json_encode(admin_icon('moon'))?>;</script>
-<script src="/admin/admin-modern.js?v=20260724-admin-fixes-v3"></script>
+<script src="/admin/admin-modern.js?v=20261026-admin-modal-fixes"></script>
 </body>
 </html>
         <?php
