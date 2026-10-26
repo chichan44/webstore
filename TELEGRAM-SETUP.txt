@@ -1,0 +1,53 @@
+DIGITAL STORE - TELEGRAM AUTO ORDER
+===================================
+
+Telegram merupakan fitur opsional. Website, katalog, checkout, admin, dan payment gateway tetap dapat digunakan tanpa Telegram.
+
+PERSYARATAN
+- Website sudah selesai diinstall melalui /install/install.php
+- HTTPS/SSL aktif pada domain
+- Ekstensi PHP cURL aktif
+- Cron Job tersedia untuk worker/broadcast/retry
+- Bot Telegram dibuat melalui @BotFather
+
+CARA AKTIFKAN
+1. Login ke /admin/telegram.php.
+2. Tambahkan token bot dari @BotFather.
+3. Klik Uji Bot untuk memastikan token dapat terhubung.
+4. Aktifkan bot lalu klik 'Periksa & Perbaiki' untuk menguji token, webhook, dan command sekaligus.
+5. URL webhook dibuat otomatis berdasarkan Site URL pada /admin/settings.php.
+6. Buat Cron Job setiap 1 menit menggunakan URL Cron rahasia yang ditampilkan di /admin/telegram.php.
+7. Uji /start, daftar produk, checkout, dan pembayaran dengan transaksi percobaan.
+
+CONTOH CRON VIA URL
+/usr/bin/curl -fsSL --connect-timeout 10 --max-time 50 \
+"URL_CRON_RAHASIA_DARI_ADMIN" \
+>/dev/null 2>&1
+
+FITUR
+- Katalog kategori/produk mengambil data dari database website yang sama.
+- Stok website dan Telegram tersinkron karena memakai tabel stok yang sama.
+- Reservasi stok saat invoice pending untuk mencegah penjualan ganda.
+- Pengiriman stok otomatis setelah pembayaran berhasil.
+- Riwayat pesanan dan pengiriman ulang produk.
+- Dukungan beberapa bot dan migrasi pengguna ke bot baru.
+- Broadcast bertahap melalui worker.
+- Retry otomatis bila Telegram sementara bermasalah.
+- Analitik Telegram di /admin/telegram.php.
+
+LINK PRODUK WEBSITE KE BOT
+Pada /admin/settings.php, isi Link Tombol “Beli di Bot Telegram” dengan format:
+https://t.me/username_bot?start=product_{product_id}
+
+Placeholder {product_id} akan diganti otomatis dengan ID produk yang sedang dibuka.
+
+KEAMANAN
+- Token bot disimpan terenkripsi menggunakan APP_KEY instalasi.
+- Webhook memakai secret_token dan URL key acak.
+- URL Cron memiliki key rahasia yang dibuat otomatis.
+- Jangan membagikan token bot, URL Cron, file includes/config.php, secret payment gateway, atau dump database.
+
+KOMPATIBILITAS TELEGRAM BOT API
+- Menggunakan link_preview_options sesuai Bot API saat ini.
+- Tombol 'Periksa & Perbaiki' dapat memasang ulang webhook jika URL berubah atau Telegram melaporkan error.
+- Webhook tetap memakai secret_token.

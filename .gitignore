@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Sensitive config (DB credentials, API keys)
+includes/db.php
+includes/config.php
+
+# Uploads
+uploads/
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Temp files
+*.tmp
+*.bak
+*.orig
+
+# Local overrides
+*.local.php

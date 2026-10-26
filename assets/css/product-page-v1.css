@@ -1,0 +1,244 @@
+/* Product Page — PREMIFY-inspired, site theme tokens (light indigo + dark) */
+.pp-wrap{max-width:1100px;margin:0 auto;padding:16px 0 48px}
+
+.pp-back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-weight:700;font-size:13px;margin-bottom:12px}
+.pp-back:hover{color:var(--indigo)}
+
+.pp-card,.pp-hero-card{background:var(--card);border:1px solid var(--line);border-radius:var(--theme-card-radius);box-shadow:var(--theme-card-shadow);padding:14px;margin-bottom:12px}
+
+/* Hero: small product image + title / price / sold */
+.pp-hero-card{display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;align-items:start}
+.pp-hero-thumb{position:relative;width:72px;height:72px;flex:0 0 auto;border-radius:14px;overflow:hidden;background:var(--soft);display:grid;place-items:center}
+.pp-hero-thumb-img{width:100%;height:100%;object-fit:cover;display:block}
+.pp-hero-thumb-fallback{width:100%;height:100%;display:grid;place-items:center;background:linear-gradient(135deg,var(--theme-hero-from,#4f46e5),var(--theme-hero-to,#312e81));color:#fff;font-weight:900;font-size:22px}
+.pp-hero-thumb-fallback span{padding:0 6px;text-align:center;font-size:12px;max-width:100%;overflow:hidden}
+
+.pp-hero-info{min-width:0;display:flex;flex-direction:column;gap:5px}
+.pp-pills{display:flex;flex-wrap:wrap;align-items:center;gap:5px;min-width:0}
+.pp-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;font-size:10.5px;font-weight:800;background:var(--soft);color:var(--muted);border:1px solid var(--line);max-width:100%}
+.pp-pill-cat{background:var(--theme-badge-bg);color:var(--theme-badge-color);border-color:transparent}
+.pp-pill-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:0 0 auto}
+.pp-pill-stock{margin-left:auto}
+.pp-pill-stock.is-available{background:#ecfdf5;color:#047857;border-color:transparent}
+.pp-pill-stock.is-out{background:#fef2f2;color:#b91c1c;border-color:transparent}
+.pp-pill-flash{background:#fdf2f8;color:var(--pink);border-color:transparent}
+html[data-theme=dark] .pp-pill-stock.is-available{background:rgba(16,185,129,.15);color:#34d399}
+html[data-theme=dark] .pp-pill-stock.is-out{background:rgba(239,68,68,.15);color:#f87171}
+
+.pp-title{margin:0;font-size:16px;line-height:1.3;color:var(--text);overflow-wrap:anywhere}
+.pp-price-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 8px;min-width:0}
+.pp-price-from{font-size:11.5px;font-weight:700;color:var(--muted)}
+.pp-price{font-size:20px;color:var(--indigo);font-weight:900;line-height:1.15}
+.pp-price-original{color:var(--muted);font-size:12.5px}
+.pp-price-discount{background:#fef2f2;color:#b91c1c;font-size:11px;font-weight:900;padding:2px 7px;border-radius:999px}
+html[data-theme=dark] .pp-price-discount{background:rgba(239,68,68,.15);color:#f87171}
+.pp-flash-badge{display:inline-flex;align-items:center;gap:3px;background:#fdf2f8;color:var(--pink);font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px}
+
+/* Hero meta: star rating (half-star fill) left, total sold right — both breakpoints */
+.pp-hero-meta{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px dashed var(--line);margin-top:2px;min-width:0}
+.pp-rating{display:inline-flex;align-items:center;gap:6px;min-width:0;flex:0 1 auto}
+.pp-stars{position:relative;display:inline-block;font-size:14px;line-height:1;letter-spacing:1px;font-weight:700}
+.pp-stars-track{color:color-mix(in srgb,var(--muted) 42%,transparent)}
+.pp-stars-fill{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#f59e0b;width:calc(var(--pp-rate,0) / 5 * 100%)}
+.pp-rating-num{font-size:13px;font-weight:900;color:var(--text)}
+.pp-rating-max{font-size:12px;font-weight:700;color:var(--muted)}
+.pp-sold-row{display:flex;align-items:center;gap:4px 5px;font-size:12px;color:var(--muted);font-weight:600;flex:0 0 auto;margin-left:auto}
+.pp-sold-row b{color:var(--text);font-size:13px;font-weight:900}
+
+/* Two-column: info card left, buy card right */
+.pp-layout{display:grid;grid-template-columns:1fr;gap:12px;align-items:start}
+.pp-main-col,.pp-side-col{min-width:0;display:flex;flex-direction:column;gap:12px}
+.pp-main-col .pp-card,.pp-side-col .pp-card{margin-bottom:0}
+
+/* Section titles */
+.pp-section-title{margin:0 0 10px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pp-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.pp-section-head .pp-section-title{margin-bottom:0}
+.pp-section-chip{background:#fdf2f8;color:var(--pink);font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap}
+
+/* Tabs — segmented pills fill the card width (no dead space on the right) */
+.pp-tabs-section{padding-top:0}
+.pp-tabs{display:flex;gap:6px;margin:0 0 14px;padding:4px;background:var(--soft);border:1px solid var(--line);border-radius:14px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.pp-tabs::-webkit-scrollbar{display:none}
+.pp-tab{appearance:none;flex:1 1 auto;min-width:0;border:0;background:transparent;padding:10px 12px;font:inherit;font-weight:800;font-size:12.5px;color:var(--muted);cursor:pointer;border-radius:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;transition:background .15s ease,color .15s ease,box-shadow .15s ease}
+.pp-tab:hover{color:var(--text)}
+.pp-tab.is-active{background:var(--card);color:var(--indigo);box-shadow:0 1px 3px rgba(15,23,42,.08),inset 0 0 0 1px var(--line)}
+html[data-theme=dark] .pp-tab.is-active{box-shadow:0 1px 3px rgba(0,0,0,.25),inset 0 0 0 1px var(--line)}
+.pp-tab-panel[hidden]{display:none}
+
+/* Description / terms — content sits in a soft text-area panel */
+.pp-desc{color:var(--text);line-height:1.7;font-size:13px;overflow-wrap:anywhere;background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.pp-desc p{margin:0 0 10px}
+.pp-desc p:last-child{margin-bottom:0}
+
+/* Syarat & Ketentuan — daftar bernomor rapi, satu kartu per ketentuan */
+.pp-terms{display:flex;flex-direction:column;gap:12px}
+.pp-terms-head{display:flex;align-items:center;gap:11px;padding:12px 14px;background:var(--soft);border:1px solid var(--line);border-radius:14px}
+.pp-terms-icon{flex:0 0 34px;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border-radius:11px;background:color-mix(in srgb,var(--indigo) 15%,var(--card));font-size:16px;line-height:1}
+.pp-terms-head-copy{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pp-terms-head-copy b{font-size:13px;font-weight:850;color:var(--text);letter-spacing:-.01em}
+.pp-terms-head-copy small{font-size:11px;font-weight:650;color:var(--muted)}
+.pp-terms-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;counter-reset:pp-terms}
+.pp-terms-item{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:var(--soft);border:1px solid var(--line);border-radius:12px;transition:border-color .15s ease}
+.pp-terms-item:hover{border-color:color-mix(in srgb,var(--indigo) 32%,var(--line))}
+.pp-terms-num{flex:0 0 22px;width:22px;height:22px;margin-top:1px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--indigo);color:#fff;font-size:11px;font-weight:900;line-height:1;letter-spacing:.01em}
+html[data-theme=dark] .pp-terms-num{background:color-mix(in srgb,var(--indigo) 82%,#fff)}
+.pp-terms-text{flex:1 1 auto;min-width:0;font-size:13px;line-height:1.65;color:var(--text);overflow-wrap:anywhere;padding-top:1px}
+@media(max-width:420px){
+  .pp-terms-head{align-items:flex-start}
+  .pp-terms-item{padding:10px 11px;gap:9px}
+  .pp-terms-text{font-size:12.5px}
+}
+
+/* Variant cards — no MEMILIH label; price + slash original + discount; warranty in-card */
+.pp-variant-list{display:flex;flex-direction:column;gap:9px;margin-bottom:12px}
+.pp-variant-card{appearance:none;width:100%;display:block;padding:0;border-radius:14px;border:1.5px solid var(--line);background:var(--card);cursor:pointer;font:inherit;text-align:left;transition:border-color .15s ease,background .15s ease,box-shadow .15s ease;overflow:hidden}
+.pp-variant-card:hover{border-color:color-mix(in srgb,var(--indigo) 45%,var(--line))}
+.pp-variant-card.is-active{border-color:var(--indigo);background:color-mix(in srgb,var(--indigo) 10%,var(--card));box-shadow:0 0 0 1px var(--indigo),0 8px 20px var(--theme-accent-glow)}
+html[data-theme=dark] .pp-variant-card.is-active{background:color-mix(in srgb,var(--indigo) 18%,var(--card))}
+.pp-variant-card.is-out{opacity:.72}
+.pp-variant-main{display:flex;flex-direction:column;gap:6px;padding:12px 12px}
+.pp-variant-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.pp-variant-name-wrap{display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 auto}
+.pp-variant-radio{flex:0 0 auto;width:16px;height:16px;border-radius:50%;border:2px solid var(--line);background:var(--card);position:relative}
+.pp-variant-card.is-active .pp-variant-radio{border-color:var(--indigo)}
+.pp-variant-card.is-active .pp-variant-radio::after{content:"";position:absolute;inset:2.5px;border-radius:50%;background:var(--indigo)}
+.pp-variant-name{font-size:13.5px;color:var(--text);font-weight:800;line-height:1.3;min-width:0;overflow-wrap:anywhere}
+.pp-variant-meta-right{display:flex;flex-direction:column;align-items:flex-end;gap:1px;text-align:right;flex:0 0 auto;max-width:44%}
+.pp-variant-stock{font-size:11px;color:var(--muted);font-weight:700}
+.pp-variant-stock.is-available{color:#047857}
+.pp-variant-stock.is-out{color:#b91c1c}
+.pp-variant-warranty{font-size:11px;color:var(--muted);font-weight:600}
+html[data-theme=dark] .pp-variant-stock.is-available{color:#34d399}
+html[data-theme=dark] .pp-variant-stock.is-out{color:#f87171}
+
+.pp-variant-price-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 8px}
+.pp-variant-price{font-size:16px;color:var(--indigo);font-weight:900}
+.pp-variant-original{color:var(--muted);font-size:12px;margin-left:auto}
+.pp-variant-discount{background:#fef2f2;color:#b91c1c;font-size:11px;font-weight:900;padding:2px 7px;border-radius:999px}
+html[data-theme=dark] .pp-variant-discount{background:rgba(239,68,68,.15);color:#f87171}
+
+/* Purchase block */
+.pp-purchase-block{display:flex;flex-direction:column;gap:10px}
+.pp-qty-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.pp-qty-label{font-size:13px;font-weight:800;color:var(--text)}
+.pp-qty-stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);flex:0 0 auto}
+.pp-qty-stepper button{appearance:none;border:0;background:var(--soft);color:var(--text);width:38px;height:38px;font-size:17px;font-weight:800;cursor:pointer}
+.pp-qty-stepper button:disabled{opacity:.4;cursor:not-allowed}
+.pp-qty-stepper span{min-width:36px;text-align:center;font-weight:800;font-size:14px}
+.pp-qty-selected{color:var(--muted);font-size:12px;font-weight:700;min-width:0;overflow-wrap:anywhere}
+
+.pp-buy-now{appearance:none;width:100%;border:0;border-radius:14px;padding:15px 16px;font:inherit;font-size:14.5px;font-weight:900;color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--theme-accent),var(--theme-accent2));box-shadow:0 10px 24px var(--theme-accent-glow);transition:transform .12s ease,opacity .12s ease}
+.pp-buy-now:hover:not(:disabled){transform:translateY(-1px)}
+.pp-buy-now:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+
+.pp-cart-hint{margin:0;font-size:12.5px;font-weight:700;color:var(--muted);text-align:center}
+.pp-cart-hint.is-on{color:var(--indigo)}
+
+/* Add to cart = full-width secondary; Wishlist + Bagikan share a row */
+.pp-secondary-btn{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:13px 10px;border-radius:12px;border:1px solid var(--line);background:var(--soft);color:var(--text);font:inherit;font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;text-align:center;transition:border-color .15s ease,background .15s ease,color .15s ease}
+.pp-secondary-btn:hover:not(:disabled){border-color:var(--indigo);color:var(--indigo)}
+.pp-secondary-btn:disabled{opacity:.5;cursor:not-allowed}
+.pp-secondary-btn.is-active{border-color:var(--indigo);background:var(--theme-accent-light);color:var(--indigo)}
+.pp-secondary-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pp-add-cart.is-added{border-color:#047857;background:#ecfdf5;color:#047857}
+html[data-theme=dark] .pp-add-cart.is-added{background:rgba(16,185,129,.15);color:#34d399;border-color:rgba(16,185,129,.4)}
+
+.pp-trust-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pp-trust-item{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;text-align:center;padding:10px 6px;border-radius:11px;background:var(--soft);border:1px solid var(--line);font-size:10.5px;font-weight:800;color:var(--muted);line-height:1.25;min-width:0}
+.pp-trust-item span{font-size:14px;flex:0 0 auto}
+
+/* Reviews */
+.pp-review-summary{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.pp-review-summary b{font-size:20px;color:var(--indigo)}
+.pp-review-summary span{color:var(--muted);font-size:12.5px}
+.pp-review-list{margin-bottom:16px}
+.pp-review-empty{color:var(--muted);text-align:center;padding:20px 0;margin:0}
+.pp-review-item{border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:9px;background:var(--soft)}
+.pp-review-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
+.pp-review-head b{font-size:13px}
+.pp-review-stars{color:#f59e0b;font-size:12.5px;letter-spacing:1px}
+.pp-review-head small{color:var(--muted);font-size:11px;margin-left:auto}
+.pp-review-item p{margin:0;color:var(--text);font-size:13px;line-height:1.55;overflow-wrap:anywhere}
+.pp-review-contact{display:inline-block;margin:0 0 6px;padding:3px 8px;border-radius:999px;background:color-mix(in srgb,var(--indigo) 9%,var(--card));border:1px solid color-mix(in srgb,var(--indigo) 18%,var(--line));color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.02em}
+.pp-review-locked{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:16px}
+.pp-review-locked h4{margin:0 0 4px;font-size:13.5px;color:var(--text)}
+.pp-review-locked p{margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.5}
+.pp-review-locked .btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 18px;text-decoration:none}
+.pp-review-form{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:9px}
+.pp-review-form-grid{display:grid;grid-template-columns:1fr;gap:9px}
+.pp-review-form input,.pp-review-form select,.pp-review-form textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font:inherit;padding:10px 12px;font-size:13.5px}
+.pp-review-form textarea{resize:vertical;min-height:88px}
+.pp-review-form .btn{align-self:stretch;width:100%}
+.pp-review-note{color:var(--muted);font-size:12px}
+
+/* Alerts */
+.alert{display:flex;gap:10px;align-items:flex-start;border-radius:12px;padding:11px 12px;margin-bottom:10px;font-size:13px}
+.alert.ok{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+.alert.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+html[data-theme=dark] .alert.ok{background:rgba(16,185,129,.12);color:#6ee7b7;border-color:rgba(16,185,129,.3)}
+html[data-theme=dark] .alert.err{background:rgba(239,68,68,.12);color:#fca5a5;border-color:rgba(239,68,68,.3)}
+.alert span{font-weight:900}
+
+/* Telegram */
+.pp-telegram-buy{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px;color:var(--text);text-decoration:none;font-weight:800;font-size:13.5px;box-shadow:var(--theme-card-shadow)}
+.pp-telegram-buy svg{width:18px;height:18px;color:var(--indigo);flex:0 0 auto}
+.pp-telegram-buy:hover{border-color:var(--indigo);color:var(--indigo)}
+
+/* Similar products — homepage-style shared cards under description; 2x2 */
+.pp-similar{margin-top:4px}
+.pp-similar-more{color:var(--indigo);font-size:12px;font-weight:800;text-decoration:none;white-space:nowrap}
+.pp-similar-more:hover{text-decoration:underline}
+.pp-similar .sf-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0}
+@media(min-width:900px){.pp-similar .sf-card-grid{gap:14px}}
+
+/* Toast */
+.pp-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(12px);z-index:80;display:flex;align-items:center;gap:10px;max-width:min(92vw,420px);padding:12px 16px;border-radius:14px;background:#065f46;color:#fff;font-size:13.5px;font-weight:800;box-shadow:0 12px 32px rgba(2,6,23,.28);opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+.pp-toast.is-on{opacity:1;transform:translateX(-50%) translateY(0)}
+.pp-toast-icon{flex:0 0 auto;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18);font-size:12px}
+html[data-theme=dark] .pp-toast{background:#059669}
+
+@media(max-width:420px){
+  .pp-hero-card{grid-template-columns:64px minmax(0,1fr);gap:10px}
+  .pp-hero-thumb{width:64px;height:64px;border-radius:12px}
+  .pp-title{font-size:15px}
+  .pp-price{font-size:18px}
+  .pp-card,.pp-hero-card{padding:12px}
+  .pp-tabs{padding:3px;gap:4px;border-radius:12px}
+  .pp-tab{padding:9px 8px;font-size:11.5px;border-radius:9px}
+  .pp-variant-main{padding:11px 11px}
+  .pp-buy-now{padding:14px 14px;font-size:14px}
+  .pp-secondary-btn{padding:12px 8px;font-size:12.5px}
+}
+
+@media(min-width:640px){
+  .pp-wrap{padding:24px 0 64px}
+  .pp-card,.pp-hero-card{padding:20px}
+  .pp-hero-card{grid-template-columns:104px minmax(0,1fr);gap:14px}
+  .pp-hero-thumb{width:104px;height:104px}
+  .pp-title{font-size:20px}
+  .pp-price{font-size:24px}
+  .pp-buy-now{padding:17px 22px;font-size:15.5px}
+  .pp-secondary-btn{font-size:13.5px;padding:13px 12px}
+  .pp-trust-item{font-size:11px;padding:12px 8px}
+  .pp-tab{font-size:13px;padding:11px 14px}
+  .pp-review-form-grid{grid-template-columns:1fr 110px}
+  .pp-review-form .btn{align-self:flex-start;width:auto}
+}
+
+/* PC: neat two-column — info left, variants + buy right; similar under description */
+@media(min-width:900px){
+  .pp-wrap{padding:24px 0 64px}
+  .pp-hero-card{grid-template-columns:120px minmax(0,1fr);gap:18px;align-items:center}
+  .pp-hero-thumb{width:120px;height:120px;border-radius:16px}
+  .pp-title{font-size:22px}
+  .pp-price{font-size:26px}
+  .pp-hero-meta{padding-top:12px}
+  .pp-layout{grid-template-columns:minmax(0,1fr) 400px;grid-template-rows:auto auto;gap:18px;align-items:start}
+  .pp-main-col{grid-column:1;grid-row:1}
+  .pp-side-col{grid-column:2;grid-row:1 / span 2}
+  .pp-similar{grid-column:1;grid-row:2;margin-top:0}
+  .pp-side-col .pp-buy-card{position:sticky;top:88px}
+  .pp-main-col,.pp-side-col{gap:0}
+  .pp-telegram-buy{margin-top:14px}
+}

@@ -1,0 +1,16 @@
+RewriteEngine On
+RewriteBase /
+
+# Serve real files/dirs as-is (assets, api, admin, uploads, existing .php entry points)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Reserved path prefixes — never treat as product slugs
+RewriteRule ^(admin|api|assets|uploads|includes|install|cron|database|lang|css|js|product|page|ss)(/|$) - [L]
+
+# Existing PHP entry points at root — serve directly
+RewriteRule ^(index|checkout|wishlist|track-order|product|login)\.php(/|$) - [L]
+
+# Root-level product slug: /canva -> product.php?slug=canva
+RewriteRule ^([^/]+)/?$ product.php?slug=$1 [L,QSA]

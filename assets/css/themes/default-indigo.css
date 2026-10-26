@@ -1,0 +1,27 @@
+/* Theme: Default (Indigo) — Classic purple-blue accent, rounded cards */
+:root {
+  --theme-accent: #4f46e5;
+  --theme-accent2: #3730a3;
+  --theme-accent-light: #eef2ff;
+  --theme-accent-glow: rgba(79, 70, 229, .25);
+  --theme-hero-from: #4f46e5;
+  --theme-hero-via: #4338ca;
+  --theme-hero-to: #312e81;
+  --theme-card-radius: 18px;
+  --theme-btn-radius: 12px;
+  --theme-card-shadow: 0 10px 28px rgba(15, 23, 42, .06);
+  --theme-card-border: 1px solid var(--line);
+  --theme-badge-bg: #eef2ff;
+  --theme-badge-color: var(--indigo);
+}
+html[data-theme=dark] {
+  --theme-accent: #7c8cff;
+  --theme-accent2: #6475f2;
+  --theme-accent-light: #312e81;
+  --theme-accent-glow: rgba(124, 140, 255, .2);
+}
+/* Layout: standard rounded cards */
+.hero-card { border-radius: 24px; }
+.product-card { border-radius: var(--theme-card-radius); }
+.btn.primary { border-radius: var(--theme-btn-radius); }
+.cat-pill.active { background: var(--theme-accent); border-color: var(--theme-accent); }

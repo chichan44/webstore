@@ -1,0 +1,24 @@
+CASAKU - SETUP PAYMENT GATEWAY
+==============================
+
+1. Siapkan License Key, QR ID Merchant, Package ID aplikasi, dan Webhook Secret dari Casaku.
+2. Buka Admin > Payment Gateway, pilih "Casaku Otomatis", lalu simpan konfigurasi.
+3. Salin URL /api/casaku_webhook.php ke menu Webhook Developer Casaku.
+4. Untuk DANA Bisnis gunakan Package IDs: id.dana.kasir,id.dana.
+5. Pastikan aplikasi Casaku pada HP merchant memiliki Notification Access dan tetap online.
+6. Lakukan transaksi uji nominal kecil.
+
+KEAMANAN
+- License Key hanya digunakan server-to-server ke https://api.casaku.id.
+- QRIS dibuat melalui /api/generate/v2/qris dan transactionId disimpan sebagai payment_reference.
+- Webhook wajib lolos HMAC-SHA256, transactionId, dan validasi nominal.
+- Polling check-status/list dipakai sebagai recovery bila webhook terlambat.
+- Fulfillment bersifat idempotent agar stok tidak terkirim dua kali.
+
+KODE UNIK
+- Aktif: kode unik dibuat lokal secara acak 1-999 dan nominal final dikirim persis ke Casaku.
+- Nonaktif: pembeli membayar nominal persis tanpa tambahan kode.
+- Pada mode nonaktif, sistem memastikan hanya satu transaksi Casaku aktif memakai nominal yang sama. Transaksi lama yang sudah kedaluwarsa/dibatalkan dibersihkan sebelum QRIS baru dibuat.
+
+TELEGRAM
+Bot auto-order mengikuti payment gateway yang aktif. Jika Casaku dipilih, bot dan website sama-sama menggunakan Casaku dan tidak membutuhkan kredensial Tokopay.
