@@ -1563,7 +1563,7 @@ function storefront_product_thumb(string $src, string $label = 'Produk Digital')
 }
 
 function render_storefront_styles(string $page='index'): void {
-    $v = '20261022-variant-v1';
+    $v = '20261027-nf-v2';
     echo '<link rel="stylesheet" href="/assets/css/front-mobile-v7.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-grid-v20.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-list-fresh-v1.css?v='.$v.'">' . "\n";

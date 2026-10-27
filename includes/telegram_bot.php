@@ -797,8 +797,6 @@ function telegram_send_product_text_list(
         WHERE p.status = 1
           AND p.telegram_status = 1
         ORDER BY
-            p.telegram_sort_order ASC,
-            p.sold_count DESC,
             p.id DESC
         LIMIT {$perPage}
         OFFSET {$offset}
@@ -935,7 +933,7 @@ function telegram_send_products(array $bot,int $chatId,int $categoryId=0,int $pa
           FROM products p
           LEFT JOIN categories c ON c.id=p.category_id
           WHERE $where
-          ORDER BY p.telegram_sort_order ASC,p.sold_count DESC,p.id DESC
+          ORDER BY p.id DESC
           LIMIT {$perPage} OFFSET {$offset}";
     $statement=$pdo->prepare($sql);
     $statement->execute($params);

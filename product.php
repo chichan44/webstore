@@ -328,7 +328,28 @@ render_storefront_styles('product');
 <?php render_storefront_header($site,$desc,$cats); ?>
 
 <?php if(!$product): ?>
-<main class="ds-shell page-wrap"><section class="page-hero"><h1><?=t('Produk tidak ditemukan')?></h1><p><?=t('Produk yang kamu cari tidak tersedia atau sudah dinonaktifkan.')?></p><p><a class="btn primary" href="/#produk"><?=t('Kembali ke Produk')?></a></p></section></main>
+<main class="ds-shell page-wrap">
+  <section class="nf-card" role="status">
+    <div class="nf-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.4 15.4 4.1 4.1"/><path d="M8 10.5h5"/></svg>
+    </div>
+    <span class="nf-pill"><?=t('Tidak ditemukan')?></span>
+    <h1 class="nf-title"><?=t('Produk tidak ditemukan')?></h1>
+    <p class="nf-desc"><?=t('Produk yang kamu cari tidak tersedia atau sudah dinonaktifkan.')?></p>
+    <div class="nf-actions">
+      <a class="nf-btn nf-btn-primary" href="/#produk">← <?=t('Kembali ke Produk')?></a>
+      <a class="nf-btn nf-btn-ghost" href="/track-order.php"><?=t('Lacak Pesanan')?></a>
+    </div>
+    <div class="nf-hints">
+      <p class="nf-hints-title"><?=t('Hal yang bisa dicoba')?></p>
+      <ul>
+        <li><?=t('Periksa kembali tautan produk yang kamu buka.')?></li>
+        <li><?=t('Cari produk lain melalui halaman katalog.')?></li>
+        <li><?=t('Hubungi kami lewat menu bantuan jika masalah berlanjut.')?></li>
+      </ul>
+    </div>
+  </section>
+</main>
 <?php else: ?>
 <?php
 $warrantyShort=$warrantyDays>0 ? (t('Garansi').' - '.number_format($warrantyDays).' '.t('hari')) : t('Tanpa garansi');

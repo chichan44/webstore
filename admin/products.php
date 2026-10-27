@@ -244,7 +244,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             $flashEnds=trim((string)($_POST['flash_ends_at'] ?? '')) ?: null;
             $status=isset($_POST['status'])?1:0;
             $telegramStatus=isset($_POST['telegram_status'])?1:0;
-            $telegramSortOrder=(int)($_POST['telegram_sort_order'] ?? 0);
+            /* Urutan manual di bot Telegram dihapus — daftar produk kini selalu
+               ditampilkan dari yang terbaru. Kolom legacy tetap ada di tabel. */
 
             if($name==='') throw new InvalidArgumentException('Nama produk wajib diisi.');
             if($slug==='') throw new InvalidArgumentException('Slug produk tidak valid.');
@@ -280,15 +281,15 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             /* products sekarang hanya induk. Kolom legacy (price, original_price, flash_price,
                manual_stock, warranty_label, warranty_days, rating) tidak ditulis lagi dari form ini.
                Rating dihitung otomatis dari ulasan yang disetujui. */
-            $data=[$categoryId,$name,$slug,$description,$productTerms,$deliveryType,$isFlash,$flashEnds,$status,$telegramStatus,$telegramSortOrder,$savedThumb];
+            $data=[$categoryId,$name,$slug,$description,$productTerms,$deliveryType,$isFlash,$flashEnds,$status,$telegramStatus,$savedThumb];
 
             if($id){
                 $data[]=$id;
-                $sql='UPDATE products SET category_id=?,name=?,slug=?,description=?,product_terms=?,delivery_type=?,manual_stock=0,is_flash_sale=?,flash_ends_at=?,status=?,telegram_status=?,telegram_sort_order=?,thumbnail=? WHERE id=?';
+                $sql='UPDATE products SET category_id=?,name=?,slug=?,description=?,product_terms=?,delivery_type=?,manual_stock=0,is_flash_sale=?,flash_ends_at=?,status=?,telegram_status=?,thumbnail=? WHERE id=?';
                 $pdo->prepare($sql)->execute($data);
                 $productId=$id;
             }else{
-                $sql='INSERT INTO products(category_id,name,slug,description,product_terms,delivery_type,manual_stock,is_flash_sale,flash_ends_at,status,telegram_status,telegram_sort_order,thumbnail,created_at) VALUES(?,?,?,?,?,?,0,?,?,?,?,?,?,?,NOW())';
+                $sql='INSERT INTO products(category_id,name,slug,description,product_terms,delivery_type,manual_stock,is_flash_sale,flash_ends_at,status,telegram_status,thumbnail,created_at) VALUES(?,?,?,?,?,?,0,?,?,?,?,?,NOW())';
                 $pdo->prepare($sql)->execute($data);
                 $productId=(int)$pdo->lastInsertId();
             }
@@ -736,7 +737,6 @@ body.admin-modern[data-admin-theme="dark"].admin-page-products #adminProductsTab
                     <small><?=!empty($edit['thumbnail'])?'Pilih gambar baru untuk mengganti thumbnail.':'Format JPG, PNG, atau WEBP.'?></small>
                 </div>
                 <div class="field"><label>Rating Produk</label><div class="rating-readonly"><b>★ <?=($edit && isset($edit['rating']))?number_format((float)$edit['rating'],1):'—'?></b><small><?=($edit && isset($edit['rating']))?'Dihitung otomatis dari ulasan pembeli yang disetujui — tidak bisa diisi manual.':'Rating akan dihitung otomatis setelah ada ulasan pembeli yang disetujui.'?></small></div></div>
-                <div class="field"><label>Urutan di Bot Telegram</label><input class="no-wheel-number" type="number" inputmode="numeric" name="telegram_sort_order" value="<?=e($edit['telegram_sort_order'] ?? 0)?>"><small>Angka lebih kecil ditampilkan lebih dulu.</small></div>
                 <div class="field"><label>Flash Sale Berakhir</label><input type="datetime-local" name="flash_ends_at" value="<?=!empty($edit['flash_ends_at'])?e(date('Y-m-d\TH:i',strtotime($edit['flash_ends_at']))):''?>"><small>Jendela flash sale untuk semua varian. Besar diskonnya diisi per varian (kolom Flash %).</small></div>
             </div>
 
