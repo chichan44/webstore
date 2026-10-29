@@ -16,6 +16,17 @@
   const globalSearchInput = byId('admGlobalSearch');
   const mobileSearchBtn = byId('admMobileSearchBtn');
 
+  /* Float .alert notifications above modal overlays — stack them in a fixed toast layer */
+  if (body.classList.contains('admin-modern')) {
+    const alerts = Array.from(doc.querySelectorAll('.adm-content .alert'));
+    if (alerts.length) {
+      const stack = doc.createElement('div');
+      stack.className = 'alert-stack';
+      alerts[0].parentNode.insertBefore(stack, alerts[0]);
+      alerts.forEach(a => stack.appendChild(a));
+    }
+  }
+
   function openSidebar(){
     if (!sidebar) return;
     sidebar.classList.add('open');

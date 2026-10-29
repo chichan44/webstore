@@ -293,6 +293,59 @@ function storefront_nav_links(): array {
 }
 
 /**
+ * Shared UI icon set (single source of truth for storefront + admin panel).
+ * Same component as admin_icon(): 24px stroke SVGs, currentColor.
+ */
+function ui_icon(string $name, string $class = ''): string {
+    $paths = [
+        'home' => '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M9.5 20v-6h5v6"/>',
+        'package' => '<path d="m3.5 7 8.5-4 8.5 4-8.5 4-8.5-4Z"/><path d="M3.5 7v10l8.5 4 8.5-4V7"/><path d="M12 11v10"/>',
+        'layers' => '<path d="m12 2.8 9 4.7-9 4.7-9-4.7 9-4.7Z"/><path d="m3 12 9 4.7 9-4.7"/><path d="m3 16.5 9 4.7 9-4.7"/>',
+        'shopping-cart' => '<circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3.5h2.3l2.1 10.1a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.4L21 8H6"/>',
+        'grid' => '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+        'file-text' => '<path d="M6 2.8h8l4 4V21H6z"/><path d="M14 2.8V7h4"/><path d="M9 12h6M9 16h6"/>',
+        'tag' => '<path d="M20.5 13.5 13 21l-10-10V3h8l9.5 9.5a1.4 1.4 0 0 1 0 2Z"/><circle cx="7.5" cy="7.5" r="1.2"/>',
+        'credit-card' => '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6.5 15h4"/>',
+        'telegram' => '<path d="m21 3-7.7 18-4.4-6.4L3 11.2 21 3Z"/><path d="m8.9 14.6 4.1-3.8"/>',
+        'refresh' => '<path d="M20 6v5h-5"/><path d="M4 18v-5h5"/><path d="M6.1 9a7 7 0 0 1 11.7-2.6L20 11M4 13l2.2 4.6A7 7 0 0 0 17.9 15"/>',
+        'settings' => '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/>',
+        'layout' => '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12"/>',
+        'external-link' => '<path d="M14 4h6v6M20 4l-9 9"/><path d="M19 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h6"/>',
+        'user' => '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+        'log-out' => '<path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5"/><path d="m16 16 4-4-4-4M20 12H9"/>',
+        'menu' => '<path d="M4 7h16M4 12h16M4 17h16"/>',
+        'search' => '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+        'bell' => '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',
+        'help' => '<circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.5 2.5 0 1 1 4.3 1.7c-1.1 1-2.1 1.5-2.1 3.3M12 18h.01"/>',
+        'sun' => '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+        'moon' => '<path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"/>',
+        'heart' => '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+        'chevron-down' => '<path d="m7 9.5 5 5 5-5"/>',
+        'chevron-right' => '<path d="m9 18 6-6-6-6"/>',
+        'chart' => '<path d="M4 20V10M10 20V4M16 20v-7M22 20V7"/>',
+        'calendar' => '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
+        'box' => '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 8h8v8H8z"/>',
+        'store' => '<path d="m5 4-2 6a3 3 0 0 0 5 2 3 3 0 0 0 4 0 3 3 0 0 0 4 0 3 3 0 0 0 5-2l-2-6Z"/><path d="M5 12v8h14v-8"/><path d="M9 20v-5h6v5"/>',
+        'check-card' => '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m8 12 2.2 2.2L16 9"/>',
+        'wallet' => '<path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H18v16H6.5A2.5 2.5 0 0 1 4 17.5z"/><path d="M4 7h14M14 12h7v5h-7a2.5 2.5 0 0 1 0-5Z"/>',
+        'plus' => '<path d="M12 5v14M5 12h14"/>',
+        'trash' => '<path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"/>',
+        'edit' => '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/>',
+        'save' => '<path d="M5 3h12l3 3v15H4V4a1 1 0 0 1 1-1Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/>',
+        'close' => '<path d="m6 6 12 12M18 6 6 18"/>',
+        'lock' => '<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+        'copy' => '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
+        'filter' => '<path d="M4 5h16M7 12h10M10 19h4"/>',
+        'eye' => '<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/>',
+        'shield' => '<path d="M12 3 20 6v5c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6z"/><path d="m9 12 2 2 4-4"/>',
+        'star' => '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9L12 3Z"/>',
+    ];
+    $path = $paths[$name] ?? $paths['box'];
+    $classAttr = $class !== '' ? ' class="'.e($class).'"' : '';
+    return '<svg'.$classAttr.' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'.$path.'</svg>';
+}
+
+/**
  * Shared storefront header.
  * PC: brand · centered text nav · right = search + wishlist + dark mode
  * Mobile: brand · dark mode · hamburger; cart is a floating button bottom-right.
@@ -327,10 +380,10 @@ function render_storefront_header(string $site='', string $desc='', array $cats=
         <span aria-hidden="true">⌕</span>
       </button>
       <a href="/wishlist.php" class="head-chip header-wishlist" aria-label="<?=e($wishLabel)?>">
-        <span aria-hidden="true">♡</span>
+        <?=ui_icon('heart')?>
       </a>
       <button type="button" data-theme-toggle class="moon head-chip" aria-label="Dark mode">
-        <span aria-hidden="true">☾</span>
+        <?=ui_icon('moon')?>
       </button>
       <button type="button" class="mobile-menu-btn" data-open-mobile-menu aria-label="<?=e($menuLabel)?>">
         <span class="burger-icon" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -1452,11 +1505,12 @@ function render_product_rating(float $rating, int $sold = 0, int $reviews = 0): 
         $star = '<svg class="rating-star is-empty" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="'.$path.'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
     }
 
-    /* ⭐ 5.0 (N reviews) left · Sold: N right (stock state lives on the buy button) */
-    $soldLabel = t('Terjual').': '.number_format($sold);
+    /* ⭐ 5.0 • 0 Sold — one nowrap row; review count lives in the aria-label only */
+    $soldLabel = t('{n} Terjual', ['n' => number_format($sold)]);
 
-    return '<div class="product-rating rating-'.$state.'" aria-label="Rating '.$label.' dari 5, '.$soldLabel.', '.$reviews.' ulasan">'
-        .'<span class="product-rating-score">'.$star.'<b>'.$label.'</b><em class="product-rating-count">('.number_format($reviews).')</em></span>'
+    return '<div class="product-rating rating-'.$state.'" aria-label="Rating '.$label.' dari 5, '.$soldLabel.', '.number_format($reviews).' ulasan">'
+        .'<span class="product-rating-score">'.$star.'<b>'.$label.'</b></span>'
+        .'<span class="product-rating-dot" aria-hidden="true">•</span>'
         .'<span class="product-sold-inline">'.$soldLabel.'</span>'
         .'</div>';
 }
@@ -1563,7 +1617,7 @@ function storefront_product_thumb(string $src, string $label = 'Produk Digital')
 }
 
 function render_storefront_styles(string $page='index'): void {
-    $v = '20261027-nf-v2';
+    $v = '20261029-ui-v1';
     echo '<link rel="stylesheet" href="/assets/css/front-mobile-v7.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-grid-v20.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-list-fresh-v1.css?v='.$v.'">' . "\n";

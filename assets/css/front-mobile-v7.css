@@ -786,24 +786,24 @@ html[data-theme=dark] .track-review-done{background:rgba(34,197,94,.08);border-c
 }
 .sf-card-grid .product-main .product-title:hover{color:var(--indigo)}
 .sf-card-grid .product-main .product-rating{
-  margin:8px 0 12px!important;padding:0;gap:8px;
+  margin:8px 0 12px!important;padding:0;gap:6px;flex-wrap:nowrap!important;overflow:hidden!important;
 }
-.sf-card-grid .product-main .product-rating .product-rating-score{gap:4px}
+.sf-card-grid .product-main .product-rating .product-rating-score{gap:4px;flex:0 0 auto!important;white-space:nowrap}
 .sf-card-grid .product-main .product-rating .rating-star{width:13px;height:13px;flex:0 0 auto;color:#f59e0b}
 .sf-card-grid .product-main .product-rating .product-rating-score b{font-size:12px;font-weight:800;color:var(--text)}
-.sf-card-grid .product-main .product-rating .product-rating-count{
-  font-style:normal;font-size:11px;font-weight:700;color:var(--muted);margin-left:1px;
+.sf-card-grid .product-main .product-rating .product-rating-dot{
+  flex:0 0 auto!important;color:var(--muted);font-size:11px;line-height:1;
 }
 .sf-card-grid .product-main .product-rating .product-sold-inline{
-  display:inline-block;margin-left:auto;
-  color:var(--muted);font-size:11px;line-height:1;font-weight:600;white-space:nowrap;
+  display:inline-block;flex:0 1 auto!important;min-width:0;
+  color:var(--muted);font-size:11px;line-height:1;font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-/* Footer sits at the bottom of the card with real air above the divider */
+/* Footer sits at the bottom of the card with real air above it (no divider line) */
 .sf-card-grid .product-price-action-row{
   display:flex!important;align-items:center!important;justify-content:space-between!important;
   gap:10px!important;
-  margin:auto 0 0!important;padding:16px 0 0!important;
-  border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)!important;
+  margin:auto 0 0!important;padding:10px 0 0!important;
 }
 .sf-card-grid .product-price-row{
   display:flex!important;flex-direction:column!important;align-items:flex-start!important;
@@ -840,7 +840,7 @@ html[data-theme=dark] .sf-card-grid .product-card:hover{border-color:color-mix(i
 html[data-theme=dark] .sf-card-grid .product-wishlist-btn{background:rgba(15,23,42,.9);border-color:rgba(148,163,184,.3);color:#cbd5e1}
 html[data-theme=dark] .sf-card-grid .product-wishlist-btn.is-active{color:#fb7185;background:rgba(244,63,94,.14);border-color:rgba(244,63,94,.4)}
 html[data-theme=dark] .sf-card-grid .product-main .grid-category-label{background:color-mix(in srgb,var(--indigo) 18%,transparent);color:#a5b4fc}
-html[data-theme=dark] .sf-card-grid .product-price-action-row{border-top-color:rgba(148,163,184,.16)!important}
+html[data-theme=dark] .sf-card-grid .product-price-action-row{border-top-color:transparent!important}
 @media(max-width:640px){
   .sf-card-grid{gap:10px}
   .sf-card-grid .product-card{padding:6px 6px 12px!important;border-radius:15px}
@@ -850,9 +850,9 @@ html[data-theme=dark] .sf-card-grid .product-price-action-row{border-top-color:r
   .sf-card-grid .product-main .product-rating{margin:7px 0 10px!important}
   .sf-card-grid .product-main .product-rating .rating-star{width:12px;height:12px}
   .sf-card-grid .product-main .product-rating .product-rating-score b{font-size:11.5px}
-  .sf-card-grid .product-main .product-rating .product-rating-count,
+  .sf-card-grid .product-main .product-rating .product-rating-dot,
   .sf-card-grid .product-main .product-rating .product-sold-inline{font-size:10.5px}
-  .sf-card-grid .product-price-action-row{gap:8px!important;padding-top:14px!important}
+  .sf-card-grid .product-price-action-row{gap:8px!important;padding-top:10px!important}
   .sf-card-grid .product-price-row{min-height:38px!important}
   .sf-card-grid .product-price-row strong{font-size:14px!important}
   .sf-card-grid .grid-cart-btn{min-width:60px;height:33px;font-size:11.5px;padding:0 14px}
@@ -986,6 +986,7 @@ html[data-theme=dark] .sf-card-grid .product-price-action-row{border-top-color:r
   background:color-mix(in srgb,var(--indigo) 7%,var(--card));
 }
 .head-chip span{font-size:17px;line-height:1}
+.head-chip svg{width:18px;height:18px;display:block;flex:0 0 auto}
 .head-chip i{
   position:absolute;
   top:-5px;

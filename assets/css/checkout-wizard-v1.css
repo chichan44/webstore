@@ -15,8 +15,8 @@
   box-shadow:var(--theme-card-shadow);
   padding:14px 16px;
 }
-.cw-steps{display:flex;align-items:center;justify-content:center;gap:0;margin:0;padding:0;list-style:none;flex-wrap:wrap;row-gap:8px}
-.cw-step{display:flex;align-items:center;gap:8px;min-width:0}
+.cw-steps{display:flex;align-items:center;justify-content:space-between;gap:0;margin:0;padding:0;list-style:none;flex-wrap:nowrap;width:100%}
+.cw-step{display:flex;align-items:center;gap:8px;min-width:0;flex:0 1 auto}
 .cw-step-dot{
   width:30px;height:30px;border-radius:50%;
   display:grid;place-items:center;
@@ -25,14 +25,21 @@
   border:1.5px solid var(--line);
   flex:0 0 auto;
 }
-.cw-step-label{font-size:13px;font-weight:800;color:var(--muted);white-space:nowrap;letter-spacing:.01em}
+.cw-step-label{font-size:13px;font-weight:800;color:var(--muted);white-space:nowrap;letter-spacing:.01em;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .cw-step.is-active .cw-step-dot{background:var(--indigo);color:#fff;border-color:var(--indigo);box-shadow:0 0 0 4px color-mix(in srgb,var(--indigo) 14%,transparent)}
 .cw-step.is-active .cw-step-label{color:var(--indigo)}
 .cw-step.is-done .cw-step-dot{background:color-mix(in srgb,var(--indigo) 14%,var(--card));color:var(--indigo);border-color:color-mix(in srgb,var(--indigo) 45%,var(--line))}
 .cw-step.is-done .cw-step-label{color:var(--text)}
-.cw-step-line{width:42px;height:2px;background:var(--line);margin:0 10px;flex:0 0 auto;border-radius:99px}
+.cw-step-line{flex:1 1 auto;min-width:16px;max-width:42px;height:2px;background:var(--line);margin:0 10px;border-radius:99px}
 .cw-step.is-done + .cw-step-line,
 .cw-step.is-done ~ .cw-step-line{background:var(--indigo)}
+@media(max-width:640px){
+  .cw-steps{padding:0 2px}
+  .cw-step{gap:5px}
+  .cw-step-dot{width:26px;height:26px;font-size:11px}
+  .cw-step-label{font-size:11px}
+  .cw-step-line{min-width:10px;max-width:none;margin:0 5px}
+}
 
 /* Two-card grid: mobile = summary above form; desktop = form left, summary right */
 .cw-layout{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
@@ -350,6 +357,6 @@ html[data-theme=dark] .cw-demo-success-badge{background:rgba(16,185,129,.15);col
   .cw-progress-card{order:1}
   .cw-summary-card{order:2;position:sticky;top:88px}
   .cw-card{padding:22px}
-  .cw-step-line{width:52px;margin:0 12px}
+  .cw-step-line{max-width:52px;margin:0 12px}
   .cw-summary-foot b{font-size:24px}
 }

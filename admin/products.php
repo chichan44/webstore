@@ -145,11 +145,12 @@ function admin_variant_row_html(string $vrKey, array $vr, int $vrId): string {
         .'<label class="variant-cell variant-cell-flash"><span>Flash %</span>'
         .'<input class="no-wheel-number variant-flash" type="number" inputmode="decimal" min="0" max="100" step="0.5" name="variant_rows['.$ph.'][flash_discount_pct]" placeholder="0" value="'.$flash.'">'
         .'</label>'
-        .'<div class="variant-cell variant-cell-warranty"><span>Garansi</span>'
-        .'<div class="variant-warranty-pair">'
-        .'<input class="variant-warranty-label" type="text" name="variant_rows['.$ph.'][warranty_label]" maxlength="100" placeholder="7 Hari" value="'.$wLabel.'">'
-        .'<input class="no-wheel-number variant-warranty-days" type="number" inputmode="numeric" min="0" max="3650" step="1" name="variant_rows['.$ph.'][warranty_days]" placeholder="7" value="'.$wDays.'" aria-label="Lama garansi (hari)">'
-        .'</div></div>'
+        .'<label class="variant-cell variant-cell-warranty-label"><span>Garansi (teks)</span>'
+        .'<input class="variant-warranty-label" type="text" name="variant_rows['.$ph.'][warranty_label]" maxlength="100" placeholder="cth. 30 Hari" title="Teks garansi yang tampil ke pembeli (detail produk, pesanan, bot Telegram)." value="'.$wLabel.'">'
+        .'</label>'
+        .'<label class="variant-cell variant-cell-warranty-days"><span>Garansi (hari)</span>'
+        .'<input class="no-wheel-number variant-warranty-days" type="number" inputmode="numeric" min="0" max="3650" step="1" name="variant_rows['.$ph.'][warranty_days]" placeholder="cth. 30" title="Durasi garansi dalam hari — dipakai sistem menghitung tanggal berakhir garansi. Jika dikosongkan/0, otomatis dibaca dari teks garansi (cth. 30 Hari = 30)." value="'.$wDays.'">'
+        .'</label>'
         .'<label class="variant-cell variant-manual-stock"><span>Stok manual</span>'
         .'<input class="no-wheel-number" type="number" inputmode="numeric" min="0" step="1" name="variant_rows['.$ph.'][manual_stock]" placeholder="0" value="'.$stock.'">'
         .'</label>'
@@ -588,12 +589,10 @@ body.admin-modern.admin-page-products .variant-block-head{display:flex;align-ite
 body.admin-modern.admin-page-products .variant-block-head b{font-size:14px;color:var(--adm-heading);font-weight:800}
 body.admin-modern.admin-page-products .variant-block-help{display:block;color:#64748b;font-size:12px;line-height:1.5;margin-bottom:12px}
 body.admin-modern.admin-page-products .variant-rows{display:flex;flex-direction:column;gap:8px}
-body.admin-modern.admin-page-products .variant-row{display:grid;grid-template-columns:minmax(140px,1.35fr) 92px 78px 78px minmax(150px,1.1fr) 86px 68px auto auto;gap:8px;align-items:end;padding:10px;border:1px solid #e6ecf4;border-radius:10px;background:#f9fbfe}
+body.admin-modern.admin-page-products .variant-row{display:grid;grid-template-columns:minmax(140px,1.35fr) 92px 78px 78px minmax(112px,1fr) 72px 86px 68px auto auto;gap:8px;align-items:end;padding:10px;border:1px solid #e6ecf4;border-radius:10px;background:#f9fbfe}
 body.admin-modern.admin-page-products .variant-cell{display:flex;flex-direction:column;gap:4px;min-width:0}
 body.admin-modern.admin-page-products .variant-cell>span{font-size:10px;font-weight:850;letter-spacing:.04em;text-transform:uppercase;color:#7a879b}
 body.admin-modern.admin-page-products .variant-cell input[type=text],body.admin-modern.admin-page-products .variant-cell input[type=number]{height:36px;border:1px solid var(--adm-border);border-radius:8px;padding:0 9px;font-size:13px;background:#fff;min-width:0;width:100%}
-body.admin-modern.admin-page-products .variant-warranty-pair{display:grid;grid-template-columns:minmax(0,1fr) 58px;gap:5px}
-body.admin-modern.admin-page-products .variant-warranty-pair input{height:36px;border:1px solid var(--adm-border);border-radius:8px;padding:0 8px;font-size:12.5px;background:#fff;min-width:0;width:100%}
 body.admin-modern.admin-page-products .variant-preview{display:block;font-size:10.5px;font-weight:800;color:#2857c8;line-height:1.35;min-height:14px}
 body.admin-modern.admin-page-products .variant-preview.is-warn{color:#c2410c}
 body.admin-modern.admin-page-products .variant-cell.is-hidden{opacity:.32;pointer-events:none}
@@ -609,8 +608,7 @@ body.admin-modern.admin-page-products .variant-remove{color:#c2410c!important}
 body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-block{background:#142033;border-color:#2b3c53}
 body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-row{background:#18263a;border-color:#2b3c53}
 body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-cell input[type=text],
-body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-cell input[type=number],
-body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-warranty-pair input{background:#101c2e;border-color:#2b3c53;color:#e2e8f0}
+body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-cell input[type=number]{background:#101c2e;border-color:#2b3c53;color:#e2e8f0}
 body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-preview{color:#93b4ff}
 body.admin-modern[data-admin-theme="dark"].admin-page-products .rating-readonly{background:#101c2e;border-color:#2b3c53}
 body.admin-modern[data-admin-theme="dark"].admin-page-products .rating-readonly b{color:#fbbf24}
@@ -618,12 +616,10 @@ body.admin-modern[data-admin-theme="dark"].admin-page-products .rating-readonly 
 @media(max-width:1180px){
     body.admin-modern.admin-page-products .variant-row{grid-template-columns:minmax(140px,1.4fr) 1fr 1fr 1fr;gap:8px}
     body.admin-modern.admin-page-products .variant-row .variant-cell-name{grid-column:1/-1}
-    body.admin-modern.admin-page-products .variant-row .variant-cell-warranty{grid-column:span 2}
 }
 @media(max-width:900px){
     body.admin-modern.admin-page-products .variant-row{grid-template-columns:1fr 1fr;gap:8px}
-    body.admin-modern.admin-page-products .variant-row .variant-cell-name,
-    body.admin-modern.admin-page-products .variant-row .variant-cell-warranty{grid-column:1/-1}
+    body.admin-modern.admin-page-products .variant-row .variant-cell-name{grid-column:1/-1}
     body.admin-modern.admin-page-products .variant-check{padding-top:6px}
 }
 
@@ -746,7 +742,7 @@ body.admin-modern[data-admin-theme="dark"].admin-page-products #adminProductsTab
                     <b>Varian Produk</b>
                     <button class="adm-btn soft" type="button" data-variant-add>+ Tambah Varian</button>
                 </div>
-                <small class="variant-block-help">Produk hanya sebagai induk — <b>harga, diskon, garansi, dan stok diisi per varian</b>. <b>Harga</b> adalah harga reguler (yang dicoret). <b>Diskon %</b> memotong harga itu menjadi harga jual. <b>Flash %</b> dipakai saat jendela flash sale di bawah aktif. <b>Stok manual</b> hanya untuk produk manual; produk instan memakai stok digital di menu <a href="/admin/stocks.php">Stok Produk</a>.</small>
+                <small class="variant-block-help">Produk hanya sebagai induk — <b>harga, diskon, garansi, dan stok diisi per varian</b>. <b>Harga</b> adalah harga reguler (yang dicoret). <b>Diskon %</b> memotong harga itu menjadi harga jual. <b>Flash %</b> dipakai saat jendela flash sale di bawah aktif. <b>Garansi (teks)</b> adalah label yang tampil ke pembeli; <b>Garansi (hari)</b> adalah durasi numerik untuk menghitung tanggal berakhir garansi (jika dikosongkan, otomatis dibaca dari teksnya, cth. "30 Hari" = 30). <b>Stok manual</b> hanya untuk produk manual; produk instan memakai stok digital di menu <a href="/admin/stocks.php">Stok Produk</a>.</small>
                 <div class="variant-rows" data-variant-rows>
                     <?php
                     /* Pre-render: posted rows on failed save, existing rows on edit, else one empty row */

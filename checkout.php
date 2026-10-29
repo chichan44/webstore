@@ -60,7 +60,7 @@ render_seo_meta([
 ?>
 <?php render_storefront_styles('index'); ?>
 <link rel="stylesheet" href="/assets/css/checkout-v24.css?v=20260830-casaku-v1">
-<link rel="stylesheet" href="/assets/css/checkout-wizard-v1.css?v=20261011-header-v7">
+<link rel="stylesheet" href="/assets/css/checkout-wizard-v1.css?v=20261029-stepper-v1">
 </head>
 <body>
 
