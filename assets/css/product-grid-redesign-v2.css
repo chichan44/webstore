@@ -164,16 +164,11 @@
   color:#8a94a6!important;
   white-space:nowrap!important;
 }
-#productsSide[data-view="grid"] #productGrid .product-rating .product-rating-dot{
-  flex:0 0 auto!important;
-  color:#c2ccd9!important;
-  font-size:10px!important;
-  line-height:1!important;
-}
 #productsSide[data-view="grid"] #productGrid .product-rating .product-sold-inline{
   display:inline-block!important;
   flex:0 1 auto!important;
   min-width:0!important;
+  margin-left:auto!important;
   overflow:hidden!important;
   text-overflow:ellipsis!important;
   white-space:nowrap!important;

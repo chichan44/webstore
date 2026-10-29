@@ -396,16 +396,11 @@ html[data-theme="dark"] .wishlist-product-grid .card-bottom button:disabled{back
   flex:0 0 auto!important;
   white-space:nowrap!important;
 }
-.product-rating .product-rating-dot{
-  flex:0 0 auto!important;
-  color:#c8d0dc!important;
-  font-size:11px!important;
-  line-height:1!important;
-}
 .product-rating .product-sold-inline{
   display:inline-block!important;
   flex:0 1 auto!important;
   min-width:0!important;
+  margin-left:auto!important;
   overflow:hidden!important;
   text-overflow:ellipsis!important;
   white-space:nowrap!important;
@@ -427,7 +422,6 @@ html[data-theme="dark"] .wishlist-product-grid .card-bottom button:disabled{back
 .wishlist-product-grid .product-meta{display:none!important;}
 @media(max-width:640px){
   .product-rating{gap:5px!important;}
-  .product-rating .product-rating-dot,
   .product-rating .product-sold-inline,
   .product-rating .product-stock-inline{font-size:10.5px!important;}
 }

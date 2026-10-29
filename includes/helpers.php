@@ -1505,12 +1505,11 @@ function render_product_rating(float $rating, int $sold = 0, int $reviews = 0): 
         $star = '<svg class="rating-star is-empty" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="'.$path.'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
     }
 
-    /* ⭐ 5.0 • 0 Sold — one nowrap row; review count lives in the aria-label only */
+    /* ⭐ 5.0 left …… 0 Terjual right — one nowrap row; review count lives in the aria-label only */
     $soldLabel = t('{n} Terjual', ['n' => number_format($sold)]);
 
     return '<div class="product-rating rating-'.$state.'" aria-label="Rating '.$label.' dari 5, '.$soldLabel.', '.number_format($reviews).' ulasan">'
         .'<span class="product-rating-score">'.$star.'<b>'.$label.'</b></span>'
-        .'<span class="product-rating-dot" aria-hidden="true">•</span>'
         .'<span class="product-sold-inline">'.$soldLabel.'</span>'
         .'</div>';
 }
@@ -1617,7 +1616,7 @@ function storefront_product_thumb(string $src, string $label = 'Produk Digital')
 }
 
 function render_storefront_styles(string $page='index'): void {
-    $v = '20261029-ui-v1';
+    $v = '20261029-ui-v2';
     echo '<link rel="stylesheet" href="/assets/css/front-mobile-v7.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-grid-v20.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-list-fresh-v1.css?v='.$v.'">' . "\n";

@@ -791,11 +791,8 @@ html[data-theme=dark] .track-review-done{background:rgba(34,197,94,.08);border-c
 .sf-card-grid .product-main .product-rating .product-rating-score{gap:4px;flex:0 0 auto!important;white-space:nowrap}
 .sf-card-grid .product-main .product-rating .rating-star{width:13px;height:13px;flex:0 0 auto;color:#f59e0b}
 .sf-card-grid .product-main .product-rating .product-rating-score b{font-size:12px;font-weight:800;color:var(--text)}
-.sf-card-grid .product-main .product-rating .product-rating-dot{
-  flex:0 0 auto!important;color:var(--muted);font-size:11px;line-height:1;
-}
 .sf-card-grid .product-main .product-rating .product-sold-inline{
-  display:inline-block;flex:0 1 auto!important;min-width:0;
+  display:inline-block;flex:0 1 auto!important;min-width:0;margin-left:auto;
   color:var(--muted);font-size:11px;line-height:1;font-weight:600;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
@@ -850,7 +847,6 @@ html[data-theme=dark] .sf-card-grid .product-price-action-row{border-top-color:t
   .sf-card-grid .product-main .product-rating{margin:7px 0 10px!important}
   .sf-card-grid .product-main .product-rating .rating-star{width:12px;height:12px}
   .sf-card-grid .product-main .product-rating .product-rating-score b{font-size:11.5px}
-  .sf-card-grid .product-main .product-rating .product-rating-dot,
   .sf-card-grid .product-main .product-rating .product-sold-inline{font-size:10.5px}
   .sf-card-grid .product-price-action-row{gap:8px!important;padding-top:10px!important}
   .sf-card-grid .product-price-row{min-height:38px!important}
