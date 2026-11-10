@@ -33,7 +33,7 @@ if ($q !== '' && mb_strlen($q) >= 2) {
         foreach ($st->fetchAll() as $row) {
             $groups['orders']['items'][] = [
                 'icon'=>'shopping-cart','title'=>$row['invoice'].' · '.$row['buyer_name'],
-                'meta'=>rupiah($row['total']).' · '.ucfirst((string)$row['status']).(!empty($row['created_at'])?' · '.date('d M Y',strtotime($row['created_at'])):''),
+                'meta'=>rupiah($row['total'],order_currency($row)).' · '.ucfirst((string)$row['status']).(!empty($row['created_at'])?' · '.date('d M Y',strtotime($row['created_at'])):''),
                 'url'=>'/admin/orders.php?detail='.rawurlencode((string)$row['invoice']),
             ];
         }

@@ -118,7 +118,7 @@ admin_page_start('Promo', 'Kelola kode promo, nilai diskon, batas penggunaan, da
     <div class="adm-card-head"><div><h3><?= $edit ? 'Edit Promo' : 'Tambah Promo' ?></h3><p>Atur kode, jenis diskon, syarat transaksi, dan masa berlaku promo.</p></div></div>
     <div class="form-grid">
         <div class="field"><label>Kode Promo</label><input name="code" value="<?=e($form['code'])?>" required maxlength="60" placeholder="HEMAT20" autocapitalize="characters"><small>Huruf, angka, tanda hubung, dan garis bawah.</small></div>
-        <div class="field"><label>Jenis Diskon</label><select name="type"><option value="percent" <?=$form['type']==='percent'?'selected':''?>>Persentase</option><option value="fixed" <?=$form['type']==='fixed'?'selected':''?>>Nominal rupiah</option></select></div>
+        <div class="field"><label>Jenis Diskon</label><select name="type"><option value="percent" <?=$form['type']==='percent'?'selected':''?>>Persentase</option><option value="fixed" <?=$form['type']==='fixed'?'selected':''?>>Nominal tetap</option></select></div>
         <div class="field"><label>Nilai Diskon</label><input type="text" inputmode="decimal" name="value" value="<?=e(plain_number($form['value']))?>" placeholder="10 atau 10000" required></div>
         <div class="field"><label>Minimum Pembelian</label><input type="text" inputmode="decimal" name="min_purchase" value="<?=e(plain_number($form['min_purchase']))?>" placeholder="0 = tanpa minimum"></div>
         <div class="field"><label>Maksimum Diskon</label><input type="text" inputmode="decimal" name="max_discount" value="<?=e(plain_number($form['max_discount']))?>" placeholder="0 = tanpa batas"><small>Umumnya dipakai untuk promo persentase.</small></div>
@@ -127,7 +127,7 @@ admin_page_start('Promo', 'Kelola kode promo, nilai diskon, batas penggunaan, da
         <div class="field"><label>Berakhir</label><input type="datetime-local" name="ends_at" value="<?=!empty($form['ends_at'])?e(date('Y-m-d\TH:i',strtotime((string)$form['ends_at']))):''?>"></div>
     </div>
     <div class="adm-checks"><label><input type="checkbox" name="status" <?=!empty($form['status'])?'checked':''?>> Promo aktif dan dapat digunakan</label></div>
-    <p class="adm-help">Gunakan angka polos, misalnya <b>10000</b> untuk Rp 10.000 atau <b>10</b> untuk 10%. Format lokal tetap akan dinormalisasi saat disimpan.</p>
+    <p class="adm-help">Gunakan angka polos, misalnya <b>10000</b> untuk <?=e(format_money(10000))?> atau <b>10</b> untuk 10%. Nilai nominal dihitung dalam mata uang toko yang aktif. Format lokal tetap akan dinormalisasi saat disimpan.</p>
     <div class="adm-actions" style="margin-top:16px"><button class="adm-btn primary" type="submit"><?=admin_icon('save')?> <?= $edit ? 'Perbarui Promo' : 'Simpan Promo' ?></button><?php if($edit):?><a class="adm-btn soft" href="/admin/promos.php">Batal Edit</a><?php endif;?></div>
 </form>
 
@@ -152,7 +152,7 @@ admin_page_start('Promo', 'Kelola kode promo, nilai diskon, batas penggunaan, da
     ?>
         <tr>
             <td class="check-col" data-label="Pilih"><div class="cell-value"><input form="promosBulkForm" class="bulk-row-check" type="checkbox" name="ids[]" value="<?=$r['id']?>"></div></td>
-            <td data-label="Promo"><div class="cell-value"><b><?=e($r['code'])?></b><small><?=e($r['type']==='percent'?'Persentase':'Nominal rupiah')?></small></div></td>
+            <td data-label="Promo"><div class="cell-value"><b><?=e($r['code'])?></b><small><?=e($r['type']==='percent'?'Persentase':'Nominal tetap')?></small></div></td>
             <td data-label="Penawaran"><div class="cell-value"><b><?=e($valueLabel)?></b><small>Min. <?=rupiah($r['min_purchase'])?> · Maks. <?=((float)$r['max_discount']>0)?rupiah($r['max_discount']):'tanpa batas'?></small></div></td>
             <td data-label="Penggunaan"><div class="cell-value"><b><?=e($usageLabel)?></b><small><?=e($period)?></small></div></td>
             <td data-label="Status"><div class="cell-value"><?= $r['status'] ? admin_status_badge('aktif') : admin_status_badge('nonaktif') ?></div></td>

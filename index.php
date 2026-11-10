@@ -298,7 +298,7 @@ html[data-theme="dark"] .znl-voucher-section{background:linear-gradient(135deg,r
 </main>
 <?php render_footer_columns($site,$desc); ?>
 <?php render_storefront_mobile_menu($site,$desc,$cats,['q'=>$q,'category_mode'=>'filter']); ?>
-<div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" data-close-cart></div><aside><div class="drawer-top"><b>Keranjang Belanja (<span data-cart-count>0</span>)</b><button data-close-cart>×</button></div><div class="cart-items" id="cartItems"></div><div class="drawer-foot"><p><span>Subtotal</span><b data-cart-total>Rp 0</b></p><a href="/checkout.php" class="btn primary">Lanjut Checkout</a></div></aside></div>
+<div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" data-close-cart></div><aside><div class="drawer-top"><b>Keranjang Belanja (<span data-cart-count>0</span>)</b><button data-close-cart>×</button></div><div class="cart-items" id="cartItems"></div><div class="drawer-foot"><p><span>Subtotal</span><b data-cart-total><?=e(format_money(0))?></b></p><a href="/checkout.php" class="btn primary">Lanjut Checkout</a></div></aside></div>
 <div class="product-modal" id="productModal" aria-hidden="true">
   <div class="modal-backdrop" data-close-product></div>
   <section class="product-modal-card">
@@ -332,7 +332,7 @@ html[data-theme="dark"] .znl-voucher-section{background:linear-gradient(135deg,r
           <div class="modal-feature-item"><i class="feature-support">🎧</i><div><b>Support Responsif</b><p>Bantuan cepat jika ada kendala pada pesanan.</p></div></div>
         </div>
         <div class="modal-purchase-row">
-          <div class="modal-price"><strong id="modalPrice">Rp 0</strong><del id="modalOriginal"></del></div>
+          <div class="modal-price"><strong id="modalPrice"><?=e(format_money(0))?></strong><del id="modalOriginal"></del></div>
         </div>
         <div class="modal-action-row">
           <button type="button" class="modal-wishlist-btn" id="modalWishlistBtn" data-wishlist-toggle="" aria-pressed="false"><span>♡</span> Wishlist</button>
@@ -393,5 +393,5 @@ html[data-theme="dark"] .znl-voucher-section{background:linear-gradient(135deg,r
   });
 })();
 </script>
-<script src="/assets/js/front-mobile-v7.js?v=20261014-reviews-v1"></script>
+<script src="/assets/js/front-mobile-v7.js?v=20261107-disc1"></script>
 </body></html>

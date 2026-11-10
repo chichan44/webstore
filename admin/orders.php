@@ -220,7 +220,7 @@ admin_page_start('Pesanan','Kelola pembayaran, status, dan stok digital pembeli.
                 <a class="order-detail-close" href="<?=e($closeUrl)?>" data-close-order-detail aria-label="Tutup detail pesanan">×</a>
             </div>
             <div class="order-detail-grid">
-                <div class="order-info-box"><span>Total</span><b><?=rupiah($detail['total'])?></b></div>
+                <div class="order-info-box"><span>Total</span><b><?=rupiah($detail['total'],order_currency($detail))?></b></div>
                 <div class="order-info-box"><span>Status</span><b><?=admin_status_badge($detail['status'])?></b></div>
                 <div class="order-info-box"><span>Tanggal</span><b><?=e(!empty($detail['created_at']) ? date('d/m/Y H:i', strtotime($detail['created_at'])).' WIB' : '-')?></b></div>
                 <div class="order-info-box order-password-box">
@@ -288,7 +288,7 @@ admin_page_start('Pesanan','Kelola pembayaran, status, dan stok digital pembeli.
             <td class="check-col" data-label="Pilih"><div class="cell-value"><input form="ordersBulkForm" class="bulk-row-check" type="checkbox" name="invoices[]" value="<?=e($order['invoice'])?>"></div></td>
             <td data-label="Invoice"><div class="cell-value"><b><?=e($order['invoice'])?></b><small><?=($order['sales_channel'] ?? 'website')==='telegram'?'Telegram':'Website'?></small></div></td>
             <td data-label="Pembeli"><div class="cell-value"><?=e($order['buyer_name'])?><small><?=e($order['buyer_email'])?></small><small class="order-product-summary"><?=e($order['product_names'] ?: '-')?></small></div></td>
-            <td data-label="Total"><div class="cell-value"><?=rupiah($order['total'])?></div></td>
+            <td data-label="Total"><div class="cell-value"><?=rupiah($order['total'],order_currency($order))?></div></td>
             <td data-label="Status"><div class="cell-value"><?=admin_status_badge($order['status'])?></div></td>
             <td data-label="Tanggal"><div class="cell-value"><?=e(!empty($order['created_at']) ? date('d/m/Y H:i', strtotime($order['created_at'])).' WIB' : '-')?></div></td>
             <td data-label="Aksi">

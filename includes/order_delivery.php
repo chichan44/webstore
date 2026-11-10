@@ -136,7 +136,7 @@ function order_delivery_payload(int $orderId): array {
         'data_produk'=>implode("\n\n",$stockBlocks),
         'garansi'=>implode("\n",$warrantyLines),
         'ketentuan'=>implode("\n\n",$termsBlocks),
-        'total'=>function_exists('rupiah')?rupiah((float)($order['payment_total'] ?? $order['total'] ?? 0)):'Rp '.number_format((float)($order['payment_total'] ?? $order['total'] ?? 0),0,',','.'),
+        'total'=>function_exists('rupiah')?rupiah((float)($order['payment_total'] ?? $order['total'] ?? 0),order_currency($order)):'Rp '.number_format((float)($order['payment_total'] ?? $order['total'] ?? 0),0,',','.'),
         'password_pesanan'=>$password,
         'link_pesanan'=>$track,
         'info_password'=>$password!==''?'Kata sandi akses pesanan: '.$password:'',

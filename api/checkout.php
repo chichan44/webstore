@@ -25,13 +25,20 @@ try{
     if($email==='' && $wa==='')json_out(['ok'=>false,'message'=>'Isi email atau nomor WhatsApp (minimal salah satu) untuk pengiriman produk.'],422);
 
     // Payment method: wizard posts payment_method; default = admin global gateway.
+    // Gateway dan mata uang saling terkait: USD hanya dilayani gateway USD (NowPayments/Crypto),
+    // sedangkan Tokopay/Casaku/QRIS manual adalah gateway IDR.
+    $storeCurrency=site_currency();
     $paymentMethod=trim((string)($_POST['payment_method']??''));
     if($paymentMethod===''){
         $paymentMethod=(string)setting('payment_gateway','qris_static');
+        if($storeCurrency==='USD' && in_array(strtolower($paymentMethod),['tokopay','casaku','qris_static'],true))$paymentMethod='nowpayments';
     }
     $paymentMethod=strtolower($paymentMethod);
     if(!in_array($paymentMethod,['demo','nowpayments','tokopay','casaku','qris_static'],true)){
         json_out(['ok'=>false,'message'=>'Metode pembayaran tidak valid.'],422);
+    }
+    if($storeCurrency==='USD' && in_array($paymentMethod,['tokopay','casaku','qris_static'],true)){
+        json_out(['ok'=>false,'message'=>'Metode pembayaran tersebut hanya melayani IDR. Mata uang USD aktif — gunakan pembayaran Crypto.'],422);
     }
     if($paymentMethod==='demo' && !checkout_demo_payment_enabled()){
         json_out(['ok'=>false,'message'=>'Pembayaran demo sedang dinonaktifkan.'],422);
@@ -53,6 +60,7 @@ try{
         if($availableStock<=0)json_out(['ok'=>false,'message'=>'Stok '.$p['name'].' ('.$variant['name'].') habis. Produk tidak bisa di-checkout.'],409);
         if($availableStock<$qty)json_out(['ok'=>false,'message'=>'Stok '.$p['name'].' ('.$variant['name'].') tidak cukup. Sisa stok: '.$availableStock],409);
         $price=product_variant_price($p,$variant);
+        if($price<=0)json_out(['ok'=>false,'message'=>'Produk '.$p['name'].' ('.$variant['name'].') belum memiliki harga '.site_currency().'. Hubungi admin.'],422);
         $items[]=['p'=>$p,'qty'=>$qty,'price'=>$price,'total'=>$price*$qty,'delivery_type'=>$deliveryType,'variant'=>$variant];
         $subtotal+=$price*$qty;
     }
@@ -82,8 +90,8 @@ try{
     $expiresAt=date('Y-m-d H:i:s',time()+($expiredMinutes*60));
     $pdo->beginTransaction();
     try{
-        $pdo->prepare('INSERT INTO orders(invoice,sales_channel,buyer_name,buyer_email,buyer_whatsapp,subtotal,discount,promo_id,total,payment_total,status,payment_provider,qris_payload,access_password_hash,access_password_admin_enc,payment_expires_at,telegram_delivery_status,created_at) VALUES(?,"website",?,?,?,?,?,?,?, ?,"pending",?,?,?,?,?,"not_applicable",NOW())')
-            ->execute([$invoice,$name,$email,$wa,$subtotal,$discount,$promoId,$total,$total,$gatewayMode,($gatewayMode==='qris_static')?setting('qris_payload',''):'',$accessHash,encrypt_admin_order_password($accessPassword),$expiresAt]);
+        $pdo->prepare('INSERT INTO orders(invoice,sales_channel,buyer_name,buyer_email,buyer_whatsapp,subtotal,discount,promo_id,total,payment_total,status,payment_provider,currency,qris_payload,access_password_hash,access_password_admin_enc,payment_expires_at,telegram_delivery_status,created_at) VALUES(?,"website",?,?,?,?,?,?,?, ?,"pending",?,?,?, ?,?,?,"not_applicable",NOW())')
+            ->execute([$invoice,$name,$email,$wa,$subtotal,$discount,$promoId,$total,$total,$gatewayMode,$storeCurrency,($gatewayMode==='qris_static')?setting('qris_payload',''):'',$accessHash,encrypt_admin_order_password($accessPassword),$expiresAt]);
         $oid=(int)$pdo->lastInsertId();
         foreach($items as $it){
             $variant=$it['variant'];
@@ -141,7 +149,7 @@ try{
             $callbackUrl=$npSiteUrl.'/api/nowpayments_webhook.php';
             $gateway=nowpayments_create_invoice([
                 'amount'=>$total,
-                'currency'=>'idr',
+                'currency'=>strtolower($storeCurrency),
                 'pay_currency'=>nowpayments_default_currency(),
                 'callback_url'=>$callbackUrl,
                 'order_id'=>$invoice,

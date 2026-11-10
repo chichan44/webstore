@@ -7,7 +7,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 }
 $data = admin_notification_summary();
 foreach ($data['items'] as &$item) {
-    $item['total_formatted'] = rupiah($item['total'] ?? 0);
+    $item['total_formatted'] = rupiah($item['total'] ?? 0, order_currency($item));
     $item['url'] = '/admin/orders.php?detail='.rawurlencode((string)$item['invoice']);
 }
 json_out(['ok'=>true,'unread'=>(int)($data['unread'] ?? 0),'items'=>$data['items']]);

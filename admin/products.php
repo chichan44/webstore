@@ -93,6 +93,7 @@ function admin_parse_variant_rows(array $raw): array {
             'id'=>(int)($row['id'] ?? 0),
             'name'=>trim((string)($row['name'] ?? '')),
             'price'=>max(0.0,(float)($row['price'] ?? 0)),
+            'price_usd'=>max(0.0,(float)($row['price_usd'] ?? 0)),
             'discount_pct'=>max(0.0,min(100.0,(float)($row['discount_pct'] ?? 0))),
             'flash_discount_pct'=>max(0.0,min(100.0,(float)($row['flash_discount_pct'] ?? 0))),
             'warranty_label'=>mb_substr($warrantyLabel,0,100),
@@ -122,6 +123,7 @@ function admin_variant_sale_price(float $regular, float $pct): float {
 function admin_variant_row_html(string $vrKey, array $vr, int $vrId): string {
     $name=e($vr['name'] ?? '');
     $price=e($vr['price'] ?? 0);
+    $priceUsd=e($vr['price_usd'] ?? 0);
     $disc=e($vr['discount_pct'] ?? 0);
     $flash=e($vr['flash_discount_pct'] ?? 0);
     $wLabel=e($vr['warranty_label'] ?? '');
@@ -136,8 +138,11 @@ function admin_variant_row_html(string $vrKey, array $vr, int $vrId): string {
         .'<input class="variant-name" type="text" name="variant_rows['.$ph.'][name]" maxlength="120" placeholder="Contoh: 1 Bulan" value="'.$name.'">'
         .'<small class="variant-preview" data-variant-preview>Harga jual: —</small>'
         .'</label>'
-        .'<label class="variant-cell variant-cell-price"><span>Harga</span>'
+        .'<label class="variant-cell variant-cell-price"><span>Harga (IDR)</span>'
         .'<input class="no-wheel-number variant-price" type="number" inputmode="decimal" min="0" step="1" name="variant_rows['.$ph.'][price]" placeholder="0" value="'.$price.'">'
+        .'</label>'
+        .'<label class="variant-cell variant-cell-price-usd"><span>Harga (USD)</span>'
+        .'<input class="no-wheel-number variant-price-usd" type="number" inputmode="decimal" min="0" step="0.01" name="variant_rows['.$ph.'][price_usd]" placeholder="0" value="'.$priceUsd.'">'
         .'</label>'
         .'<label class="variant-cell variant-cell-disc"><span>Diskon %</span>'
         .'<input class="no-wheel-number variant-disc" type="number" inputmode="decimal" min="0" max="100" step="0.5" name="variant_rows['.$ph.'][discount_pct]" placeholder="0" value="'.$disc.'">'
@@ -272,6 +277,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             if(count($variantNames)!==count(array_unique($variantNames))) throw new InvalidArgumentException('Nama varian tidak boleh sama. Gunakan nama yang berbeda untuk setiap varian.');
             foreach($namedVariants as $vr){
                 if($vr['price']<=0 && $vr['discount_pct']>0) throw new InvalidArgumentException('Varian "'.e($vr['name']).'" punya diskon tetapi harganya masih 0.');
+                if($vr['price_usd']<=0 && $vr['discount_pct']>0) throw new InvalidArgumentException('Varian "'.e($vr['name']).'" punya diskon tetapi harga USD-nya masih 0.');
             }
             if($isFlash){
                 $flashNamed=array_values(array_filter($namedVariants,static fn($r)=>!empty($r['status']) && $r['flash_discount_pct']>0));
@@ -296,8 +302,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             }
 
             /* Variant rows: delete remove-checked, update existing, insert new (skip empty names) */
-            $insertVariant=$pdo->prepare('INSERT INTO product_variants(product_id,name,price,discount_pct,flash_discount_pct,warranty_label,warranty_days,manual_stock,sort_order,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,NOW(),NOW())');
-            $updateVariant=$pdo->prepare('UPDATE product_variants SET name=?,price=?,discount_pct=?,flash_discount_pct=?,warranty_label=?,warranty_days=?,manual_stock=?,sort_order=?,status=?,updated_at=NOW() WHERE id=? AND product_id=?');
+            $insertVariant=$pdo->prepare('INSERT INTO product_variants(product_id,name,price,price_usd,discount_pct,flash_discount_pct,warranty_label,warranty_days,manual_stock,sort_order,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,NOW(),NOW())');
+            $updateVariant=$pdo->prepare('UPDATE product_variants SET name=?,price=?,price_usd=?,discount_pct=?,flash_discount_pct=?,warranty_label=?,warranty_days=?,manual_stock=?,sort_order=?,status=?,updated_at=NOW() WHERE id=? AND product_id=?');
             $deleteVariant=$pdo->prepare('DELETE FROM product_variants WHERE id=? AND product_id=?');
             $readManualStock=$pdo->prepare('SELECT manual_stock FROM product_variants WHERE id=? AND product_id=?');
             foreach($variantRows as $vr){
@@ -318,7 +324,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                         $manualStock=0;
                     }
                 }
-                $variantData=[$vr['name'],$vr['price'],$vr['discount_pct'],$vr['flash_discount_pct'],$vr['warranty_label'],$vr['warranty_days'],$manualStock,$vr['sort_order'],$vr['status']];
+                $variantData=[$vr['name'],$vr['price'],$vr['price_usd'],$vr['discount_pct'],$vr['flash_discount_pct'],$vr['warranty_label'],$vr['warranty_days'],$manualStock,$vr['sort_order'],$vr['status']];
                 if($vr['id']>0){
                     $updateVariant->execute(array_merge($variantData,[$vr['id'],$productId]));
                 }else{
@@ -359,15 +365,16 @@ $modalOpen=(bool)$edit || isset($_GET['add']) || $err!=='';
    Harga jual varian = price * (1 - diskon/100); flash memakai flash_discount_pct saat
    jendela flash produk masih berlaku. */
 $flashCase='(p.is_flash_sale=1 AND (p.flash_ends_at IS NULL OR p.flash_ends_at>NOW()))';
-$variantSaleSql='CASE WHEN '.$flashCase.' AND v.flash_discount_pct>0 THEN ROUND(v.price*(1-v.flash_discount_pct/100),2) WHEN v.discount_pct>0 THEN ROUND(v.price*(1-v.discount_pct/100),2) ELSE v.price END';
+$variantPriceCol=currency_is_usd()?'v.price_usd':'v.price';
+$variantSaleSql='CASE WHEN '.$flashCase.' AND v.flash_discount_pct>0 THEN ROUND('.$variantPriceCol.'*(1-v.flash_discount_pct/100),2) WHEN v.discount_pct>0 THEN ROUND('.$variantPriceCol.'*(1-v.discount_pct/100),2) ELSE '.$variantPriceCol.' END';
 $allRows=$pdo->query('SELECT p.*,c.name category,
     (SELECT COUNT(*) FROM product_variants v WHERE v.product_id=p.id AND v.status=1) variant_count,
     (SELECT MIN('.$variantSaleSql.')
        FROM product_variants v WHERE v.product_id=p.id AND v.status=1) variant_min_price,
     (SELECT MAX('.$variantSaleSql.')
        FROM product_variants v WHERE v.product_id=p.id AND v.status=1) variant_max_price,
-    (SELECT MAX(v.price) FROM product_variants v WHERE v.product_id=p.id AND v.status=1
-        AND v.price > '.$variantSaleSql.') variant_max_compare,
+    (SELECT MAX('.$variantPriceCol.') FROM product_variants v WHERE v.product_id=p.id AND v.status=1
+        AND '.$variantPriceCol.' > '.$variantSaleSql.') variant_max_compare,
     CASE
       WHEN p.delivery_type="manual" THEN (
         SELECT COUNT(*) FROM product_variants v WHERE v.product_id=p.id AND v.status=1
@@ -858,27 +865,38 @@ body.admin-modern[data-admin-theme="dark"].admin-page-products #adminProductsTab
         const v=Math.round(Number(n)||0);
         return 'Rp '+new Intl.NumberFormat('id-ID').format(v);
     }
-    /* Model varian: price = harga reguler (harga coret), discount_pct = diskon harian,
-       flash_discount_pct = diskon saat jendela flash sale produk aktif.
-       Harga jual = price * (1 - pct/100); coret ditampilkan hanya bila price > harga jual. */
+    function usd(n){
+        const v=Math.round((Number(n)||0)*100)/100;
+        return '$'+new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v);
+    }
+    /* Model varian: price / price_usd = harga reguler (harga coret) per mata uang,
+       discount_pct = diskon harian, flash_discount_pct = diskon saat jendela flash sale produk aktif.
+       Harga jual = harga reguler * (1 - pct/100); coret ditampilkan hanya bila harga reguler > harga jual. */
     function previewRow(row){
         const out=row.querySelector('[data-variant-preview]');
         if(!out) return;
         const regular=Math.max(0,Number(row.querySelector('.variant-price')?.value)||0);
+        const regularUsd=Math.max(0,Number(row.querySelector('.variant-price-usd')?.value)||0);
         const disc=Math.min(100,Math.max(0,Number(row.querySelector('.variant-disc')?.value)||0));
         const flash=Math.min(100,Math.max(0,Number(row.querySelector('.variant-flash')?.value)||0));
         const flashOn=!!modal?.querySelector('input[name="is_flash_sale"]')?.checked;
         const pct=(flashOn&&flash>0)?flash:disc;
-        if(regular<=0){
+        if(regular<=0 && regularUsd<=0){
             out.textContent=pct>0?'Isi harga varian dulu':'Harga jual: —';
             out.classList.toggle('is-warn',pct>0);
             return;
         }
         const sale=Math.max(0,Math.round(regular*(1-pct/100)*100)/100);
         const slash=regular>sale?regular:0;
-        out.textContent=slash>0
-            ? 'Jual '+rupiah(sale)+' · coret '+rupiah(slash)
-            : (pct>0?('Jual '+rupiah(sale)):('Jual '+rupiah(regular)));
+        const saleUsd=Math.max(0,Math.round(regularUsd*(1-pct/100)*100)/100);
+        const slashUsd=regularUsd>saleUsd?regularUsd:0;
+        const idrPart=regular>0
+            ? (slash>0 ? 'Jual '+rupiah(sale)+' · coret '+rupiah(slash) : (pct>0?('Jual '+rupiah(sale)):('Jual '+rupiah(regular))))
+            : 'IDR —';
+        const usdPart=regularUsd>0
+            ? (slashUsd>0 ? ' · USD jual '+usd(saleUsd)+' · coret '+usd(slashUsd) : ' · USD '+(pct>0?('jual '+usd(saleUsd)):usd(regularUsd)))
+            : ' · USD —';
+        out.textContent=idrPart+usdPart;
         out.classList.remove('is-warn');
     }
     function previewAll(){ rowsHost?.querySelectorAll('[data-variant-row]').forEach(previewRow); }

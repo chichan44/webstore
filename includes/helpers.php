@@ -32,7 +32,41 @@ function ensure_storefront_session(): void {
 ensure_storefront_session();
 
 function e($v){ return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
-function rupiah($n){ return 'Rp ' . number_format((float)$n,0,',','.'); }
+
+/**
+ * Mata uang toko (setting site_currency): 'IDR' (default) atau 'USD'.
+ * Bersifat global — harga produk, total pesanan, dan pembayaran mengikuti nilai ini.
+ */
+function site_currency(): string {
+    return strtoupper(trim((string)setting('site_currency','IDR'))) === 'USD' ? 'USD' : 'IDR';
+}
+function currency_is_usd(?string $currency=null): bool {
+    $currency = $currency === null ? site_currency() : strtoupper(trim($currency));
+    return $currency === 'USD';
+}
+function currency_symbol(?string $currency=null): string { return currency_is_usd($currency) ? '$' : 'Rp '; }
+function currency_decimals(?string $currency=null): int { return currency_is_usd($currency) ? 2 : 0; }
+function currency_locale(?string $currency=null): string { return currency_is_usd($currency) ? 'en-US' : 'id-ID'; }
+
+/** Format nominal sesuai mata uang. Tanpa argumen = mata uang toko aktif. */
+function format_money($amount, ?string $currency=null): string {
+    $currency = $currency === null ? site_currency() : strtoupper(trim($currency));
+    if ($currency === 'USD') return '$' . number_format((float)$amount, 2, '.', ',');
+    return 'Rp ' . number_format((float)$amount, 0, ',', '.');
+}
+/** Kompatibilitas lama — semua pemanggilan lama otomatis mengikuti mata uang aktif. */
+function rupiah($n, ?string $currency=null){ return format_money($n, $currency); }
+
+/** Konfigurasi mata uang untuk formatter JS front-end. */
+function currency_js_config(): array {
+    $currency = site_currency();
+    return [
+        'code' => $currency,
+        'symbol' => currency_symbol($currency),
+        'locale' => currency_locale($currency),
+        'decimals' => currency_decimals($currency),
+    ];
+}
 
 function telegram_product_button_template(?string $template=null): string {
     $template=trim($template ?? (string)setting('telegram_product_button_url',''));
@@ -395,6 +429,7 @@ function render_storefront_header(string $site='', string $desc='', array $cats=
   <span aria-hidden="true">🛒</span>
   <i data-cart-count>0</i>
 </button>
+<script>window.dsCurrency=<?=json_encode(currency_js_config(), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;</script>
 <?php
 }
 
@@ -464,6 +499,12 @@ function ensure_order_security_columns(): void {
     try { if (!db_column_exists('orders','payment_expires_at')) $pdo->exec("ALTER TABLE orders ADD payment_expires_at DATETIME NULL AFTER access_password_admin_enc"); } catch (Throwable $e) {}
     try { if (!db_column_exists('orders','promo_id')) $pdo->exec("ALTER TABLE orders ADD promo_id INT NULL AFTER discount"); } catch (Throwable $e) {}
     try { if (!db_column_exists('orders','promo_counted_at')) $pdo->exec("ALTER TABLE orders ADD promo_counted_at DATETIME NULL AFTER promo_id"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('orders','currency')) $pdo->exec("ALTER TABLE orders ADD currency VARCHAR(3) NOT NULL DEFAULT 'IDR' AFTER payment_provider"); } catch (Throwable $e) {}
+}
+
+/** Mata uang sebuah pesanan (fallback 'IDR' untuk order lama). */
+function order_currency(array $order): string {
+    return strtoupper(trim((string)($order['currency'] ?? ''))) === 'USD' ? 'USD' : 'IDR';
 }
 
 
@@ -610,6 +651,7 @@ function ensure_product_variant_columns(): void {
             product_id INT UNSIGNED NOT NULL,
             name VARCHAR(120) NOT NULL,
             price DECIMAL(14,2) NOT NULL DEFAULT 0,
+            price_usd DECIMAL(14,2) NOT NULL DEFAULT 0,
             discount_pct DECIMAL(5,2) NOT NULL DEFAULT 0,
             flash_discount_pct DECIMAL(5,2) NOT NULL DEFAULT 0,
             warranty_label VARCHAR(100) NOT NULL DEFAULT '',
@@ -625,7 +667,8 @@ function ensure_product_variant_columns(): void {
     } catch (Throwable $e) {}
     foreach ([
         'price' => "ALTER TABLE product_variants ADD price DECIMAL(14,2) NOT NULL DEFAULT 0 AFTER name",
-        'discount_pct' => "ALTER TABLE product_variants ADD discount_pct DECIMAL(5,2) NOT NULL DEFAULT 0 AFTER price",
+        'price_usd' => "ALTER TABLE product_variants ADD price_usd DECIMAL(14,2) NOT NULL DEFAULT 0 AFTER price",
+        'discount_pct' => "ALTER TABLE product_variants ADD discount_pct DECIMAL(5,2) NOT NULL DEFAULT 0 AFTER price_usd",
         'flash_discount_pct' => "ALTER TABLE product_variants ADD flash_discount_pct DECIMAL(5,2) NOT NULL DEFAULT 0 AFTER discount_pct",
         'warranty_label' => "ALTER TABLE product_variants ADD warranty_label VARCHAR(100) NOT NULL DEFAULT '' AFTER flash_discount_pct",
         'warranty_days' => "ALTER TABLE product_variants ADD warranty_days INT NOT NULL DEFAULT 0 AFTER warranty_label",
@@ -956,6 +999,10 @@ function product_active_variants(int $productId): array {
  *
  * Sale price = price * (1 - pct/100).  The <del> slash is simply `price`
  * whenever the effective discount is greater than zero.
+ *
+ * Multi-currency (site_currency): product_variants.price = harga reguler IDR,
+ * product_variants.price_usd = harga reguler USD. Persentase diskon berlaku
+ * untuk kedua mata uang. Tanpa argumen, semua helper mengikuti mata uang aktif.
  */
 
 /** Flash WINDOW lives on the product (one sale event); the amount is per variant. */
@@ -965,7 +1012,8 @@ function product_variant_flash_active(array $p): bool {
 }
 
 /** Harga reguler varian — angka yang dicoret saat diskon > 0. */
-function product_variant_regular_price(array $variant): float {
+function product_variant_regular_price(array $variant, ?string $currency=null): float {
+    if (currency_is_usd($currency)) return max(0.0, (float)($variant['price_usd'] ?? 0));
     return max(0.0, (float)($variant['price'] ?? 0));
 }
 
@@ -978,8 +1026,8 @@ function product_variant_discount_pct(array $p, array $variant): float {
 }
 
 /** Harga jual varian setelah diskon. */
-function product_variant_price(array $p, array $variant): float {
-    $regular = product_variant_regular_price($variant);
+function product_variant_price(array $p, array $variant, ?string $currency=null): float {
+    $regular = product_variant_regular_price($variant, $currency);
     $pct = product_variant_discount_pct($p, $variant);
     if ($pct <= 0 || $regular <= 0) return $regular;
     return max(0.0, round($regular * (1 - $pct / 100), 2));
@@ -989,9 +1037,9 @@ function product_variant_price(array $p, array $variant): float {
  * Harga coret varian. Mengembalikan 0 bila varian itu tidak sedang didiskon,
  * supaya card/PDP bisa menyembunyikan <del> dengan bersih.
  */
-function product_variant_compare_price(array $p, array $variant): float {
-    $sale = product_variant_price($p, $variant);
-    $regular = product_variant_regular_price($variant);
+function product_variant_compare_price(array $p, array $variant, ?string $currency=null): float {
+    $sale = product_variant_price($p, $variant, $currency);
+    $regular = product_variant_regular_price($variant, $currency);
     return $regular > $sale ? $regular : 0.0;
 }
 
@@ -1616,7 +1664,7 @@ function storefront_product_thumb(string $src, string $label = 'Produk Digital')
 }
 
 function render_storefront_styles(string $page='index'): void {
-    $v = '20261029-ui-v2';
+    $v = '20261107-disc1';
     echo '<link rel="stylesheet" href="/assets/css/front-mobile-v7.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-grid-v20.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-list-fresh-v1.css?v='.$v.'">' . "\n";
@@ -2079,7 +2127,7 @@ function admin_notification_summary(): array {
         $stUnread = $pdo->prepare("SELECT COUNT(*) c FROM orders WHERE COALESCE(paid_at,created_at) > ? AND status IN ('pending','paid','delivered')");
         $stUnread->execute([$lastRead]);
         $data['unread'] = (int)($stUnread->fetch()['c'] ?? 0);
-        $st = $pdo->query("SELECT invoice,buyer_name,total,status,created_at,paid_at FROM orders WHERE status IN ('pending','paid','delivered','failed','cancelled') ORDER BY COALESCE(paid_at,created_at) DESC, id DESC LIMIT 5");
+        $st = $pdo->query("SELECT invoice,buyer_name,total,status,currency,created_at,paid_at FROM orders WHERE status IN ('pending','paid','delivered','failed','cancelled') ORDER BY COALESCE(paid_at,created_at) DESC, id DESC LIMIT 5");
         foreach ($st->fetchAll() as $o) {
             $eventTime = (string)($o['paid_at'] ?: $o['created_at']);
             $isUnread = $eventTime > $lastRead && in_array((string)$o['status'], ['pending','paid','delivered'], true);
@@ -2088,6 +2136,7 @@ function admin_notification_summary(): array {
                 'invoice' => $o['invoice'],
                 'buyer' => $o['buyer_name'],
                 'total' => $o['total'],
+                'currency' => $o['currency'] ?? 'IDR',
                 'status' => $o['status'],
                 'label' => $label,
                 'time' => $eventTime,

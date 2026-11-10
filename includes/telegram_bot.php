@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__.'/helpers.php';
 require_once __DIR__.'/casaku.php';
+require_once __DIR__.'/nowpayments.php';
 
 function telegram_ensure_schema(): void {
     global $pdo;
@@ -165,6 +166,11 @@ function telegram_ensure_schema(): void {
     try{
         if(!db_column_exists('orders','telegram_unique_code')){
             $pdo->exec("ALTER TABLE orders ADD telegram_unique_code INT UNSIGNED NOT NULL DEFAULT 0 AFTER discount");
+        }
+    }catch(Throwable $e){}
+    try{
+        if(!db_column_exists('orders','currency')){
+            $pdo->exec("ALTER TABLE orders ADD currency VARCHAR(3) NOT NULL DEFAULT 'IDR' AFTER payment_provider");
         }
     }catch(Throwable $e){}
 }
@@ -1107,8 +1113,9 @@ function telegram_product_detail_content(array $p,int $productId,string $backCal
     $text.='<b>Terjual:</b> '.$sold."\n\n";
     $text.='<b>Garansi:</b> '.telegram_html((string)(product_variant_warranty_label($variant,$p) ?: '-'))."\n";
     $text.='<b>Pengiriman:</b> '.(strtolower((string)$p['delivery_type'])==='manual'?'Manual oleh admin':'Otomatis setelah pembayaran')."\n\n";
+    $payLabel=telegram_payment_label(telegram_payment_gateway());
     if($stock>0){
-        $text.='Pilih jumlah produk, lalu tekan <b>Bayar via QRIS</b>.'."\n\n";
+        $text.='Pilih jumlah produk, lalu tekan <b>Bayar via '.telegram_html($payLabel).'</b>.'."\n\n";
         $text.='<b>Jumlah Pesanan:</b> +'.$qty;
     }else $text.='Maaf, stok produk sedang habis.';
     if($backCallback==='')$backCallback='cat:'.(int)($p['category_id'] ?? 0).':1';
@@ -1120,7 +1127,7 @@ function telegram_product_detail_content(array $p,int $productId,string $backCal
             ['text'=>(string)$qty,'callback_data'=>'noop'],
             ['text'=>'➕','callback_data'=>'qtyinc:'.$productId.':'.$qty],
         ];
-        $keys[]=[['text'=>'💳 Bayar via QRIS','callback_data'=>'confirm:'.$productId.':'.$qty]];
+        $keys[]=[['text'=>'💳 Bayar via '.$payLabel,'callback_data'=>'confirm:'.$productId.':'.$qty]];
     }
     $keys[]=[['text'=>'◀️ Kembali ke Produk','callback_data'=>$backCallback]];
     return ['text'=>$text,'keys'=>$keys,'qty'=>$qty,'back_callback'=>$backCallback];
@@ -1159,6 +1166,8 @@ function telegram_send_quantity(array $bot,int $chatId,int $productId,string $de
 function telegram_invoice_no(): string { return 'TG-'.date('ymd').'-'.strtoupper(substr(bin2hex(random_bytes(4)),0,8)); }
 function telegram_unique_code(): int { return random_int(100,500); }
 function telegram_payment_unique_code(string $gateway,int $current=0): int {
+    // Kode unik dipakai untuk pencocokan transfer manual (IDR). Gateway invoice nominal-pas tidak memakainya.
+    if($gateway==='nowpayments' || $gateway==='demo')return 0;
     if($gateway==='casaku'){
         if(!casaku_use_unique_code())return 0;
         return $current>0?max(1,min(999,$current)):random_int(1,999);
@@ -1166,8 +1175,13 @@ function telegram_payment_unique_code(string $gateway,int $current=0): int {
     return $current>0?max(100,min(500,$current)):telegram_unique_code();
 }
 function telegram_payment_gateway(): string {
+    // USD hanya dilayani gateway USD (NowPayments/Crypto). IDR memakai gateway global dari admin.
+    if(currency_is_usd())return 'nowpayments';
     $gateway=strtolower(trim((string)setting('payment_gateway','qris_static')));
-    return in_array($gateway,['tokopay','casaku','qris_static'],true)?$gateway:'qris_static';
+    return in_array($gateway,['tokopay','casaku','qris_static','nowpayments'],true)?$gateway:'qris_static';
+}
+function telegram_payment_label(string $gateway): string {
+    return ['casaku'=>'Casaku','tokopay'=>'Tokopay','nowpayments'=>'Crypto (NowPayments)','demo'=>'Demo','qris_static'=>'QRIS Manual'][$gateway] ?? strtoupper((string)$gateway);
 }
 function telegram_assert_auto_gateway_ready(string $gateway): void {
     if($gateway==='tokopay'){
@@ -1182,7 +1196,11 @@ function telegram_assert_auto_gateway_ready(string $gateway): void {
         if(!casaku_package_ids())throw new RuntimeException('Casaku aktif tetapi Package ID belum diatur.');
         return;
     }
-    throw new RuntimeException('Bot auto-order membutuhkan payment gateway otomatis Tokopay atau Casaku. QRIS manual tidak dapat mengonfirmasi pembayaran otomatis.');
+    if($gateway==='nowpayments'){
+        if(trim((string)setting('nowpayments_api_key',''))==='')throw new RuntimeException('Pembayaran Crypto (NowPayments) aktif tetapi API Key belum diatur di Payment Gateway.');
+        return;
+    }
+    throw new RuntimeException('Bot auto-order membutuhkan payment gateway otomatis Tokopay, Casaku, atau NowPayments. QRIS manual tidak dapat mengonfirmasi pembayaran otomatis.');
 }
 function telegram_resolve_promo(string $promoCode,float $subtotal): array {
     global $pdo;
@@ -1234,10 +1252,10 @@ function telegram_send_checkout_confirmation(array $bot,int $chatId,int $product
 ";
     $text.='<b>Total:</b> '.telegram_html(rupiah($total))."
 ";
-    $text.='<b>Gateway:</b> '.telegram_html($gateway==='casaku'?'Casaku':'Tokopay')."
+    $text.='<b>Gateway:</b> '.telegram_html(telegram_payment_label($gateway))."
 
 ";
-    $text.='Periksa kembali pesanan sebelum melanjutkan ke pembayaran QRIS.';
+    $text.='Periksa kembali pesanan sebelum melanjutkan ke pembayaran.';
 
     $keys=[];
     $keys[]=[[ 'text'=>$promo?'🎟 Ganti Kode Voucher':'🎟 Input Kode Voucher','callback_data'=>'voucher:'.$productId.':'.$qty ]];
@@ -1293,7 +1311,9 @@ function telegram_create_order(array $bot,array $user,int $chatId,int $productId
     $qty=max(1,min(5,$qty));
     $gatewayMode=telegram_payment_gateway();
     telegram_assert_auto_gateway_ready($gatewayMode);
+    $siteCurrency=site_currency();
     $price=telegram_product_price($p);$subtotal=$price*$qty;
+    if($price<=0)throw new RuntimeException('Produk ini belum memiliki harga '.$siteCurrency.'. Hubungi admin.');
     [$promo,$discount]=telegram_resolve_promo($promoCode,$subtotal);
     $promoId=(int)($promo['id'] ?? 0);
     $baseTotal=max(0,$subtotal-$discount);
@@ -1311,15 +1331,15 @@ function telegram_create_order(array $bot,array $user,int $chatId,int $productId
     if(maintenance_mode_enabled()) throw new RuntimeException(maintenance_mode_message());
     $stock=telegram_product_stock($p);if($stock<$qty)throw new RuntimeException('Stok tidak cukup. Sisa stok: '.$stock);
     $total=$baseTotal+$uniqueCode;$invoice=telegram_invoice_no();
-    $expiredMinutes=$gatewayMode==='casaku'?casaku_expired_minutes():tokopay_expired_minutes();
+    $expiredMinutes=$gatewayMode==='casaku'?casaku_expired_minutes():($gatewayMode==='nowpayments'?nowpayments_expired_minutes():tokopay_expired_minutes());
     $expiresAt=telegram_db_expiry_datetime($expiredMinutes);
     $name=trim((string)($user['first_name'] ?? '').' '.(string)($user['last_name'] ?? '')) ?: ((string)($user['username'] ?? '') ?: 'Telegram User');
     $email=trim((string)($user['buyer_email'] ?? '')) ?: 'tg'.(int)$user['telegram_user_id'].'@telegram.invalid';
     $password=random_access_password();$accessHash=password_hash($password,PASSWORD_DEFAULT);
     $pdo->beginTransaction();
     try{
-        $pdo->prepare('INSERT INTO orders(invoice,sales_channel,telegram_bot_id,telegram_user_id,telegram_chat_id,buyer_name,buyer_email,buyer_whatsapp,subtotal,discount,telegram_unique_code,promo_id,total,payment_total,status,payment_provider,qris_payload,access_password_hash,access_password_admin_enc,payment_expires_at,telegram_delivery_status,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,"pending",?,?,?,?,?,"pending",NOW())')
-            ->execute([$invoice,'telegram',(int)$bot['id'],(int)$user['telegram_user_id'],$chatId,$name,$email,(string)($user['buyer_whatsapp'] ?? ''),$subtotal,$discount,$uniqueCode,$promoId?:null,$total,$total,$gatewayMode,'',$accessHash,encrypt_admin_order_password($password),$expiresAt]);
+        $pdo->prepare('INSERT INTO orders(invoice,sales_channel,telegram_bot_id,telegram_user_id,telegram_chat_id,buyer_name,buyer_email,buyer_whatsapp,subtotal,discount,telegram_unique_code,promo_id,total,payment_total,status,payment_provider,currency,qris_payload,access_password_hash,access_password_admin_enc,payment_expires_at,telegram_delivery_status,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,"pending",?,?,?,?,?,?,"pending",NOW())')
+            ->execute([$invoice,'telegram',(int)$bot['id'],(int)$user['telegram_user_id'],$chatId,$name,$email,(string)($user['buyer_whatsapp'] ?? ''),$subtotal,$discount,$uniqueCode,$promoId?:null,$total,$total,$gatewayMode,$siteCurrency,'',$accessHash,encrypt_admin_order_password($password),$expiresAt]);
         $orderId=(int)$pdo->lastInsertId();
         $deliveryType=strtolower((string)($p['delivery_type'] ?? 'instant'))==='manual'?'manual':'instant';
         $variant=telegram_product_first_variant($p);
@@ -1355,6 +1375,25 @@ function telegram_create_order(array $bot,array $user,int $chatId,int $productId
             }finally{
                 if($lockKey!=='')casaku_release_exact_amount_lock($lockKey);
             }
+        }elseif($gatewayMode==='nowpayments'){
+            $npSiteUrl=rtrim(seo_site_url(),'/');
+            $localPayUrl=seo_url('/checkout.php?invoice='.rawurlencode($invoice));
+            if(!filter_var($localPayUrl,FILTER_VALIDATE_URL) || !preg_match('~^https?://~i',$localPayUrl))$localPayUrl='';
+            $gateway=nowpayments_create_invoice([
+                'amount'=>$total,
+                'currency'=>strtolower($siteCurrency),
+                'pay_currency'=>nowpayments_default_currency(),
+                'callback_url'=>$npSiteUrl.'/api/nowpayments_webhook.php',
+                'order_id'=>$invoice,
+                'description'=>'Digital Store Order '.$invoice,
+                'success_url'=>$npSiteUrl.'/checkout.php?invoice='.rawurlencode($invoice),
+                'cancel_url'=>$npSiteUrl,
+            ]);
+            if(!$gateway['ok'])throw new RuntimeException($gateway['error'] ?? 'NowPayments gagal membuat invoice.');
+            $payUrl=(string)($gateway['invoice_url'] ?? '');
+            $ref=(string)($gateway['invoice_id'] ?? '');
+            assert_payment_reference_available('nowpayments',$ref,$orderId);
+            $pdo->prepare('UPDATE orders SET payment_url=?,payment_reference=?,payment_total=? WHERE id=?')->execute([$payUrl,$ref,$total,$orderId]);
         }else{
             $gateway=create_tokopay_order(['invoice'=>$invoice,'buyer_name'=>$name,'buyer_email'=>$email,'buyer_whatsapp'=>(string)($user['buyer_whatsapp'] ?? ''),'total'=>$total],[['product_id'=>$productId,'product_name'=>$p['name'],'price'=>$price,'qty'=>$qty]]);
             $gd=is_array($gateway['data'] ?? null)?$gateway['data']:[];
@@ -1379,17 +1418,21 @@ function telegram_invoice_caption(array $order): string {
     $items=order_items((int)$order['id']);$products=[];foreach($items as $it)$products[]=$it['product_name'].' x'.$it['qty'];
     $expires=!empty($order['payment_expires_at'])?telegram_display_datetime_wib((string)$order['payment_expires_at']):'-';
     $paymentTotal=(float)($order['payment_total'] ?: $order['total']);
+    $orderCurrency=order_currency($order);
+    $provider=strtolower(trim((string)($order['payment_provider'] ?? '')));
     $text="<b>⌛ TRANSAKSI PENDING</b>\n\n";
     $text.='<b>ID Pembayaran:</b> '.telegram_html((string)$order['invoice'])."\n";
     $text.='<b>Produk:</b> '.telegram_html(implode(', ',$products))."\n";
-    $text.='<b>Harga:</b> '.telegram_html(rupiah($order['subtotal']))."\n";
-    if((float)($order['discount'] ?? 0)>0)$text.='<b>Diskon Voucher:</b> -'.telegram_html(rupiah($order['discount']))."\n";
-    if((int)($order['telegram_unique_code'] ?? 0)>0)$text.='<b>Kode Unik:</b> +'.telegram_html(rupiah((int)$order['telegram_unique_code']))."\n";
-    if((float)$order['payment_fee']>0)$text.='<b>Biaya:</b> '.telegram_html(rupiah($order['payment_fee']))."\n";
-    $text.='<b>Total Dibayar:</b> '.telegram_html(rupiah($paymentTotal))."\n";
-    $text.='<b>Metode:</b> QRIS'."\n";
+    $text.='<b>Harga:</b> '.telegram_html(rupiah($order['subtotal'],$orderCurrency))."\n";
+    if((float)($order['discount'] ?? 0)>0)$text.='<b>Diskon Voucher:</b> -'.telegram_html(rupiah($order['discount'],$orderCurrency))."\n";
+    if((int)($order['telegram_unique_code'] ?? 0)>0)$text.='<b>Kode Unik:</b> +'.telegram_html(rupiah((int)$order['telegram_unique_code'],$orderCurrency))."\n";
+    if((float)$order['payment_fee']>0)$text.='<b>Biaya:</b> '.telegram_html(rupiah($order['payment_fee'],$orderCurrency))."\n";
+    $text.='<b>Total Dibayar:</b> '.telegram_html(rupiah($paymentTotal,$orderCurrency))."\n";
+    $text.='<b>Metode:</b> '.telegram_html(telegram_payment_label($provider))."\n";
     $text.='<b>Batas Bayar:</b> '.telegram_html($expires)."\n\n";
-    $text.='Pindai QRIS di atas. Produk dikirim otomatis setelah pembayaran terkonfirmasi.';
+    $text.=$provider==='nowpayments'
+        ?'Selesaikan pembayaran melalui tombol <b>Buka Pembayaran</b>. Produk dikirim otomatis setelah pembayaran terkonfirmasi.'
+        :'Pindai QRIS di atas. Produk dikirim otomatis setelah pembayaran terkonfirmasi.';
     return $text;
 }
 function telegram_send_invoice(array $bot,int $chatId,array $order): void {
@@ -1595,7 +1638,7 @@ function telegram_show_history(array $bot,int $chatId,int $telegramUserId): void
     telegram_clear_chat_state((int)$bot['id'],$chatId);
     $st=$pdo->prepare('SELECT * FROM orders WHERE telegram_user_id=? ORDER BY id DESC LIMIT 10');$st->execute([$telegramUserId]);$rows=$st->fetchAll();
     if(!$rows){telegram_send_ui_message($bot,$chatId,'Belum ada riwayat pesanan.',['inline_keyboard'=>[[['text'=>'📦 Lihat Produk','callback_data'=>'categories']]]]);return;}
-    $keys=[];foreach($rows as $o)$keys[]=[[ 'text'=>telegram_order_status_label((string)$o['status']).' · '.$o['invoice'].' · '.rupiah($o['payment_total'] ?: $o['total']), 'callback_data'=>'order:'.$o['invoice'] ]];
+    $keys=[];foreach($rows as $o)$keys[]=[[ 'text'=>telegram_order_status_label((string)$o['status']).' · '.$o['invoice'].' · '.rupiah($o['payment_total'] ?: $o['total'],order_currency($o)), 'callback_data'=>'order:'.$o['invoice'] ]];
     telegram_send_ui_message($bot,$chatId,"<b>📜 Riwayat Pesanan</b>\nPilih invoice untuk melihat detail:",['inline_keyboard'=>$keys]);
 }
 function telegram_show_order(array $bot,int $chatId,int $telegramUserId,string $invoice): void {
@@ -1603,8 +1646,8 @@ function telegram_show_order(array $bot,int $chatId,int $telegramUserId,string $
     $o=telegram_refresh_order($invoice,$telegramUserId);if(!$o){telegram_send_ui_message($bot,$chatId,'Pesanan tidak ditemukan.');return;}
     $text='<b>🧾 '.telegram_html((string)$o['invoice'])."</b>\n\n";
     $text.='<b>Status:</b> '.telegram_html(telegram_order_status_label((string)$o['status']))."\n";
-    if((int)($o['telegram_unique_code'] ?? 0)>0)$text.='<b>Kode Unik:</b> +'.telegram_html(rupiah((int)$o['telegram_unique_code']))."\n";
-    $text.='<b>Total:</b> '.telegram_html(rupiah($o['payment_total'] ?: $o['total']))."\n";
+    if((int)($o['telegram_unique_code'] ?? 0)>0)$text.='<b>Kode Unik:</b> +'.telegram_html(rupiah((int)$o['telegram_unique_code'],order_currency($o)))."\n";
+    $text.='<b>Total:</b> '.telegram_html(rupiah($o['payment_total'] ?: $o['total'],order_currency($o)))."\n";
     $text.='<b>Tanggal:</b> '.telegram_html(display_datetime_gmt7((string)$o['created_at']))."\n";
     $keys=[];
     if($o['status']==='pending')$keys[]=[['text'=>'🔄 Cek Pembayaran','callback_data'=>'check:'.$invoice],['text'=>'❌ Batalkan','callback_data'=>'cancel:'.$invoice]];

@@ -20,6 +20,8 @@
   const summarySubtotal=document.querySelector('[data-cw-subtotal]');
   const summaryDiscountRow=document.getElementById('cwDiscountRow');
   const summaryDiscount=document.querySelector('[data-cw-discount]');
+  const summaryProductDiscountRow=document.getElementById('cwProductDiscountRow');
+  const summaryProductDiscount=document.querySelector('[data-cw-product-discount]');
   const summaryTotal=document.querySelector('[data-cw-total]');
   const promoInput=document.getElementById('cwPromoInput');
   const promoApply=document.getElementById('cwPromoApply');
@@ -41,7 +43,8 @@
   let promoDiscount=0;
   let cart=[];
 
-  const rupiah=n=>'Rp '+new Intl.NumberFormat('id-ID').format(Number(n||0));
+  const dsCurrency=(window.dsCurrency&&window.dsCurrency.code)?window.dsCurrency:{code:'IDR',symbol:'Rp ',locale:'id-ID',decimals:0};
+  const rupiah=n=>dsCurrency.symbol+new Intl.NumberFormat(dsCurrency.locale,{minimumFractionDigits:dsCurrency.decimals,maximumFractionDigits:dsCurrency.decimals}).format(Number(n||0));
 
   function showAlert(message,type){
     if(!alertBox) return;
@@ -76,11 +79,19 @@
   }
 
   function lineTotal(i){ return (Number(i.price)||0)*(Number(i.qty)||0); }
+  function lineRegular(i){
+    const price=Number(i.price)||0;
+    const orig=Number(i.original_price)||0;
+    return orig>price?orig:price;
+  }
 
   function renderSummary(){
-    const subtotal=cart.reduce((s,i)=>s+lineTotal(i),0);
-    const discount=Math.min(promoDiscount,subtotal);
-    const total=Math.max(0,subtotal-discount);
+    cart=readCart();
+    const saleSubtotal=cart.reduce((s,i)=>s+lineTotal(i),0);
+    const regularTotal=cart.reduce((s,i)=>s+lineRegular(i)*(Number(i.qty)||0),0);
+    const productDiscount=Math.max(0,regularTotal-saleSubtotal);
+    const discount=Math.min(promoDiscount,saleSubtotal);
+    const total=Math.max(0,saleSubtotal-discount);
     if(summaryItems){
       if(!cart.length){
         summaryItems.innerHTML='<p class="cw-sum-variant">'+(i18n.emptyCart||'Keranjang kosong')+'</p>';
@@ -90,21 +101,31 @@
           const thumbHtml=(thumb&&thumb!=='DIGITAL')
             ? '<img src="'+String(thumb).replace(/"/g,'&quot;')+'" alt="">'
             : 'DIGITAL';
+          const qty=Number(i.qty)||1;
+          const price=Number(i.price)||0;
+          const orig=Number(i.original_price)||0;
+          const pct=Number(i.discount_pct)||0;
+          const hasDisc=orig>price&&price>0;
+          const priceHtml=(hasDisc?'<del>'+rupiah(orig*qty)+'</del>':'')+
+            '<b>'+rupiah(lineTotal(i))+'</b>'+
+            (hasDisc&&pct>0?'<span class="cw-sum-disc">-'+pct+'%</span>':'');
           return '<div class="cw-sum-item">'+
             '<div class="cw-sum-thumb">'+thumbHtml+'</div>'+
             '<div><div class="cw-sum-name">'+escapeHtml(i.name||'')+'</div>'+
-            '<div class="cw-sum-variant">'+escapeHtml(i.variant_name||'')+' · ×'+(Number(i.qty)||1)+'</div></div>'+
-            '<div class="cw-sum-price">'+rupiah(lineTotal(i))+'</div>'+
+            '<div class="cw-sum-variant">'+escapeHtml(i.variant_name||'')+' · ×'+qty+'</div></div>'+
+            '<div class="cw-sum-price">'+priceHtml+'</div>'+
           '</div>';
         }).join('');
       }
     }
-    if(summarySubtotal) summarySubtotal.textContent=rupiah(subtotal);
+    if(summarySubtotal) summarySubtotal.textContent=rupiah(productDiscount>0?regularTotal:saleSubtotal);
+    if(summaryProductDiscountRow) summaryProductDiscountRow.hidden=!(productDiscount>0);
+    if(summaryProductDiscount) summaryProductDiscount.textContent=productDiscount>0?('-'+rupiah(productDiscount)):'';
     const hasDiscount=discount>0;
     if(summaryDiscountRow) summaryDiscountRow.hidden=!hasDiscount;
     if(summaryDiscount) summaryDiscount.textContent=hasDiscount?('-'+rupiah(discount)):'';
     if(summaryTotal) summaryTotal.textContent=rupiah(total);
-    return {subtotal,discount,total};
+    return {subtotal:saleSubtotal,discount,total};
   }
 
   function escapeHtml(s){
@@ -308,5 +329,13 @@
     renderSummary();
     setStep(1);
     updateSubmitState();
+    if(cart.length && typeof window.dsRefreshCartPrices==='function'){
+      window.dsRefreshCartPrices().then(function(){
+        cart=readCart();
+        renderSummary();
+        if(step===3) renderConfirm();
+        updateSubmitState();
+      });
+    }
   }
 })();

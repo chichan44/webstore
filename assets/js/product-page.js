@@ -22,7 +22,8 @@
   const heroDiscEl=document.querySelector('[data-pp-hero-discount]');
   const cartHint=document.querySelector('[data-pp-cart-hint]');
   const toastEl=document.getElementById('ppToast');
-  const rupiah=n=>'Rp '+new Intl.NumberFormat('id-ID').format(Number(n||0));
+  const dsCurrency=(window.dsCurrency&&window.dsCurrency.code)?window.dsCurrency:{code:'IDR',symbol:'Rp ',locale:'id-ID',decimals:0};
+  const rupiah=n=>dsCurrency.symbol+new Intl.NumberFormat(dsCurrency.locale,{minimumFractionDigits:dsCurrency.decimals,maximumFractionDigits:dsCurrency.decimals}).format(Number(n||0));
 
   /* Hero price follows variant stock/price (init = cheapest variant from server) */
   function syncHeroPrice(price,originalPrice,discPct){
@@ -180,10 +181,14 @@
   });
 
   function buildCartLine(){
+    const price=Math.round((Number(selectedVariant.price)||0)*100)/100;
+    const orig=Math.round((Number(selectedVariant.originalPrice)||0)*100)/100;
     return {
       id:String(data.id),
       name:data.name,
-      price:Math.round(selectedVariant.price),
+      price:price,
+      original_price:orig>price?orig:0,
+      discount_pct:(orig>price&&price>0)?(Number(selectedVariant.discountPct)||Math.round((1-price/orig)*100)):0,
       thumb:data.thumb||'DIGITAL',
       maxStock:Math.max(0,Number(selectedVariant.stock)||0),
       qty:qty,
@@ -224,6 +229,7 @@
         if(!confirm(i18n.replaceCart||'Beli Sekarang akan mengganti isi keranjang. Lanjutkan?')) return;
       }
       localStorage.setItem('ds_cart',JSON.stringify([buildCartLine()]));
+      try{localStorage.setItem('ds_cart_currency',(window.dsCurrency&&window.dsCurrency.code)||'IDR')}catch(e){}
       location.href='/checkout.php';
     });
   }

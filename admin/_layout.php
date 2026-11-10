@@ -143,7 +143,7 @@ if (!function_exists('admin_page_start')) {
                         <?php if(!empty($notif['items'])): foreach($notif['items'] as $n): ?>
                             <a class="adm-notif-item <?= !empty($n['unread']) ? 'unread' : 'read' ?>" href="/admin/orders.php?detail=<?= e($n['invoice']) ?>">
                                 <span class="<?= e($n['status']) ?>"></span>
-                                <div><b><?= e($n['label']) ?></b><small><?= e($n['invoice']) ?> · <?= e($n['buyer']) ?> · <?= rupiah($n['total']) ?></small></div>
+                                <div><b><?= e($n['label']) ?></b><small><?= e($n['invoice']) ?> · <?= e($n['buyer']) ?> · <?= rupiah($n['total'], order_currency($n)) ?></small></div>
                             </a>
                         <?php endforeach; else: ?>
                             <div class="adm-notif-empty">Belum ada notifikasi pesanan.</div>

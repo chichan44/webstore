@@ -292,7 +292,7 @@ if($product){
         'offers'=>[
             '@type'=>'Offer',
             'url'=>$productUrl,
-            'priceCurrency'=>'IDR',
+            'priceCurrency'=>site_currency(),
             'price'=>(string)(int)round($basePrice),
             'availability'=>'https://schema.org/'.$jsonLdAvailability,
         ],
@@ -561,7 +561,7 @@ $hasMultipleVariants=count($variantCards)>1;
 
 <?php render_footer_columns($site,$desc); ?>
 <?php render_storefront_mobile_menu($site,$desc,$cats); ?>
-<div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" data-close-cart></div><aside><div class="drawer-top"><b><?=t('Keranjang Belanja')?> (<span data-cart-count>0</span>)</b><button data-close-cart>×</button></div><div class="cart-items" id="cartItems"></div><div class="drawer-foot"><p><span><?=t('Subtotal')?></span><b data-cart-total>Rp 0</b></p><a href="/checkout.php" class="btn primary"><?=t('Lanjut Checkout')?></a></div></aside></div>
+<div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" data-close-cart></div><aside><div class="drawer-top"><b><?=t('Keranjang Belanja')?> (<span data-cart-count>0</span>)</b><button data-close-cart>×</button></div><div class="cart-items" id="cartItems"></div><div class="drawer-foot"><p><span><?=t('Subtotal')?></span><b data-cart-total><?=e(format_money(0))?></b></p><a href="/checkout.php" class="btn primary"><?=t('Lanjut Checkout')?></a></div></aside></div>
 
 <?php if($product): ?>
 <script id="productsJson" type="application/json"><?=json_encode([[
@@ -612,10 +612,10 @@ $hasMultipleVariants=count($variantCards)>1;
     'shareCopied'=>t('Tautan produk disalin'),
     'shareFailed'=>t('Gagal membagikan tautan'),
 ], JSON_UNESCAPED_UNICODE)?></script>
-<script src="/assets/js/front-mobile-v7.js?v=20261014-reviews-v1"></script>
-<script src="/assets/js/product-page.js?v=20261006-product-page-v9"></script>
+<script src="/assets/js/front-mobile-v7.js?v=20261107-disc1"></script>
+<script src="/assets/js/product-page.js?v=20261107-disc1"></script>
 <?php else: ?>
 <script id="productsJson" type="application/json">[]</script>
-<script src="/assets/js/front-mobile-v7.js?v=20261014-reviews-v1"></script>
+<script src="/assets/js/front-mobile-v7.js?v=20261107-disc1"></script>
 <?php endif; ?>
 </body></html>

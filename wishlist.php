@@ -27,7 +27,7 @@ foreach($rows as $p){
 <?php foreach($products as $p):?><article hidden class="product-card znl-product-card" data-wishlist-card data-id="<?=intval($p['id'])?>"><div class="thumb znl-card-thumb"><?php $cardBadge=storefront_discount_badge($p);?><?php if($cardBadge!==''):?><em><?=e($cardBadge)?></em><?php endif;?><?=ds_thumb_html($p['thumbnail'],$p['name'])?><button class="product-wishlist-btn" type="button" data-wishlist-toggle="<?=intval($p['id'])?>" aria-pressed="true"><span>♥</span></button></div><div class="product-main znl-card-body"><span class="grid-category-label"><?=e($p['category'])?></span><a class="product-title" href="/<?=e($p['slug'])?>"><?=e($p['name'])?></a><?=render_product_rating((float)$p['rating'], (int)$p['sold'], (int)($p['reviews'] ?? 0))?><div class="product-price-row"><strong><?=rupiah($p['price'])?></strong><?php if($p['originalPrice']>$p['price']):?><del><?=rupiah($p['originalPrice'])?></del><?php endif;?></div><div class="product-meta"><p><?=t('Pilih varian')?></p><small><?=t('Terjual')?>: <?=intval($p['sold'])?></small></div></div><div class="card-bottom znl-card-bottom"><a href="/<?=e($p['slug'])?>">🛒 <?=t('Lihat Produk & Pilih Varian')?></a></div></article><?php endforeach;?></div><section class="wishlist-empty" data-wishlist-empty><span>♡</span><h2><?=t('Wishlist masih kosong')?></h2><p><?=t('Tekan ikon hati pada produk yang ingin kamu simpan.')?></p><a class="btn primary" href="/#produk"><?=t('Mulai Belanja')?></a></section></main>
 <?php render_footer_columns($site,$desc);?>
 <?php render_storefront_mobile_menu($site,$desc,$cats); ?>
-<div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" data-close-cart></div><aside><div class="drawer-top"><b><?=t('Keranjang Belanja')?> (<span data-cart-count>0</span>)</b><button data-close-cart>×</button></div><div class="cart-items" id="cartItems"></div><div class="drawer-foot"><p><span><?=t('Subtotal')?></span><b data-cart-total>Rp 0</b></p><a href="/checkout.php" class="btn primary"><?=t('Lanjut Checkout')?></a></div></aside></div>
+<div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" data-close-cart></div><aside><div class="drawer-top"><b><?=t('Keranjang Belanja')?> (<span data-cart-count>0</span>)</b><button data-close-cart>×</button></div><div class="cart-items" id="cartItems"></div><div class="drawer-foot"><p><span><?=t('Subtotal')?></span><b data-cart-total><?=e(format_money(0))?></b></p><a href="/checkout.php" class="btn primary"><?=t('Lanjut Checkout')?></a></div></aside></div>
 <div class="product-modal" id="productModal" aria-hidden="true">
   <div class="modal-backdrop" data-close-product></div>
   <section class="product-modal-card">
@@ -61,7 +61,7 @@ foreach($rows as $p){
           <div class="modal-feature-item"><i class="feature-support">🎧</i><div><b><?=t('Support Responsif')?></b><p><?=t('Bantuan cepat jika ada kendala pada pesanan.')?></p></div></div>
         </div>
         <div class="modal-purchase-row">
-          <div class="modal-price"><strong id="modalPrice">Rp 0</strong><del id="modalOriginal"></del></div>
+          <div class="modal-price"><strong id="modalPrice"><?=e(format_money(0))?></strong><del id="modalOriginal"></del></div>
         </div>
         <div class="modal-action-row">
           <button type="button" class="modal-wishlist-btn" id="modalWishlistBtn" data-wishlist-toggle="" aria-pressed="false"><span>♡</span> <?=t('Wishlist')?></button>
@@ -87,4 +87,4 @@ foreach($rows as $p){
     </div>
   </section>
 </div>
-<script id="productsJson" type="application/json"><?=json_encode($products,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?></script><script id="frontI18n" type="application/json"><?=json_encode(['modalStock'=>t('Pilih varian'),'modalCta'=>t('Lihat Produk & Pilih Varian'),'maxStock'=>t('Jumlah melebihi stok tersedia')],JSON_UNESCAPED_UNICODE)?></script><script src="/assets/js/front-mobile-v7.js?v=20261014-reviews-v1"></script></body></html>
+<script id="productsJson" type="application/json"><?=json_encode($products,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?></script><script id="frontI18n" type="application/json"><?=json_encode(['modalStock'=>t('Pilih varian'),'modalCta'=>t('Lihat Produk & Pilih Varian'),'maxStock'=>t('Jumlah melebihi stok tersedia')],JSON_UNESCAPED_UNICODE)?></script><script src="/assets/js/front-mobile-v7.js?v=20261107-disc1"></script></body></html>

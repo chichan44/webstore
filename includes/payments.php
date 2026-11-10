@@ -9,6 +9,7 @@ function checkout_demo_payment_enabled(): bool {
 
 function checkout_available_payment_methods(): array {
     $methods = [];
+    $currency = site_currency();
 
     // Demo — admin-gated auto-complete for testing only.
     $methods[] = [
@@ -19,7 +20,7 @@ function checkout_available_payment_methods(): array {
         'enabled' => checkout_demo_payment_enabled(),
     ];
 
-    // Crypto via existing NowPayments integration.
+    // Crypto via existing NowPayments integration (melayani IDR maupun USD).
     $npEnabled = function_exists('nowpayments_api_key') ? (nowpayments_api_key() !== '') : (trim((string)setting('nowpayments_api_key', '')) !== '');
     $methods[] = [
         'id' => 'nowpayments',
@@ -29,7 +30,10 @@ function checkout_available_payment_methods(): array {
         'enabled' => true, // always list; API error surfaces on submit if key missing
     ];
 
-    // Later: tokopay, casaku, qris_static.
+    // Gateway berbasis Rupiah (Tokopay/Casaku/QRIS manual) — hanya untuk toko ber-mata uang IDR.
+    if ($currency !== 'USD') {
+        // Later: tokopay, casaku, qris_static.
+    }
 
     return $methods;
 }

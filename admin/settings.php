@@ -4,7 +4,7 @@ require_admin();
 require_once __DIR__.'/_layout.php';
 require_once __DIR__.'/../includes/order_delivery.php';
 
-$keys = ['site_name','site_url','site_description','site_default_lang','google_site_verification_meta','telegram_product_button_url','delivery_email_enabled','delivery_whatsapp_enabled','smtp_host','smtp_port','smtp_user','smtp_from_email','smtp_from_name','fonnte_country_code','delivery_whatsapp_template','maintenance_mode','maintenance_message'];
+$keys = ['site_name','site_url','site_description','site_default_lang','site_currency','google_site_verification_meta','telegram_product_button_url','delivery_email_enabled','delivery_whatsapp_enabled','smtp_host','smtp_port','smtp_user','smtp_from_email','smtp_from_name','fonnte_country_code','delivery_whatsapp_template','maintenance_mode','maintenance_message'];
 $values = [];
 foreach ($keys as $key) $values[$key] = (string)setting($key, '');
 $values['telegram_product_button_url'] = telegram_product_button_template($values['telegram_product_button_url']);
@@ -15,6 +15,7 @@ if ($values['fonnte_country_code'] === '') $values['fonnte_country_code'] = '62'
 if (trim($values['delivery_whatsapp_template']) === '') $values['delivery_whatsapp_template'] = order_delivery_default_whatsapp_template();
 if ($values['site_name'] === '') $values['site_name'] = 'DigiSoft Store';
 if ($values['site_default_lang'] === '') $values['site_default_lang'] = 'id';
+if (!in_array($values['site_currency'], ['IDR','USD'], true)) $values['site_currency'] = 'IDR';
 $values['maintenance_mode'] = $values['maintenance_mode'] === '1' ? '1' : '0';
 if (trim($values['maintenance_message']) === '') $values['maintenance_message'] = 'Checkout sedang dalam pemeliharaan. Silakan coba kembali beberapa saat lagi.';
 
@@ -40,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         foreach ($keys as $key) $values[$key] = trim((string)($_POST[$key] ?? ''));
+        $values['site_currency'] = strtoupper($values['site_currency']) === 'USD' ? 'USD' : 'IDR';
         $values['delivery_email_enabled'] = $values['delivery_email_enabled'] === '1' ? '1' : '0';
         $values['delivery_whatsapp_enabled'] = $values['delivery_whatsapp_enabled'] === '1' ? '1' : '0';
         $values['smtp_port'] = (string)max(1, min(65535, (int)$values['smtp_port']));
@@ -131,6 +133,10 @@ admin_page_start('Pengaturan', 'Atur identitas website, logo, favicon, SEO dasar
             <option value="id" <?=($values['site_default_lang']==='id'?'selected':'')?>><?=t('Indonesia')?></option>
             <option value="en" <?=($values['site_default_lang']==='en'?'selected':'')?>><?=t('English')?></option>
         </select></div>
+        <div class="field"><label>Mata Uang Toko</label><select name="site_currency">
+            <option value="IDR" <?=($values['site_currency']==='IDR'?'selected':'')?>>IDR — Rupiah (Rp)</option>
+            <option value="USD" <?=($values['site_currency']==='USD'?'selected':'')?>>USD — Dolar AS ($)</option>
+        </select><small>Saat USD aktif, harga ditampilkan dari harga USD produk dan pembayaran memakai gateway USD (Crypto/NowPayments). Saat IDR aktif, berlaku sebaliknya (Tokopay/Casaku/QRIS).</small></div>
     </div>
 
     <h2>Logo & Favicon</h2>

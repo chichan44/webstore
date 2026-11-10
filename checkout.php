@@ -60,7 +60,7 @@ render_seo_meta([
 ?>
 <?php render_storefront_styles('index'); ?>
 <link rel="stylesheet" href="/assets/css/checkout-v24.css?v=20260830-casaku-v1">
-<link rel="stylesheet" href="/assets/css/checkout-wizard-v1.css?v=20261029-stepper-v1">
+<link rel="stylesheet" href="/assets/css/checkout-wizard-v1.css?v=20261107-disc1">
 </head>
 <body>
 
@@ -93,7 +93,7 @@ if(!function_exists('ds_icon')){function ds_icon($name){$n=mb_strtolower((string
       <?php endif; ?>
       <div class="checkout-total-card">
         <small><?=t('Total Pembayaran')?></small>
-        <strong><?=rupiah($order['payment_total'] ?: $order['total'])?></strong>
+        <strong><?=rupiah($order['payment_total'] ?: $order['total'],order_currency($order))?></strong>
         <span class="status-pill" id="payStatus"><?=e($order['status'])?></span>
       </div>
       <div class="checkout-security-note">
@@ -270,7 +270,8 @@ if(!function_exists('ds_icon')){function ds_icon($name){$n=mb_strtolower((string
         </div>
         <div id="cwSummaryItems" class="cw-summary-items"></div>
         <div class="cw-summary-lines">
-          <p><span><?=t('Subtotal')?></span><b data-cw-subtotal>Rp 0</b></p>
+          <p><span><?=t('Subtotal')?></span><b data-cw-subtotal><?=e(format_money(0))?></b></p>
+          <p id="cwProductDiscountRow" class="discount-row" hidden><span><?=t('Diskon Produk')?></span><b data-cw-product-discount></b></p>
           <p id="cwDiscountRow" class="discount-row" hidden><span><?=t('Diskon Promo')?></span><b data-cw-discount></b></p>
         </div>
         <div class="cw-promo-block">
@@ -281,7 +282,7 @@ if(!function_exists('ds_icon')){function ds_icon($name){$n=mb_strtolower((string
           </div>
           <small id="cwPromoMsg" class="cw-promo-msg" aria-live="polite"></small>
         </div>
-        <div class="cw-summary-foot"><span><?=t('Total')?></span><b data-cw-total>Rp 0</b></div>
+        <div class="cw-summary-foot"><span><?=t('Total')?></span><b data-cw-total><?=e(format_money(0))?></b></div>
         <p class="cw-summary-secure">🔒 <?=t('Pembayaran aman & terenkripsi')?></p>
       </aside>
     </form>
@@ -304,8 +305,8 @@ if(!function_exists('ds_icon')){function ds_icon($name){$n=mb_strtolower((string
 </main>
 <?php render_footer_columns($site,$desc); ?>
 <?php render_storefront_mobile_menu($site,$desc,$cats,['q'=>$_GET['q']??'']); ?>
-<div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" data-close-cart></div><aside><div class="drawer-top"><b><?=t('Keranjang Belanja')?> (<span data-cart-count>0</span>)</b><button data-close-cart>×</button></div><div class="cart-items" id="cartItems"></div><div class="drawer-foot"><p><span><?=t('Subtotal')?></span><b data-cart-total>Rp 0</b></p><a href="/checkout.php" class="btn primary"><?=t('Lanjut Checkout')?></a></div></aside></div>
-<script id="productsJson" type="application/json">[]</script><script src="/assets/js/front-mobile-v7.js?v=20261014-reviews-v1"></script>
+<div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" data-close-cart></div><aside><div class="drawer-top"><b><?=t('Keranjang Belanja')?> (<span data-cart-count>0</span>)</b><button data-close-cart>×</button></div><div class="cart-items" id="cartItems"></div><div class="drawer-foot"><p><span><?=t('Subtotal')?></span><b data-cart-total><?=e(format_money(0))?></b></p><a href="/checkout.php" class="btn primary"><?=t('Lanjut Checkout')?></a></div></aside></div>
+<script id="productsJson" type="application/json">[]</script><script src="/assets/js/front-mobile-v7.js?v=20261107-disc1"></script>
 <?php if($order && $orderProvider==='casaku' && !$isPaymentExpired && !empty($qrisValue)): ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
@@ -319,7 +320,7 @@ if(!function_exists('ds_icon')){function ds_icon($name){$n=mb_strtolower((string
 </script>
 <?php endif; ?>
 <?php if(!$order): ?>
-<script src="/assets/js/checkout-wizard.js?v=20261011-header-v7"></script>
+<script src="/assets/js/checkout-wizard.js?v=20261107-disc1"></script>
 <?php else: ?>
 <script src="/assets/js/checkout-v24.js?v=20260603manualstockfix1"></script>
 <?php endif; ?>

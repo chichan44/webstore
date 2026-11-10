@@ -92,7 +92,7 @@ admin_page_start('Dashboard');
                     <tr>
                         <td><a class="adm-link invoice-link" href="/admin/orders.php?detail=<?=e($order['invoice'])?>"><?=e($order['invoice'])?></a></td>
                         <td><div class="buyer-cell"><span><?=e($initial)?></span><div><b><?=e($order['buyer_name'])?></b><small><?=e($order['buyer_email'])?></small></div></div></td>
-                        <td><?=rupiah($order['total'])?></td>
+                        <td><?=rupiah($order['total'],order_currency($order))?></td>
                         <td><?=admin_status_badge($order['status'])?></td>
                         <td><span class="dashboard-date-cell"><?=e(date('Y-m-d',strtotime($order['created_at'])))?></span><small><?=e(date('H:i:s',strtotime($order['created_at'])))?></small></td>
                         <td><a class="detail-pill" href="/admin/orders.php?detail=<?=e($order['invoice'])?>">Detail</a></td>
@@ -108,7 +108,7 @@ admin_page_start('Dashboard');
                 <a class="dash-order-card" href="/admin/orders.php?detail=<?=e($order['invoice'])?>">
                     <span class="dash-avatar"><?=e($initial)?></span>
                     <div><b><?=e($order['invoice'])?></b><small><?=e($order['buyer_name'])?> · <?=e($order['buyer_email'])?></small></div>
-                    <div class="dash-order-meta"><?=admin_status_badge($order['status'])?><strong><?=rupiah($order['total'])?></strong><small><?=e(display_datetime_gmt7($order['created_at'] ?? ''))?></small></div>
+                    <div class="dash-order-meta"><?=admin_status_badge($order['status'])?><strong><?=rupiah($order['total'],order_currency($order))?></strong><small><?=e(display_datetime_gmt7($order['created_at'] ?? ''))?></small></div>
                     <i>›</i>
                 </a>
             <?php endforeach;endif;?>

@@ -113,7 +113,7 @@ if(!function_exists('ds_icon')){function ds_icon($name){$n=mb_strtolower((string
         </div>
         <div>
           <small><?=t('Total')?></small>
-          <b class="front-price"><?=rupiah($order['payment_total'] ?: $order['total'])?></b>
+          <b class="front-price"><?=rupiah($order['payment_total'] ?: $order['total'],order_currency($order))?></b>
         </div>
         <div>
           <small><?=t('Tanggal')?></small>
@@ -251,8 +251,8 @@ if(!function_exists('ds_icon')){function ds_icon($name){$n=mb_strtolower((string
 </main>
 <?php render_footer_columns($site,$desc); ?>
 <?php render_storefront_mobile_menu($site,$desc,$cats,['q'=>$_GET['q']??'']); ?>
-<div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" data-close-cart></div><aside><div class="drawer-top"><b><?=t('Keranjang Belanja')?> (<span data-cart-count>0</span>)</b><button data-close-cart>×</button></div><div class="cart-items" id="cartItems"></div><div class="drawer-foot"><p><span><?=t('Subtotal')?></span><b data-cart-total>Rp 0</b></p><a href="/checkout.php" class="btn primary"><?=t('Lanjut Checkout')?></a></div></aside></div>
-<script id="productsJson" type="application/json">[]</script><script src="/assets/js/front-mobile-v7.js?v=20261021-track-v1"></script>
+<div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" data-close-cart></div><aside><div class="drawer-top"><b><?=t('Keranjang Belanja')?> (<span data-cart-count>0</span>)</b><button data-close-cart>×</button></div><div class="cart-items" id="cartItems"></div><div class="drawer-foot"><p><span><?=t('Subtotal')?></span><b data-cart-total><?=e(format_money(0))?></b></p><a href="/checkout.php" class="btn primary"><?=t('Lanjut Checkout')?></a></div></aside></div>
+<script id="productsJson" type="application/json">[]</script><script src="/assets/js/front-mobile-v7.js?v=20261107-disc1"></script>
 <?php if($order && strtolower(trim((string)($order['payment_provider']??'')))==='casaku' && in_array($order['status'],['pending','failed','paid'],true) && !empty($order['payment_reference'])): ?>
 <script>
 (function(){

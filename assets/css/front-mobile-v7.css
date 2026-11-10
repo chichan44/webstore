@@ -1332,3 +1332,8 @@ html[data-theme=dark] .cart-fab{
   .brand b{max-width:96px}
 }
 
+/* Cart line discount display */
+.cart-price del{color:#94a3b8;font-weight:600;margin-right:4px}
+.cart-disc{display:inline-block;margin-left:4px;font-size:10px;font-weight:800;color:#dc2626;background:#fee2e2;border-radius:999px;padding:1px 6px;vertical-align:middle}
+html[data-theme=dark] .cart-price del{color:#64748b}
+html[data-theme=dark] .cart-disc{color:#fca5a5;background:rgba(220,38,38,.18)}

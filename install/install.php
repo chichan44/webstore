@@ -161,6 +161,7 @@ if (!$installed && (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST')) {
                 'site_favicon' => '',
                 'google_site_verification_meta' => '',
                 'payment_gateway' => 'qris_static',
+                'site_currency' => 'IDR',
                 'qris_merchant_name' => strtoupper(mb_strimwidth($siteName, 0, 80, '', 'UTF-8')),
                 'qris_payload' => '',
                 'tokopay_merchant_id' => '',
