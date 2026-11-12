@@ -106,7 +106,7 @@
     "Garansi aktif hingga": "Warranty active until",
     "Garansi telah berakhir": "Warranty has expired",
     "Tanpa garansi": "No warranty",
-    "Garansi {days} hari": "{days} day warranty",
+    "Garansi {days} hari": "{days} Day Warranty",
     "Pengiriman produk ini diproses manual oleh admin.": "This product is manually delivered by admin.",
 
     "Wishlist - {site}": "Wishlist - {site}",
@@ -537,5 +537,8 @@
     "Ditambahkan ke keranjang": "Added to cart",
     "✓ Ditambahkan": "✓ Added",
     "Item di Keranjang": "Item(s) in cart",
-    "Mulai dari": "From"
+    "Mulai dari": "From",
+    "Fitur": "Features",
+    "fitur produk": "product features",
+    "Garansi Penggantian 1:1": "1:1 Replacement Guarantee"
 }

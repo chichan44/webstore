@@ -85,9 +85,9 @@ function admin_parse_variant_rows(array $raw): array {
     if(!is_array($raw)) return $rows;
     foreach($raw as $key=>$row){
         if(!is_array($row)) continue;
-        $warrantyLabel=trim((string)($row['warranty_label'] ?? ''));
         $warrantyDays=max(0,min(3650,(int)($row['warranty_days'] ?? 0)));
-        if($warrantyDays<=0) $warrantyDays=warranty_days_from_label($warrantyLabel);
+        /* Teks garansi diturunkan otomatis dari durasi — satu sumber kebenaran. */
+        $warrantyLabel=$warrantyDays>0 ? ($warrantyDays.' Hari') : '';
         $rows[]=[
             'key'=>(string)$key,
             'id'=>(int)($row['id'] ?? 0),
@@ -126,7 +126,6 @@ function admin_variant_row_html(string $vrKey, array $vr, int $vrId): string {
     $priceUsd=e($vr['price_usd'] ?? 0);
     $disc=e($vr['discount_pct'] ?? 0);
     $flash=e($vr['flash_discount_pct'] ?? 0);
-    $wLabel=e($vr['warranty_label'] ?? '');
     $wDays=e($vr['warranty_days'] ?? 0);
     $stock=e($vr['manual_stock'] ?? 0);
     $sort=e($vr['sort_order'] ?? 0);
@@ -150,11 +149,8 @@ function admin_variant_row_html(string $vrKey, array $vr, int $vrId): string {
         .'<label class="variant-cell variant-cell-flash"><span>Flash %</span>'
         .'<input class="no-wheel-number variant-flash" type="number" inputmode="decimal" min="0" max="100" step="0.5" name="variant_rows['.$ph.'][flash_discount_pct]" placeholder="0" value="'.$flash.'">'
         .'</label>'
-        .'<label class="variant-cell variant-cell-warranty-label"><span>Garansi (teks)</span>'
-        .'<input class="variant-warranty-label" type="text" name="variant_rows['.$ph.'][warranty_label]" maxlength="100" placeholder="cth. 30 Hari" title="Teks garansi yang tampil ke pembeli (detail produk, pesanan, bot Telegram)." value="'.$wLabel.'">'
-        .'</label>'
         .'<label class="variant-cell variant-cell-warranty-days"><span>Garansi (hari)</span>'
-        .'<input class="no-wheel-number variant-warranty-days" type="number" inputmode="numeric" min="0" max="3650" step="1" name="variant_rows['.$ph.'][warranty_days]" placeholder="cth. 30" title="Durasi garansi dalam hari — dipakai sistem menghitung tanggal berakhir garansi. Jika dikosongkan/0, otomatis dibaca dari teks garansi (cth. 30 Hari = 30)." value="'.$wDays.'">'
+        .'<input class="no-wheel-number variant-warranty-days" type="number" inputmode="numeric" min="0" max="3650" step="1" name="variant_rows['.$ph.'][warranty_days]" placeholder="cth. 30" title="Durasi garansi dalam hari — teks garansi untuk pembeli otomatis disusun dari nilai ini (cth. 30 → &quot;30 Hari&quot;)." value="'.$wDays.'">'
         .'</label>'
         .'<label class="variant-cell variant-manual-stock"><span>Stok manual</span>'
         .'<input class="no-wheel-number" type="number" inputmode="numeric" min="0" step="1" name="variant_rows['.$ph.'][manual_stock]" placeholder="0" value="'.$stock.'">'
@@ -596,7 +592,7 @@ body.admin-modern.admin-page-products .variant-block-head{display:flex;align-ite
 body.admin-modern.admin-page-products .variant-block-head b{font-size:14px;color:var(--adm-heading);font-weight:800}
 body.admin-modern.admin-page-products .variant-block-help{display:block;color:#64748b;font-size:12px;line-height:1.5;margin-bottom:12px}
 body.admin-modern.admin-page-products .variant-rows{display:flex;flex-direction:column;gap:8px}
-body.admin-modern.admin-page-products .variant-row{display:grid;grid-template-columns:minmax(140px,1.35fr) 92px 78px 78px minmax(112px,1fr) 72px 86px 68px auto auto;gap:8px;align-items:end;padding:10px;border:1px solid #e6ecf4;border-radius:10px;background:#f9fbfe}
+body.admin-modern.admin-page-products .variant-row{display:grid;grid-template-columns:minmax(140px,1.35fr) 92px 78px 78px minmax(112px,1fr) 86px 68px auto auto auto;gap:8px;align-items:end;padding:10px;border:1px solid #e6ecf4;border-radius:10px;background:#f9fbfe}
 body.admin-modern.admin-page-products .variant-cell{display:flex;flex-direction:column;gap:4px;min-width:0}
 body.admin-modern.admin-page-products .variant-cell>span{font-size:10px;font-weight:850;letter-spacing:.04em;text-transform:uppercase;color:#7a879b}
 body.admin-modern.admin-page-products .variant-cell input[type=text],body.admin-modern.admin-page-products .variant-cell input[type=number]{height:36px;border:1px solid var(--adm-border);border-radius:8px;padding:0 9px;font-size:13px;background:#fff;min-width:0;width:100%}
@@ -749,7 +745,7 @@ body.admin-modern[data-admin-theme="dark"].admin-page-products #adminProductsTab
                     <b>Varian Produk</b>
                     <button class="adm-btn soft" type="button" data-variant-add>+ Tambah Varian</button>
                 </div>
-                <small class="variant-block-help">Produk hanya sebagai induk — <b>harga, diskon, garansi, dan stok diisi per varian</b>. <b>Harga</b> adalah harga reguler (yang dicoret). <b>Diskon %</b> memotong harga itu menjadi harga jual. <b>Flash %</b> dipakai saat jendela flash sale di bawah aktif. <b>Garansi (teks)</b> adalah label yang tampil ke pembeli; <b>Garansi (hari)</b> adalah durasi numerik untuk menghitung tanggal berakhir garansi (jika dikosongkan, otomatis dibaca dari teksnya, cth. "30 Hari" = 30). <b>Stok manual</b> hanya untuk produk manual; produk instan memakai stok digital di menu <a href="/admin/stocks.php">Stok Produk</a>.</small>
+                <small class="variant-block-help">Produk hanya sebagai induk — <b>harga, diskon, garansi, dan stok diisi per varian</b>. <b>Harga</b> adalah harga reguler (yang dicoret). <b>Diskon %</b> memotong harga itu menjadi harga jual. <b>Flash %</b> dipakai saat jendela flash sale di bawah aktif. <b>Garansi (hari)</b> adalah durasi garansi dalam hari; teks garansi untuk pembeli otomatis disusun dari nilai ini (cth. 30 → "30 Hari"). <b>Stok manual</b> hanya untuk produk manual; produk instan memakai stok digital di menu <a href="/admin/stocks.php">Stok Produk</a>.</small>
                 <div class="variant-rows" data-variant-rows>
                     <?php
                     /* Pre-render: posted rows on failed save, existing rows on edit, else one empty row */

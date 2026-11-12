@@ -180,28 +180,11 @@ if($product){
     $reviews=$st->fetchAll();
 }
 
-/* Syarat & ketentuan = daftar bernomor. Admin mengisi satu ketentuan per baris;
-   penomoran ditambahkan saat render, jadi angka/bullet di awal baris dibuang. */
-$termsLines=[];
-$rawTerms=trim((string)($product['product_terms'] ?? ''));
-if($rawTerms!==''){
-    foreach(preg_split('/\r\n|\r|\n/',$rawTerms) as $line){
-        $line=trim(preg_replace('/^[-•*]+\s*/u','',preg_replace('/^\d+[.)]\s*/u','',(string)$line)));
-        if($line!=='') $termsLines[]=$line;
-    }
+/* Fitur produk = daftar poin fitur dari deskripsi (satu fitur per baris/bullet). */
+$featureLines=ds_desc_points((string)($product['description'] ?? ''),8);
+if(!$featureLines){
+    $featureLines=['Produk digital siap dikirim otomatis setelah pembayaran berhasil.'];
 }
-if(!$termsLines){
-    $termsLines=[
-        'Produk digital yang sudah terkirim tidak dapat dikembalikan.',
-        'Garansi produk mengikuti ketentuan varian yang dipilih.',
-        'Komplain wajib menyertakan invoice dan detail lengkap.',
-    ];
-}
-/* Garansi mengikuti varian yang ditampilkan (fallback: varian pertama) */
-$heroWarrantySource=$heroVariant ?? ($variantCards[0] ?? []);
-$warrantyLabel=trim((string)($heroWarrantySource['warranty_label'] ?? ''));
-if($warrantyLabel==='') $warrantyLabel='Garansi';
-$warrantyDays=(int)($heroWarrantySource['warranty_days'] ?? warranty_days_from_label($warrantyLabel));
 $deliveryType=strtolower((string)($product['delivery_type'] ?? 'instant'))==='manual'?'manual':'instant';
 $catName=trim((string)($product['category_name'] ?? '')) ?: 'Digital';
 $thumbSrc=trim((string)($product['thumbnail'] ?? ''));
@@ -352,7 +335,6 @@ render_storefront_styles('product');
 </main>
 <?php else: ?>
 <?php
-$warrantyShort=$warrantyDays>0 ? (t('Garansi').' - '.number_format($warrantyDays).' '.t('hari')) : t('Tanpa garansi');
 /* Hero price = cheapest variant (stock & price live on variants) */
 $cheapestVariantPrice=null;
 $cheapestVariantId=null;
@@ -409,29 +391,29 @@ $hasMultipleVariants=count($variantCards)>1;
 
   <div class="pp-layout">
     <div class="pp-main-col">
-      <!-- Card 1: Deskripsi + Syarat & Ketentuan (2 tabs) -->
+      <!-- Card 1: Deskripsi + Fitur (2 tabs) -->
       <section class="pp-card pp-tabs-section" data-pp-tabs="info">
         <div class="pp-tabs" role="tablist">
           <button type="button" class="pp-tab is-active" data-pp-tab="desc" role="tab" aria-selected="true"><?=t('Deskripsi')?></button>
-          <button type="button" class="pp-tab" data-pp-tab="terms" role="tab" aria-selected="false"><?=t('Syarat & Ketentuan')?></button>
+          <button type="button" class="pp-tab" data-pp-tab="features" role="tab" aria-selected="false"><?=t('Fitur')?></button>
         </div>
         <div class="pp-tab-panel" data-pp-panel="desc" role="tabpanel">
           <div class="pp-desc"><?=safe_product_html((string)($product['description'] ?: 'Produk digital siap dikirim otomatis setelah pembayaran berhasil.'))?></div>
         </div>
-        <div class="pp-tab-panel" data-pp-panel="terms" role="tabpanel" hidden>
-          <div class="pp-terms">
-            <header class="pp-terms-head">
-              <span class="pp-terms-icon" aria-hidden="true">📋</span>
-              <div class="pp-terms-head-copy">
-                <b><?=t('Syarat & Ketentuan Produk')?></b>
-                <small><?=number_format(count($termsLines))?> <?=t('ketentuan berlaku untuk varian yang dipilih')?></small>
+        <div class="pp-tab-panel" data-pp-panel="features" role="tabpanel" hidden>
+          <div class="pp-features">
+            <header class="pp-features-head">
+              <span class="pp-features-icon" aria-hidden="true">✨</span>
+              <div class="pp-features-head-copy">
+                <b><?=t('Fitur')?></b>
+                <small><?=number_format(count($featureLines))?> <?=t('fitur produk')?></small>
               </div>
             </header>
-            <ol class="pp-terms-list">
-              <?php foreach($termsLines as $i=>$line): ?>
-              <li class="pp-terms-item">
-                <span class="pp-terms-num" aria-hidden="true"><?=($i+1)?></span>
-                <span class="pp-terms-text"><?=e($line)?></span>
+            <ol class="pp-features-list">
+              <?php foreach($featureLines as $i=>$line): ?>
+              <li class="pp-features-item">
+                <span class="pp-features-num" aria-hidden="true"><?=($i+1)?></span>
+                <span class="pp-features-text"><?=e($line)?></span>
               </li>
               <?php endforeach; ?>
             </ol>
@@ -461,17 +443,19 @@ $hasMultipleVariants=count($variantCards)>1;
             <?php if($flashActive): ?><span class="pp-section-chip">⚡ <?=t('Flash Sale')?></span><?php endif; ?>
           </div>
           <div class="pp-variant-list" role="radiogroup" aria-label="<?=t('Varian')?>">
-            <?php foreach($variantCards as $v): $vid=(int)$v['id']; $isSelected=($initialVariantId!==null && $vid===$initialVariantId); $vPrice=(float)$v['effective_price']; $vStock=(int)$v['stock']; $vCompare=(float)($v['compare_price'] ?? 0); $vDisc=($vCompare>$vPrice && $vPrice>0)?(int)round((1-$vPrice/$vCompare)*100):0; $vWarrantyDays=(int)($v['warranty_days'] ?? 0); $vWarrantyText=$vWarrantyDays>0 ? (t('Garansi').' - '.number_format($vWarrantyDays).' '.t('hari')) : t('Tanpa garansi'); ?>
+            <?php foreach($variantCards as $v): $vid=(int)$v['id']; $isSelected=($initialVariantId!==null && $vid===$initialVariantId); $vPrice=(float)$v['effective_price']; $vStock=(int)$v['stock']; $vCompare=(float)($v['compare_price'] ?? 0); $vDisc=($vCompare>$vPrice && $vPrice>0)?(int)round((1-$vPrice/$vCompare)*100):0; $vWarrantyDays=(int)($v['warranty_days'] ?? 0); $vWarrantyTip=$vWarrantyDays>0 ? t('Garansi {days} hari',['days'=>number_format($vWarrantyDays)]) : ''; ?>
             <button type="button" class="pp-variant-card <?=$isSelected?'is-active':''?> <?=$vStock<=0?'is-out':''?>" data-pp-variant="<?=$vid?>" data-pp-variant-price="<?=$vPrice?>" data-pp-variant-original="<?=$vCompare?>" data-pp-variant-disc="<?=$vDisc?>" role="radio" aria-checked="<?=$isSelected?'true':'false'?>">
               <span class="pp-variant-main">
                 <span class="pp-variant-top">
                   <span class="pp-variant-name-wrap">
                     <span class="pp-variant-radio" aria-hidden="true"></span>
                     <b class="pp-variant-name"><?=e($v['name'])?></b>
+                    <?php if($vWarrantyDays>0): ?>
+                    <span class="pp-variant-shield" data-pp-warranty-tip aria-label="<?=e($vWarrantyTip)?>"><?=ui_icon('shield')?><b class="pp-variant-shield-num"><?=$vWarrantyDays?></b><span class="pp-variant-shield-tip" role="tooltip"><?=e($vWarrantyTip)?></span></span>
+                    <?php endif; ?>
                   </span>
                   <span class="pp-variant-meta-right">
                     <small class="pp-variant-stock <?=$vStock>0?'is-available':'is-out'?>"><?= $vStock>0 ? (t('Stok').': '.number_format($vStock)) : t('Stok Habis') ?></small>
-                    <small class="pp-variant-warranty"><?=e($vWarrantyText)?></small>
                   </span>
                 </span>
                 <span class="pp-variant-price-row">
@@ -503,7 +487,7 @@ $hasMultipleVariants=count($variantCards)>1;
             </div>
             <div class="pp-trust-row" aria-label="Keunggulan">
               <span class="pp-trust-item"><span aria-hidden="true">⚡</span><?= $deliveryType==='manual' ? t('Pengiriman Manual') : t('Aktif Instan') ?></span>
-              <span class="pp-trust-item"><span aria-hidden="true">🛡</span><?=e($warrantyShort)?></span>
+              <span class="pp-trust-item"><span aria-hidden="true">🛡</span><?=t('Garansi Penggantian 1:1')?></span>
               <span class="pp-trust-item"><span aria-hidden="true">🎧</span><?=t('Support 24/7')?></span>
             </div>
           </div>
@@ -613,7 +597,7 @@ $hasMultipleVariants=count($variantCards)>1;
     'shareFailed'=>t('Gagal membagikan tautan'),
 ], JSON_UNESCAPED_UNICODE)?></script>
 <script src="/assets/js/front-mobile-v7.js?v=20261107-disc1"></script>
-<script src="/assets/js/product-page.js?v=20261107-disc1"></script>
+<script src="/assets/js/product-page.js?v=20261111-shield"></script>
 <?php else: ?>
 <script id="productsJson" type="application/json">[]</script>
 <script src="/assets/js/front-mobile-v7.js?v=20261107-disc1"></script>

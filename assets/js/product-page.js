@@ -149,6 +149,10 @@
       });
       return;
     }
+    /* Warranty shield tooltip — tap toggles on touch, hover handled by CSS */
+    const warrantyTip=e.target.closest('[data-pp-warranty-tip]');
+    document.querySelectorAll('[data-pp-warranty-tip].is-open').forEach(s=>{ if(s!==warrantyTip) s.classList.remove('is-open'); });
+    if(warrantyTip){ warrantyTip.classList.toggle('is-open'); return; }
     const variantCard=e.target.closest('[data-pp-variant]');
     if(variantCard){ selectVariant(variantCard.dataset.ppVariant); return; }
     const qtyBtn=e.target.closest('[data-pp-qty]');

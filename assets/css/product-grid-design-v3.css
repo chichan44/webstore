@@ -104,7 +104,9 @@
 }
 .product-wishlist-btn:hover{transform:scale(1.06)!important;color:#ef476f!important;border-color:#ffc7d6!important}
 .product-wishlist-btn span{display:block!important;font-size:20px!important;line-height:1!important;transform:translateY(-1px)!important}
+.product-wishlist-btn svg{width:18px!important;height:18px!important;display:block!important}
 .product-wishlist-btn.is-active{color:#ef476f!important;background:#fff5f8!important;border-color:#ffc7d6!important}
+.product-wishlist-btn.is-active svg{fill:currentColor}
 
 #productsSide[data-view="grid"] #productGrid .product-main,
 #productsSide[data-view="grid"] #productGrid .znl-card-body,
@@ -346,7 +348,7 @@ html[data-theme="dark"] .wishlist-product-grid .card-bottom button:disabled{back
   #productsSide[data-view="grid"] #productGrid .product-meta p,#productsSide[data-view="grid"] #productGrid .product-meta small,.wishlist-product-grid .product-meta p,.wishlist-product-grid .product-meta small{font-size:8.8px!important;white-space:normal!important}
   #productsSide[data-view="grid"] #productGrid .card-bottom,.wishlist-product-grid .card-bottom{padding:3px 3px 9px!important}
   #productsSide[data-view="grid"] #productGrid .card-bottom button,.wishlist-product-grid .card-bottom button{height:38px!important;font-size:10.5px!important}
-  .product-wishlist-btn{width:31px!important;height:31px!important;right:4px!important;top:4px!important}.product-wishlist-btn span{font-size:18px!important}
+  .product-wishlist-btn{width:31px!important;height:31px!important;right:4px!important;top:4px!important}.product-wishlist-btn span{font-size:18px!important}.product-wishlist-btn svg{width:16px!important;height:16px!important}
   .wishlist-page-head{align-items:flex-start;flex-direction:column}.wishlist-page-head h1{font-size:22px}
 }
 

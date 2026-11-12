@@ -71,28 +71,28 @@ html[data-theme=dark] .pp-tab.is-active{box-shadow:0 1px 3px rgba(0,0,0,.25),ins
 .pp-desc p{margin:0 0 10px}
 .pp-desc p:last-child{margin-bottom:0}
 
-/* Syarat & Ketentuan — daftar bernomor rapi, satu kartu per ketentuan */
-.pp-terms{display:flex;flex-direction:column;gap:12px}
-.pp-terms-head{display:flex;align-items:center;gap:11px;padding:12px 14px;background:var(--soft);border:1px solid var(--line);border-radius:14px}
-.pp-terms-icon{flex:0 0 34px;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border-radius:11px;background:color-mix(in srgb,var(--indigo) 15%,var(--card));font-size:16px;line-height:1}
-.pp-terms-head-copy{display:flex;flex-direction:column;gap:2px;min-width:0}
-.pp-terms-head-copy b{font-size:13px;font-weight:850;color:var(--text);letter-spacing:-.01em}
-.pp-terms-head-copy small{font-size:11px;font-weight:650;color:var(--muted)}
-.pp-terms-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;counter-reset:pp-terms}
-.pp-terms-item{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:var(--soft);border:1px solid var(--line);border-radius:12px;transition:border-color .15s ease}
-.pp-terms-item:hover{border-color:color-mix(in srgb,var(--indigo) 32%,var(--line))}
-.pp-terms-num{flex:0 0 22px;width:22px;height:22px;margin-top:1px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--indigo);color:#fff;font-size:11px;font-weight:900;line-height:1;letter-spacing:.01em}
-html[data-theme=dark] .pp-terms-num{background:color-mix(in srgb,var(--indigo) 82%,#fff)}
-.pp-terms-text{flex:1 1 auto;min-width:0;font-size:13px;line-height:1.65;color:var(--text);overflow-wrap:anywhere;padding-top:1px}
+/* Fitur produk — daftar bernomor rapi, satu kartu per fitur */
+.pp-features{display:flex;flex-direction:column;gap:12px}
+.pp-features-head{display:flex;align-items:center;gap:11px;padding:12px 14px;background:var(--soft);border:1px solid var(--line);border-radius:14px}
+.pp-features-icon{flex:0 0 34px;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border-radius:11px;background:color-mix(in srgb,var(--indigo) 15%,var(--card));font-size:16px;line-height:1}
+.pp-features-head-copy{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pp-features-head-copy b{font-size:13px;font-weight:850;color:var(--text);letter-spacing:-.01em}
+.pp-features-head-copy small{font-size:11px;font-weight:650;color:var(--muted)}
+.pp-features-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;counter-reset:pp-features}
+.pp-features-item{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:var(--soft);border:1px solid var(--line);border-radius:12px;transition:border-color .15s ease}
+.pp-features-item:hover{border-color:color-mix(in srgb,var(--indigo) 32%,var(--line))}
+.pp-features-num{flex:0 0 22px;width:22px;height:22px;margin-top:1px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--indigo);color:#fff;font-size:11px;font-weight:900;line-height:1;letter-spacing:.01em}
+html[data-theme=dark] .pp-features-num{background:color-mix(in srgb,var(--indigo) 82%,#fff)}
+.pp-features-text{flex:1 1 auto;min-width:0;font-size:13px;line-height:1.65;color:var(--text);overflow-wrap:anywhere;padding-top:1px}
 @media(max-width:420px){
-  .pp-terms-head{align-items:flex-start}
-  .pp-terms-item{padding:10px 11px;gap:9px}
-  .pp-terms-text{font-size:12.5px}
+  .pp-features-head{align-items:flex-start}
+  .pp-features-item{padding:10px 11px;gap:9px}
+  .pp-features-text{font-size:12.5px}
 }
 
 /* Variant cards — no MEMILIH label; price + slash original + discount; warranty in-card */
 .pp-variant-list{display:flex;flex-direction:column;gap:9px;margin-bottom:12px}
-.pp-variant-card{appearance:none;width:100%;display:block;padding:0;border-radius:14px;border:1.5px solid var(--line);background:var(--card);cursor:pointer;font:inherit;text-align:left;transition:border-color .15s ease,background .15s ease,box-shadow .15s ease;overflow:hidden}
+.pp-variant-card{appearance:none;width:100%;display:block;padding:0;border-radius:14px;border:1.5px solid var(--line);background:var(--card);cursor:pointer;font:inherit;text-align:left;transition:border-color .15s ease,background .15s ease,box-shadow .15s ease}
 .pp-variant-card:hover{border-color:color-mix(in srgb,var(--indigo) 45%,var(--line))}
 .pp-variant-card.is-active{border-color:var(--indigo);background:color-mix(in srgb,var(--indigo) 10%,var(--card));box-shadow:0 0 0 1px var(--indigo),0 8px 20px var(--theme-accent-glow)}
 html[data-theme=dark] .pp-variant-card.is-active{background:color-mix(in srgb,var(--indigo) 18%,var(--card))}
@@ -108,7 +108,14 @@ html[data-theme=dark] .pp-variant-card.is-active{background:color-mix(in srgb,va
 .pp-variant-stock{font-size:11px;color:var(--muted);font-weight:700}
 .pp-variant-stock.is-available{color:#047857}
 .pp-variant-stock.is-out{color:#b91c1c}
-.pp-variant-warranty{font-size:11px;color:var(--muted);font-weight:600}
+/* Shield badge next to the variant name — warranty days inside the shield + tooltip */
+.pp-variant-shield{position:relative;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--indigo);cursor:pointer;vertical-align:middle}
+.pp-variant-shield svg{width:26px;height:26px;display:block}
+.pp-variant-shield svg path:last-of-type{display:none}
+.pp-variant-shield-num{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:9px;font-weight:900;line-height:1;letter-spacing:-.01em;color:var(--indigo)}
+.pp-variant-shield-tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(3px);padding:7px 10px;border-radius:9px;background:#0f172a;color:#fff;font-size:11px;font-weight:600;line-height:1.3;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s ease,transform .15s ease;z-index:30;box-shadow:0 8px 20px rgba(15,23,42,.28)}
+.pp-variant-shield:hover .pp-variant-shield-tip,
+.pp-variant-shield.is-open .pp-variant-shield-tip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
 html[data-theme=dark] .pp-variant-stock.is-available{color:#34d399}
 html[data-theme=dark] .pp-variant-stock.is-out{color:#f87171}
 

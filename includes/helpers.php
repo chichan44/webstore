@@ -1586,6 +1586,26 @@ function storefront_discount_badge(array $item): string {
     return $pct > 0 ? '🏷️ '.$pct.'%' : '';
 }
 /**
+ * Poin fitur dari deskripsi produk — satu fitur per baris/bullet.
+ * Penomoran/bullet di awal baris dibuang; fallback: potongan deskripsi.
+ */
+function ds_desc_points($text, $limit = 3): array {
+    $text = trim(strip_tags((string)$text));
+    if ($text === '') return [];
+    $text = str_replace(["\r\n", "\r"], "\n", $text);
+    $parts = preg_split('/\n+|(?:\s*[•\-–]\s+)/u', $text);
+    $out = [];
+    foreach ($parts as $part) {
+        $part = trim(preg_replace('/\s+/u', ' ', (string)$part));
+        if ($part !== '') $out[] = $part;
+        if (count($out) >= $limit) break;
+    }
+    if (!$out) {
+        $out[] = mb_strimwidth($text, 0, 90, '...');
+    }
+    return $out;
+}
+/**
  * Shared storefront product card — homepage look, usable on any page.
  * $item: id, name, slug, price, originalPrice, rating, sold, thumbnail, category?, discount?, maxDiscountPct?
  * $opts: show_wishlist (default true), show_category (default false), grid_class
@@ -1613,7 +1633,7 @@ function storefront_product_card(array $item, array $opts = []): string {
     $thumbHtml = storefront_product_thumb($thumb, $name);
     $wishlist = '';
     if ($showWishlist && $id > 0) {
-        $wishlist = '<button class="product-wishlist-btn" type="button" data-wishlist-toggle="'.$id.'" aria-label="'.e(t('Tambahkan {name} ke wishlist', ['name'=>$name])).'" aria-pressed="false"><span>♡</span></button>';
+        $wishlist = '<button class="product-wishlist-btn" type="button" data-wishlist-toggle="'.$id.'" aria-label="'.e(t('Tambahkan {name} ke wishlist', ['name'=>$name])).'" aria-pressed="false">'.ui_icon('heart').'</button>';
     }
     $catHtml = ($showCategory && $category !== '') ? '<span class="grid-category-label">'.e($category).'</span>' : '';
     $del = ($original > $price && $original > 0) ? '<del>'.rupiah($original).'</del>' : '';
@@ -1664,7 +1684,7 @@ function storefront_product_thumb(string $src, string $label = 'Produk Digital')
 }
 
 function render_storefront_styles(string $page='index'): void {
-    $v = '20261107-disc1';
+    $v = '20261111-ui5';
     echo '<link rel="stylesheet" href="/assets/css/front-mobile-v7.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-grid-v20.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-list-fresh-v1.css?v='.$v.'">' . "\n";

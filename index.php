@@ -48,7 +48,6 @@ function ds_thumb_html($thumb,$label='Produk Digital'){
   }
   return '<img class="ds-product-thumb-img" src="'.e($src).'" alt="Thumbnail produk '.e($fallback).'" loading="lazy" width="600" height="600" style="width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;object-position:center center;display:block;">';
 }
-function ds_desc_points($text,$limit=3){ $text=trim(strip_tags((string)$text)); if($text==='') return []; $text=str_replace(["\r\n","\r"],"\n",$text); $parts=preg_split('/\n+|(?:\s*[•\-–]\s+)/u',$text); $out=[]; foreach($parts as $part){ $part=trim(preg_replace('/\s+/u',' ',(string)$part)); if($part!=='') $out[]=$part; if(count($out)>=$limit) break; } if(!$out){ $out[]=mb_strimwidth($text,0,90,'...'); } return $out; }
 $categoryIconMap=[];
 foreach($cats as $categoryRow){ $categoryIconMap[(int)$categoryRow['id']]=ds_category_icon($categoryRow); }
 $q=trim($_GET['q']??'');
@@ -262,7 +261,7 @@ html[data-theme="dark"] .znl-voucher-section{background:linear-gradient(135deg,r
           <div class="thumb znl-card-thumb">
             <?php $cardBadge=storefront_discount_badge($p); ?><?php if($cardBadge!==''): ?><em><?=e($cardBadge)?></em><?php endif; ?>
             <?=ds_thumb_html($p['thumbnail'], $p['name'])?>
-            <button class="product-wishlist-btn" type="button" data-wishlist-toggle="<?=intval($p['id'])?>" aria-label="Tambahkan <?=e($p['name'])?> ke wishlist" aria-pressed="false"><span>♡</span></button>
+            <button class="product-wishlist-btn" type="button" data-wishlist-toggle="<?=intval($p['id'])?>" aria-label="Tambahkan <?=e($p['name'])?> ke wishlist" aria-pressed="false"><?=ui_icon('heart')?></button>
           </div>
           <div class="product-main znl-card-body">
             <a class="product-title" href="/<?=e($p['slug'])?>"><?=e($p['name'])?></a>
