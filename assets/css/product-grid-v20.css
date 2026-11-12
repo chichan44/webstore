@@ -62,7 +62,7 @@
   z-index:2!important;
   padding:6px 10px!important;
   border-radius:0 0 10px 0!important;
-  background:#fb7185!important;
+  background:#ef4444!important;
   color:#fff!important;
   font-size:11px!important;
   font-weight:950!important;
@@ -453,7 +453,7 @@ html[data-theme=dark] #productsSide[data-view="grid"] #productGrid .card-bottom 
   min-height:22px!important;
   padding:4px 8px!important;
   border-radius:999px!important;
-  background:linear-gradient(135deg,#fb7185,#ec4899)!important;
+  background:linear-gradient(135deg,#ef4444,#dc2626)!important;
   color:#fff!important;
   font-size:10px!important;
   line-height:1!important;

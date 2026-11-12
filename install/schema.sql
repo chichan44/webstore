@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `name` varchar(190) NOT NULL,
   `slug` varchar(190) NOT NULL,
   `description` mediumtext NULL,
-  `product_terms` mediumtext NULL,
+  `product_features` mediumtext NULL,
   /* LEGACY (variant-level pricing 2026-10-22): no longer written from the admin form.
      Kept for backward compatibility / fallback in product_variant_warranty_* helpers. */
   `warranty_label` varchar(100) NOT NULL DEFAULT '7 Hari',

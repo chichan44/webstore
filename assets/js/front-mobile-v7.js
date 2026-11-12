@@ -51,7 +51,8 @@ async function refreshCartPrices(){
       if(price<=0) return;
       const orig=Math.round((Number(v.original_price)||0)*100)/100;
       const nextOrig=orig>price?orig:0;
-      const nextPct=nextOrig>0?Math.round((1-price/nextOrig)*100):0;
+      /* Exact configured percent from the variant record — never reverse-calc from rounded prices */
+      const nextPct=Math.max(0,Math.min(100,Number(v.discount_pct)||0));
       if(Number(i.price)!==price||Number(i.original_price||0)!==nextOrig||Number(i.discount_pct||0)!==nextPct){
         i.price=price;
         i.original_price=nextOrig;
@@ -107,11 +108,9 @@ let checkoutPromoTotal=null;
 let checkoutTermsMap={};
 let checkoutTermsSignature='';
 function cartSubtotal(){return cart.reduce((a,b)=>a+b.qty*b.price,0)}
-function parseProductTerms(raw){
+function parseProductFeatures(raw){
   const base=[
-    'Produk digital yang sudah terkirim tidak dapat dikembalikan.',
-    'Garansi produk mengikuti deskripsi yang tertera pada halaman produk.',
-    'Komplain wajib menyertakan invoice dan detail lengkap.'
+    'Produk digital siap dikirim otomatis setelah pembayaran berhasil.'
   ];
   const lines=String(raw||'').split(/\r?\n/).map(line=>line.replace(/^[-•*\d.)\s]+/u,'').trim()).filter(Boolean);
   return lines.length?Array.from(new Set(lines)):base;
@@ -126,7 +125,7 @@ function renderCheckoutTerms(){
   const html=cart.map((item,index)=>{
     const meta=checkoutTermsMap[String(item.id)]||{};
     const name=meta.name||item.name||'Produk Digital';
-    const terms=parseProductTerms(meta.product_terms);
+    const terms=parseProductFeatures(meta.product_features);
     const thumb=meta.thumbnail||item.thumb||'';
     const badge=(meta.delivery_type||'instant')==='manual'?'✍ Manual':'⚡ Instan';
     const warranty=String(meta.warranty_label||((Number(meta.warranty_days||0)>0)?(Number(meta.warranty_days)+' Hari'):'Tanpa garansi'));
@@ -137,7 +136,7 @@ function renderCheckoutTerms(){
     return '<article class="checkout-term-card">'
       +'<button type="button" class="checkout-term-toggle'+(index===0?' is-open':'')+'" data-checkout-term-toggle aria-expanded="'+(index===0?'true':'false')+'">'
       +thumbHtml
-      +'<span class="checkout-term-meta"><b>'+name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</b><small>'+badge+' · 🛡 '+warranty.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+' · '+terms.length+' ketentuan</small></span>'
+      +'<span class="checkout-term-meta"><b>'+name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</b><small>'+badge+' · 🛡 '+warranty.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+' · '+terms.length+' fitur</small></span>'
       +'<span class="checkout-term-chevron">⌄</span>'
       +'</button>'
       +'<div class="checkout-term-content'+(index===0?' is-open':'')+'"><ul>'+items+'</ul></div>'
@@ -221,7 +220,7 @@ function setCategory(slug){
 }
 function openProduct(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;const modal=document.getElementById('productModal');const modalThumb=document.getElementById('modalThumb');const modalIcon=document.getElementById('modalIcon');const thumbSrc=(p.thumbnail&&String(p.thumbnail).trim())?String(p.thumbnail).trim():'';if(modalThumb){if(thumbSrc){modalThumb.src=thumbSrc;modalThumb.style.display='block';modalThumb.removeAttribute('aria-hidden');if(modalIcon){modalIcon.textContent='';modalIcon.style.display='none';}}else{modalThumb.removeAttribute('src');modalThumb.style.display='none';modalThumb.setAttribute('aria-hidden','true');if(modalIcon){modalIcon.textContent='♛';modalIcon.style.display='grid';modalIcon.setAttribute('aria-hidden','false');}}}else if(modalIcon){modalIcon.textContent=thumbSrc?(p.icon||'♛'):'♛';modalIcon.style.display='grid';}const rawCategory=String(p.category||'').trim();document.getElementById('modalCategory').textContent=rawCategory&&rawCategory.toLowerCase()!=='digital'?rawCategory:'Akun Premium';const rawDiscount=String(p.discount||'-0%').trim();document.getElementById('modalDiscount').textContent=/^diskon/i.test(rawDiscount)?rawDiscount:('Diskon '+rawDiscount);document.getElementById('modalName').textContent=p.name;const subtitle=document.getElementById('modalSubtitle');if(subtitle)subtitle.textContent=String(p.description||'Produk digital siap dikirim otomatis setelah pembayaran berhasil.').replace(/\s+/g,' ').trim();const modalDesc=document.getElementById('modalDesc');if(modalDesc){modalDesc.innerHTML=p.descriptionHtml||String(p.description||'Produk digital siap dikirim otomatis setelah pembayaran berhasil.').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\r?\n/g,'<br>');}const rating=renderModalRating(p.rating);const rateVal=document.getElementById('modalRatingValue');if(rateVal)rateVal.textContent=rating.toFixed(1);const rateCount=document.getElementById('modalRatingCount');if(rateCount)rateCount.textContent='('+Number(p.sold||0)+')';renderModalFeatures(p);const warranty=String(p.warranty||'Garansi').trim()||'Garansi';const mw=document.getElementById('modalWarranty');if(mw)mw.textContent=warranty;const deliveryType=String(p.deliveryType||'instant').toLowerCase()==='manual'?'manual':'instant';const delivery=document.getElementById('modalDelivery');if(delivery){delivery.textContent=p.deliveryLabel||(deliveryType==='manual'?'✍ Manual':'⚡ Instan');delivery.classList.toggle('manual',deliveryType==='manual');delivery.classList.toggle('instant',deliveryType!=='manual');}document.getElementById('modalStock').textContent=frontI18n('modalStock','Pilih varian');document.getElementById('modalSold').textContent=p.sold;document.getElementById('modalPrice').textContent=rupiah(p.price);const del=document.getElementById('modalOriginal');del.textContent=(Number(p.originalPrice)>Number(p.price))?rupiah(p.originalPrice):'';const add=document.getElementById('modalAddCart');const pdpUrl='/'+encodeURIComponent(String(p.slug||''));if(add){add.href=pdpUrl;add.textContent=frontI18n('modalCta','Lihat Produk & Pilih Varian');add.removeAttribute('disabled');add.removeAttribute('aria-disabled');add.classList.remove('is-out');}const wishBtn=document.getElementById('modalWishlistBtn');if(wishBtn)wishBtn.dataset.wishlistToggle=p.id;const telegramBuy=document.getElementById('modalTelegramBuy');if(telegramBuy){const telegramLabel=telegramBuy.querySelector('span');const telegramUrl=productButtonUrl(telegramBuy.dataset.urlTemplate||'',p);if(telegramUrl){telegramBuy.href=telegramUrl;telegramBuy.hidden=false;telegramBuy.removeAttribute('tabindex');telegramBuy.setAttribute('aria-label','Beli '+String(p.name||'produk')+' di Bot Telegram');telegramBuy.removeAttribute('title');if(telegramLabel)telegramLabel.textContent='Beli di Bot Telegram';}else{telegramBuy.hidden=true;telegramBuy.removeAttribute('href');telegramBuy.removeAttribute('aria-label');telegramBuy.removeAttribute('tabindex');telegramBuy.removeAttribute('title');if(telegramLabel)telegramLabel.textContent='Beli di Bot Telegram';}}modal.classList.remove('is-out');modal.classList.add('in-stock');modal.classList.toggle('has-default-thumb',!thumbSrc);modal.classList.add('open');modal.setAttribute('aria-hidden','false');renderWishlist();setupModalDescription();}
 function renderModalRating(value){const rating=Math.max(1,Math.min(5,Number(value)||5));const stars=document.getElementById('modalRatingStars');const row=document.getElementById('modalRatingRow');if(stars){stars.innerHTML='';for(let i=1;i<=5;i++){const star=document.createElement('i');const remaining=rating-(i-1);star.textContent='★';star.className=remaining>=1?'is-full':(remaining>=0.5?'is-half':'is-empty');stars.appendChild(star);}}if(row)row.setAttribute('aria-label','Rating '+rating.toFixed(1)+' dari 5');return rating;}
-function renderModalFeatures(p){const wrap=document.getElementById('modalFeatureList');if(!wrap)return;const defaults=[['✉','Produk Digital','Siap digunakan setelah pembayaran berhasil.','feature-mail'],['⚡','Proses Cepat','Pengiriman dan aktivasi dilakukan secepat mungkin.','feature-zap'],['✔','Aman & Terjamin','Produk dijaga agar tetap aman dan terpercaya.','feature-check'],['🎧','Support Responsif','Bantuan cepat jika ada kendala pada pesanan.','feature-support']];const points=Array.isArray(p.descPoints)?p.descPoints.filter(Boolean).slice(0,4):[];const titles=['Produk Digital','Siap Pakai','Aman & Terjamin','Support Responsif'];const classes=['feature-mail','feature-zap','feature-check','feature-support'];const icons=['✉','⚡','✔','🎧'];const items=(points.length?points.map((txt,i)=>[icons[i]||'•',titles[i]||'Fitur',txt,classes[i]||'feature-mail']):defaults).map(item=>`<div class="modal-feature-item"><i class="${item[3]}">${item[0]}</i><div><b>${item[1]}</b><p>${item[2]}</p></div></div>`).join('');wrap.innerHTML=items;}
+function renderModalFeatures(p){const wrap=document.getElementById('modalFeatureList');if(!wrap)return;const defaults=[['✉','Produk Digital','Siap digunakan setelah pembayaran berhasil.','feature-mail'],['⚡','Proses Cepat','Pengiriman dan aktivasi dilakukan secepat mungkin.','feature-zap'],['✔','Aman & Terjamin','Produk dijaga agar tetap aman dan terpercaya.','feature-check'],['🎧','Support Responsif','Bantuan cepat jika ada kendala pada pesanan.','feature-support']];const points=(Array.isArray(p.features)&&p.features.length?p.features:(Array.isArray(p.descPoints)?p.descPoints:[])).filter(Boolean).slice(0,4);const titles=['Produk Digital','Siap Pakai','Aman & Terjamin','Support Responsif'];const classes=['feature-mail','feature-zap','feature-check','feature-support'];const icons=['✉','⚡','✔','🎧'];const items=(points.length?points.map((txt,i)=>[icons[i]||'•',titles[i]||'Fitur',txt,classes[i]||'feature-mail']):defaults).map(item=>`<div class="modal-feature-item"><i class="${item[3]}">${item[0]}</i><div><b>${item[1]}</b><p>${item[2]}</p></div></div>`).join('');wrap.innerHTML=items;}
 function closeProduct(){const modal=document.getElementById('productModal');modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true')}
 function sortProducts(mode){
   const label=document.getElementById('sortLabel');

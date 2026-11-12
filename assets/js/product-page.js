@@ -192,7 +192,8 @@
       name:data.name,
       price:price,
       original_price:orig>price?orig:0,
-      discount_pct:(orig>price&&price>0)?(Number(selectedVariant.discountPct)||Math.round((1-price/orig)*100)):0,
+      /* Exact configured percent from the variant record — never reverse-calc from rounded prices */
+      discount_pct:Number(selectedVariant.discountPct)||0,
       thumb:data.thumb||'DIGITAL',
       maxStock:Math.max(0,Number(selectedVariant.stock)||0),
       qty:qty,

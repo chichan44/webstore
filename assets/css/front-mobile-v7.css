@@ -754,8 +754,8 @@ html[data-theme=dark] .track-review-done{background:rgba(34,197,94,.08);border-c
 .sf-card-grid .product-card>.thumb em{
   position:absolute;left:8px;top:8px;z-index:2;
   padding:4px 8px;border-radius:8px;
-  background:#f43f5e;color:#fff;font-style:normal;font-size:10px;font-weight:900;line-height:1;letter-spacing:.02em;
-  box-shadow:0 4px 12px rgba(244,63,94,.35);
+  background:#ef4444;color:#fff;font-style:normal;font-size:10px;font-weight:900;line-height:1;letter-spacing:.02em;
+  box-shadow:0 4px 12px rgba(239,68,68,.35);
 }
 .sf-card-grid .product-wishlist-btn{
   position:absolute;right:8px;top:8px;z-index:3;

@@ -306,7 +306,7 @@ if(!function_exists('ds_icon')){function ds_icon($name){$n=mb_strtolower((string
 <?php render_footer_columns($site,$desc); ?>
 <?php render_storefront_mobile_menu($site,$desc,$cats,['q'=>$_GET['q']??'']); ?>
 <div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" data-close-cart></div><aside><div class="drawer-top"><b><?=t('Keranjang Belanja')?> (<span data-cart-count>0</span>)</b><button data-close-cart>×</button></div><div class="cart-items" id="cartItems"></div><div class="drawer-foot"><p><span><?=t('Subtotal')?></span><b data-cart-total><?=e(format_money(0))?></b></p><a href="/checkout.php" class="btn primary"><?=t('Lanjut Checkout')?></a></div></aside></div>
-<script id="productsJson" type="application/json">[]</script><script src="/assets/js/front-mobile-v7.js?v=20261107-disc1"></script>
+<script id="productsJson" type="application/json">[]</script><script src="/assets/js/front-mobile-v7.js?v=20261112-feat1"></script>
 <?php if($order && $orderProvider==='casaku' && !$isPaymentExpired && !empty($qrisValue)): ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>

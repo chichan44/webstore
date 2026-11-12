@@ -180,10 +180,10 @@ if($product){
     $reviews=$st->fetchAll();
 }
 
-/* Fitur produk = daftar poin fitur dari deskripsi (satu fitur per baris/bullet). */
-$featureLines=ds_desc_points((string)($product['description'] ?? ''),8);
+/* Fitur produk = daftar fitur dari kolom product_features (satu fitur per baris). */
+$featureLines=ds_feature_lines((string)($product['product_features'] ?? ''));
 if(!$featureLines){
-    $featureLines=['Produk digital siap dikirim otomatis setelah pembayaran berhasil.'];
+    $featureLines=[t('Produk digital siap dikirim otomatis setelah pembayaran berhasil.')];
 }
 $deliveryType=strtolower((string)($product['delivery_type'] ?? 'instant'))==='manual'?'manual':'instant';
 $catName=trim((string)($product['category_name'] ?? '')) ?: 'Digital';
@@ -339,17 +339,20 @@ render_storefront_styles('product');
 $cheapestVariantPrice=null;
 $cheapestVariantId=null;
 $heroOriginal=0.0;
+$cheapestVariantDiscountPct=0.0;
 foreach($variantCards as $vc){
     $vp=(float)$vc['effective_price'];
     if($cheapestVariantPrice===null || $vp<$cheapestVariantPrice){
         $cheapestVariantPrice=$vp;
         $cheapestVariantId=(int)$vc['id'];
         $heroOriginal=(float)($vc['compare_price'] ?? 0);
+        $cheapestVariantDiscountPct=(float)($vc['discount_pct'] ?? 0);
     }
 }
 if($cheapestVariantPrice===null) $cheapestVariantPrice=$basePrice;
 if($heroOriginal<=0 && $originalPrice>$cheapestVariantPrice) $heroOriginal=$originalPrice;
-$heroDiscPct=($heroOriginal>0 && $cheapestVariantPrice>0)?(int)round((1-$cheapestVariantPrice/$heroOriginal)*100):0;
+/* Exact configured discount percent of the hero (cheapest) variant — never reverse-calc from rounded prices. */
+$heroDiscPct=(int)round((float)($cheapestVariantDiscountPct ?? 0));
 $hasMultipleVariants=count($variantCards)>1;
 ?>
 <main class="ds-shell pp-wrap">
@@ -443,7 +446,7 @@ $hasMultipleVariants=count($variantCards)>1;
             <?php if($flashActive): ?><span class="pp-section-chip">⚡ <?=t('Flash Sale')?></span><?php endif; ?>
           </div>
           <div class="pp-variant-list" role="radiogroup" aria-label="<?=t('Varian')?>">
-            <?php foreach($variantCards as $v): $vid=(int)$v['id']; $isSelected=($initialVariantId!==null && $vid===$initialVariantId); $vPrice=(float)$v['effective_price']; $vStock=(int)$v['stock']; $vCompare=(float)($v['compare_price'] ?? 0); $vDisc=($vCompare>$vPrice && $vPrice>0)?(int)round((1-$vPrice/$vCompare)*100):0; $vWarrantyDays=(int)($v['warranty_days'] ?? 0); $vWarrantyTip=$vWarrantyDays>0 ? t('Garansi {days} hari',['days'=>number_format($vWarrantyDays)]) : ''; ?>
+            <?php foreach($variantCards as $v): $vid=(int)$v['id']; $isSelected=($initialVariantId!==null && $vid===$initialVariantId); $vPrice=(float)$v['effective_price']; $vStock=(int)$v['stock']; $vCompare=(float)($v['compare_price'] ?? 0); $vDisc=(int)round((float)($v['discount_pct'] ?? 0)); $vWarrantyDays=(int)($v['warranty_days'] ?? 0); $vWarrantyTip=$vWarrantyDays>0 ? t('Garansi {days} hari',['days'=>number_format($vWarrantyDays)]) : ''; ?>
             <button type="button" class="pp-variant-card <?=$isSelected?'is-active':''?> <?=$vStock<=0?'is-out':''?>" data-pp-variant="<?=$vid?>" data-pp-variant-price="<?=$vPrice?>" data-pp-variant-original="<?=$vCompare?>" data-pp-variant-disc="<?=$vDisc?>" role="radio" aria-checked="<?=$isSelected?'true':'false'?>">
               <span class="pp-variant-main">
                 <span class="pp-variant-top">
@@ -578,7 +581,7 @@ $hasMultipleVariants=count($variantCards)>1;
         'priceDelta'=>(float)$v['price_delta'],
         'price'=>(float)$v['effective_price'],
         'originalPrice'=>(float)($v['compare_price'] ?? 0),
-        'discountPct'=>(($v['compare_price'] ?? 0)>(float)$v['effective_price'] && (float)$v['effective_price']>0)?(int)round((1-(float)$v['effective_price']/(float)$v['compare_price'])*100):0,
+        'discountPct'=>(int)round((float)($v['discount_pct'] ?? 0)),
         'stock'=>(int)$v['stock'],
     ], $variantCards),
 ], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?></script>
@@ -596,10 +599,10 @@ $hasMultipleVariants=count($variantCards)>1;
     'shareCopied'=>t('Tautan produk disalin'),
     'shareFailed'=>t('Gagal membagikan tautan'),
 ], JSON_UNESCAPED_UNICODE)?></script>
-<script src="/assets/js/front-mobile-v7.js?v=20261107-disc1"></script>
-<script src="/assets/js/product-page.js?v=20261111-shield"></script>
+<script src="/assets/js/front-mobile-v7.js?v=20261112-feat1"></script>
+<script src="/assets/js/product-page.js?v=20261112-disc2"></script>
 <?php else: ?>
 <script id="productsJson" type="application/json">[]</script>
-<script src="/assets/js/front-mobile-v7.js?v=20261107-disc1"></script>
+<script src="/assets/js/front-mobile-v7.js?v=20261112-feat1"></script>
 <?php endif; ?>
 </body></html>

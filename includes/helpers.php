@@ -1079,7 +1079,8 @@ function storefront_product_card_pricing(array $p): array {
     foreach ($variants as $v) {
         $vp = product_variant_price($p, $v);
         $vc = product_variant_compare_price($p, $v);
-        $pct = $vc > $vp && $vp > 0 ? (int)round((1 - $vp / $vc) * 100) : 0;
+        /* Exact configured percent — never reverse-calc from rounded prices (0.49→0.47 loses 5%→4%). */
+        $pct = (int)round(product_variant_discount_pct($p, $v));
         if ($pct > $maxDiscountPct) $maxDiscountPct = $pct;
         if ($cheapestAny === null || $vp < $cheapestAny[0]) $cheapestAny = [$vp, $vc, $v];
         if (product_variant_stock($p, $v) > 0) {
@@ -1102,7 +1103,7 @@ function storefront_product_card_pricing(array $p): array {
         'hasStock' => $hasStock,
         'originalPrice' => $compare > $price ? (float)$compare : 0.0,
         'maxDiscountPct' => $maxDiscountPct,
-        'discountPct' => ($compare > $price && $price > 0) ? (int)round((1 - $price / $compare) * 100) : 0,
+        'discountPct' => $shown ? (int)round(product_variant_discount_pct($p, $shown)) : 0,
         'variantId' => (int)($shown['id'] ?? 0),
         'variantName' => (string)($shown['name'] ?? ''),
         'warrantyLabel' => product_variant_warranty_label($shown ?: [], $p),
@@ -1164,11 +1165,15 @@ function assert_manual_stock_reservable_variant(int $productId, int $variantId, 
     if($available<$qty) throw new RuntimeException('Stok '.$variant['name'].' tidak cukup. Sisa stok: '.$available);
 }
 
-function ensure_product_terms_column(): void {
+function ensure_product_features_column(): void {
     global $pdo;
     try {
-        if (!db_column_exists('products','product_terms')) {
-            $pdo->exec("ALTER TABLE products ADD product_terms MEDIUMTEXT NULL AFTER description");
+        if (db_column_exists('products','product_features')) return;
+        if (db_column_exists('products','product_terms')) {
+            /* Rename T&C column → product features (data preserved). */
+            $pdo->exec("ALTER TABLE products CHANGE product_terms product_features MEDIUMTEXT NULL AFTER description");
+        } else {
+            $pdo->exec("ALTER TABLE products ADD product_features MEDIUMTEXT NULL AFTER description");
         }
     } catch (Throwable $e) {}
 }
@@ -1279,7 +1284,7 @@ function ensure_product_extra_columns(): void {
     ensure_product_warranty_column();
     ensure_product_delivery_column();
     ensure_product_manual_stock_column();
-    ensure_product_terms_column();
+    ensure_product_features_column();
     ensure_product_rating_column();
     ensure_product_telegram_columns();
     ensure_order_channel_columns();
@@ -1578,11 +1583,7 @@ function storefront_discount_badge(array $item): string {
             if ($s !== '' && preg_match('/(\d+)\s*%/u', $s, $m)) $pct = (int)$m[1];
         }
     }
-    if ($pct <= 0) {
-        $price = (float)($item['price'] ?? 0);
-        $original = (float)($item['originalPrice'] ?? 0);
-        if ($original > $price && $price > 0) $pct = (int)round((1 - $price / $original) * 100);
-    }
+    /* No reverse-calc from rounded prices — badges show the exact configured percent. */
     return $pct > 0 ? '🏷️ '.$pct.'%' : '';
 }
 /**
@@ -1604,6 +1605,25 @@ function ds_desc_points($text, $limit = 3): array {
         $out[] = mb_strimwidth($text, 0, 90, '...');
     }
     return $out;
+}
+/**
+ * Fitur produk dari kolom product_features — satu fitur per baris.
+ * Admin cukup menulis satu fitur per baris tanpa nomor; prefix nomor/bullet
+ * ("1.", "2)", "-") dilepas saat parse sehingga tampil sebagai daftar bernomor.
+ */
+function ds_feature_lines($raw, $limit = 0): array {
+    $text = trim(strip_tags((string)$raw));
+    if ($text === '') return [];
+    $out = [];
+    foreach (preg_split('/\r\n|\r|\n/', $text) as $line) {
+        $line = trim($line);
+        if ($line === '') continue;
+        $line = trim(preg_replace('/^\s*(?:\d+[.)]|[-•*–—])\s+/u', '', $line));
+        $line = trim(preg_replace('/\s+/u', ' ', $line));
+        if ($line !== '') $out[] = $line;
+        if ($limit > 0 && count($out) >= $limit) break;
+    }
+    return array_values(array_unique($out));
 }
 /**
  * Shared storefront product card — homepage look, usable on any page.
@@ -1684,7 +1704,7 @@ function storefront_product_thumb(string $src, string $label = 'Produk Digital')
 }
 
 function render_storefront_styles(string $page='index'): void {
-    $v = '20261111-ui5';
+    $v = '20261112-ui6';
     echo '<link rel="stylesheet" href="/assets/css/front-mobile-v7.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-grid-v20.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-list-fresh-v1.css?v='.$v.'">' . "\n";

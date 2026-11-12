@@ -68,6 +68,8 @@ foreach($products as $p){
   $price=$cardPricing['price'];
   $orig=(float)($cardPricing['originalPrice'] ?? 0);
   $regularPrice = $orig > 0 ? $orig : $price;
+  /* Exact configured percent from variant record — never reverse-calc from rounded prices */
+  $exactPct=(int)($cardPricing['discountPct'] ?? 0);
   $catName=$p['category_name']?:'Digital';
   $warrantyLabel=trim((string)($cardPricing['warrantyLabel'] ?? ''));
   if($warrantyLabel==='') $warrantyLabel='Garansi';
@@ -77,8 +79,8 @@ foreach($products as $p){
     'id'=>(int)$p['id'], 'name'=>$p['name'], 'slug'=>$p['slug'], 'description'=>$p['description'] ?: 'Produk digital siap dikirim otomatis setelah pembayaran berhasil.', 'descriptionHtml'=>safe_product_html($p['description'] ?: 'Produk digital siap dikirim otomatis setelah pembayaran berhasil.'),
     'category'=>$catName, 'categorySlug'=>$p['category_slug'] ?: '', 'icon'=>($categoryIconMap[(int)($p['category_id'] ?? 0)] ?? ds_icon($catName)), 'price'=>$price, 'originalPrice'=>$orig, 'hasStock'=>$cardPricing['hasStock'],
     'regularPrice'=>$regularPrice, 'isFlashSale'=>$flashActive, 'flashEndsAt'=>$flashActive && $flashEndsTs ? date('c',$flashEndsTs) : '',
-    'discount'=>$orig>$price?('-'.round((1-$price/$orig)*100).'%'):'-0%', 'maxDiscountPct'=>(int)($cardPricing['maxDiscountPct'] ?? 0), 'sold'=>(int)($p['sold_success_count'] ?? 0), 'reviews'=>(int)($p['review_count'] ?? 0),
-    'rating'=>max(0,min(5,(float)($p['rating'] ?? 5))), 'warranty'=>$warrantyLabel, 'deliveryType'=>$deliveryType, 'deliveryLabel'=>$deliveryType==='manual'?'Manual':'Instan', 'thumbnail'=>trim((string)($p['thumbnail'] ?? '')), 'descPoints'=>ds_desc_points($p['description'] ?? '',3)
+    'discount'=>$exactPct>0?('-'.$exactPct.'%'):'-0%', 'maxDiscountPct'=>(int)($cardPricing['maxDiscountPct'] ?? 0), 'sold'=>(int)($p['sold_success_count'] ?? 0), 'reviews'=>(int)($p['review_count'] ?? 0),
+    'rating'=>max(0,min(5,(float)($p['rating'] ?? 5))), 'warranty'=>$warrantyLabel, 'deliveryType'=>$deliveryType, 'deliveryLabel'=>$deliveryType==='manual'?'Manual':'Instan', 'thumbnail'=>trim((string)($p['thumbnail'] ?? '')), 'descPoints'=>ds_desc_points($p['description'] ?? '',3), 'features'=>ds_feature_lines((string)($p['product_features'] ?? ''),6)
   ];
   $productJson[]=$item;
   if($flashActive){ $flashProducts[]=$item; }
@@ -392,5 +394,5 @@ html[data-theme="dark"] .znl-voucher-section{background:linear-gradient(135deg,r
   });
 })();
 </script>
-<script src="/assets/js/front-mobile-v7.js?v=20261107-disc1"></script>
+<script src="/assets/js/front-mobile-v7.js?v=20261112-feat1"></script>
 </body></html>

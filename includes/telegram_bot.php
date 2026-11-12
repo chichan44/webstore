@@ -1709,7 +1709,7 @@ function telegram_try_deliver_order(int $orderId,bool $force=false): bool {
     telegram_clear_ui_messages($bot,$chatId);
     $pdo->prepare("UPDATE orders SET telegram_delivery_status='pending',telegram_delivery_attempts=telegram_delivery_attempts+1,telegram_last_error=NULL WHERE id=?")->execute([$orderId]);
     telegram_send_message($bot,$chatId,"<b>✅ PEMBAYARAN BERHASIL</b>\n\nInvoice: <code>".telegram_html((string)$order['invoice'])."</code>\nProduk digital Anda sedang dikirim di bawah ini.");
-    $items=$pdo->prepare('SELECT oi.id,oi.product_name,oi.qty,oi.warranty_label,oi.warranty_days,oi.warranty_started_at,oi.warranty_expires_at,p.delivery_type,p.product_terms FROM order_items oi LEFT JOIN products p ON p.id=oi.product_id WHERE oi.order_id=? ORDER BY oi.id');$items->execute([$orderId]);
+    $items=$pdo->prepare('SELECT oi.id,oi.product_name,oi.qty,oi.warranty_label,oi.warranty_days,oi.warranty_started_at,oi.warranty_expires_at,p.delivery_type,p.product_features FROM order_items oi LEFT JOIN products p ON p.id=oi.product_id WHERE oi.order_id=? ORDER BY oi.id');$items->execute([$orderId]);
     foreach($items as $item){
         if(strtolower((string)($item['delivery_type'] ?? 'instant'))==='manual'){
             telegram_send_message($bot,$chatId,'<b>📦 '.telegram_html((string)$item['product_name'])."</b>\nPesanan ini diproses manual oleh admin. Anda akan menerima informasi lanjutan setelah selesai.\n\n<b>🛡 Garansi:</b> ".telegram_html(warranty_status_text($item)));
@@ -1723,7 +1723,7 @@ function telegram_try_deliver_order(int $orderId,bool $force=false): bool {
             if(count($rows)>1)$msg.=' #'.($idx+1);
             $msg.="\n\n<pre>".telegram_html($content).'</pre>';
             $msg.="\n\n<b>🛡 Garansi:</b> ".telegram_html(warranty_status_text($item));
-            if(!empty($item['product_terms']))$msg.="\n\n<b>Ketentuan:</b>\n".telegram_html(telegram_short((string)$item['product_terms'],700));
+            if(!empty($item['product_features']))$msg.="\n\n<b>Fitur:</b>\n".telegram_html(telegram_short((string)$item['product_features'],700));
             telegram_send_message($bot,$chatId,$msg);
         }
     }

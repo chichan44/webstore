@@ -237,7 +237,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             $categoryId=(int)($_POST['category_id'] ?? 0);
             $categoryId=$categoryId>0?$categoryId:null;
             $description=(string)($_POST['description'] ?? '');
-            $productTerms=trim((string)($_POST['product_terms'] ?? ''));
+            $productFeatures=implode("\n",ds_feature_lines((string)($_POST['product_features'] ?? '')));
             $deliveryType=strtolower(trim((string)($_POST['delivery_type'] ?? 'instant')))==='manual'?'manual':'instant';
             /* Produk hanya induk: harga, garansi, diskon & stok semuanya di varian.
                is_flash_sale + flash_ends_at = JENDELA flash (satu event per produk);
@@ -284,15 +284,15 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             /* products sekarang hanya induk. Kolom legacy (price, original_price, flash_price,
                manual_stock, warranty_label, warranty_days, rating) tidak ditulis lagi dari form ini.
                Rating dihitung otomatis dari ulasan yang disetujui. */
-            $data=[$categoryId,$name,$slug,$description,$productTerms,$deliveryType,$isFlash,$flashEnds,$status,$telegramStatus,$savedThumb];
+            $data=[$categoryId,$name,$slug,$description,$productFeatures,$deliveryType,$isFlash,$flashEnds,$status,$telegramStatus,$savedThumb];
 
             if($id){
                 $data[]=$id;
-                $sql='UPDATE products SET category_id=?,name=?,slug=?,description=?,product_terms=?,delivery_type=?,manual_stock=0,is_flash_sale=?,flash_ends_at=?,status=?,telegram_status=?,thumbnail=? WHERE id=?';
+                $sql='UPDATE products SET category_id=?,name=?,slug=?,description=?,product_features=?,delivery_type=?,manual_stock=0,is_flash_sale=?,flash_ends_at=?,status=?,telegram_status=?,thumbnail=? WHERE id=?';
                 $pdo->prepare($sql)->execute($data);
                 $productId=$id;
             }else{
-                $sql='INSERT INTO products(category_id,name,slug,description,product_terms,delivery_type,manual_stock,is_flash_sale,flash_ends_at,status,telegram_status,thumbnail,created_at) VALUES(?,?,?,?,?,?,0,?,?,?,?,?,NOW())';
+                $sql='INSERT INTO products(category_id,name,slug,description,product_features,delivery_type,manual_stock,is_flash_sale,flash_ends_at,status,telegram_status,thumbnail,created_at) VALUES(?,?,?,?,?,?,0,?,?,?,?,?,NOW())';
                 $pdo->prepare($sql)->execute($data);
                 $productId=(int)$pdo->lastInsertId();
             }
@@ -764,7 +764,7 @@ body.admin-modern[data-admin-theme="dark"].admin-page-products #adminProductsTab
             </div>
 
             <div class="field" style="margin-top:16px"><label>Deskripsi</label><textarea name="description" placeholder="Jelaskan detail produk, fitur, dan informasi penting."><?=e($edit['description'] ?? '')?></textarea></div>
-            <div class="field" style="margin-top:16px"><label>Syarat & Ketentuan Produk</label><textarea name="product_terms" placeholder="Tulis satu ketentuan per baris."><?=e($edit['product_terms'] ?? '')?></textarea><small>Ketentuan tampil pada halaman lacak pesanan setelah produk terkirim.</small></div>
+            <div class="field" style="margin-top:16px"><label>Fitur Produk</label><textarea name="product_features" placeholder="Tulis satu fitur per baris (tanpa nomor)."><?=e($edit['product_features'] ?? $edit['product_terms'] ?? '')?></textarea><small>Fitur tampil pada tab Fitur di halaman produk. Satu fitur per baris — penomoran otomatis.</small></div>
             <div class="adm-checks"><label><input type="checkbox" name="is_flash_sale" <?=!empty($edit['is_flash_sale'])?'checked':''?>> Aktifkan flash sale</label><label><input type="checkbox" name="status" <?=($edit['status'] ?? 1)?'checked':''?>> Produk aktif</label><label><input type="checkbox" name="telegram_status" <?=($edit['telegram_status'] ?? 1)?'checked':''?>> Tampilkan di bot Telegram</label></div>
             <div class="adm-actions" style="margin-top:16px"><button class="adm-btn primary" type="submit"><?=admin_icon('save')?>Simpan Produk</button><a class="adm-btn soft" href="/admin/products.php">Batal</a></div>
         </form>

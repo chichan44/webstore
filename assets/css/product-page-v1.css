@@ -30,8 +30,8 @@ html[data-theme=dark] .pp-pill-stock.is-out{background:rgba(239,68,68,.15);color
 .pp-price-from{font-size:11.5px;font-weight:700;color:var(--muted)}
 .pp-price{font-size:20px;color:var(--indigo);font-weight:900;line-height:1.15}
 .pp-price-original{color:var(--muted);font-size:12.5px}
-.pp-price-discount{background:#fef2f2;color:#b91c1c;font-size:11px;font-weight:900;padding:2px 7px;border-radius:999px}
-html[data-theme=dark] .pp-price-discount{background:rgba(239,68,68,.15);color:#f87171}
+.pp-price-discount{background:#ef4444;color:#fff;font-size:11px;font-weight:900;padding:2px 7px;border-radius:999px}
+html[data-theme=dark] .pp-price-discount{background:#ef4444;color:#fff}
 .pp-flash-badge{display:inline-flex;align-items:center;gap:3px;background:#fdf2f8;color:var(--pink);font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px}
 
 /* Hero meta: star rating (half-star fill) left, total sold right — both breakpoints */
@@ -122,8 +122,8 @@ html[data-theme=dark] .pp-variant-stock.is-out{color:#f87171}
 .pp-variant-price-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 8px}
 .pp-variant-price{font-size:16px;color:var(--indigo);font-weight:900}
 .pp-variant-original{color:var(--muted);font-size:12px;margin-left:auto}
-.pp-variant-discount{background:#fef2f2;color:#b91c1c;font-size:11px;font-weight:900;padding:2px 7px;border-radius:999px}
-html[data-theme=dark] .pp-variant-discount{background:rgba(239,68,68,.15);color:#f87171}
+.pp-variant-discount{background:#ef4444;color:#fff;font-size:11px;font-weight:900;padding:2px 7px;border-radius:999px}
+html[data-theme=dark] .pp-variant-discount{background:#ef4444;color:#fff}
 
 /* Purchase block */
 .pp-purchase-block{display:flex;flex-direction:column;gap:10px}

@@ -54,7 +54,7 @@ function order_delivery_payload(int $orderId): array {
     $order=$st->fetch();
     if(!$order) throw new RuntimeException('Order pengiriman tidak ditemukan.');
 
-    $items=$pdo->prepare('SELECT oi.*,p.delivery_type,p.product_terms FROM order_items oi LEFT JOIN products p ON p.id=oi.product_id WHERE oi.order_id=? ORDER BY oi.id');
+    $items=$pdo->prepare('SELECT oi.*,p.delivery_type,p.product_features FROM order_items oi LEFT JOIN products p ON p.id=oi.product_id WHERE oi.order_id=? ORDER BY oi.id');
     $items->execute([$orderId]);
     $rows=$items->fetchAll();
     $detailBlocks=[];
@@ -100,9 +100,9 @@ function order_delivery_payload(int $orderId): array {
             $detail[]=$warranty;
             $warrantyLines[]=$label.' — '.$warranty;
         }
-        $terms=trim((string)($item['product_terms'] ?? ''));
+        $terms=trim((string)($item['product_features'] ?? ''));
         if($terms!==''){
-            $detail[]="Ketentuan:\n".$terms;
+            $detail[]="Fitur:\n".$terms;
             $termsBlocks[]=$label."\n".$terms;
         }
 
