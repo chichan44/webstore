@@ -1,0 +1,68 @@
+/* FAQ / Pusat Bantuan — accordion ala premifystore.id/faq.
+   Memakai token front-mobile-v7.css (--bg/--card/--text/--muted/--line/--indigo/--soft)
+   supaya ikut tema terang/gelap storefront. */
+
+.faq-hero h1{display:flex;align-items:center;gap:10px}
+.faq-hero .faq-hero-icon{width:26px;height:26px;color:var(--indigo);flex:none}
+
+.faq-card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:8px 22px;box-shadow:0 22px 70px rgba(15,23,42,.08)}
+
+.faq-item{border-bottom:1px solid var(--line);transition:all .3s ease}
+.faq-item:last-child{border-bottom:0}
+
+.faq-head{display:flex;align-items:flex-start;gap:12px;width:100%;padding:18px 0;border:0;background:none;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.faq-head:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;border-radius:8px}
+
+.faq-ico{flex:none;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.faq-ico svg{width:15px;height:15px}
+.faq-ico.tint-rose{background:#ffe4e6;color:#e11d48}
+.faq-ico.tint-amber{background:#fef3c7;color:#d97706}
+.faq-ico.tint-blue{background:#dbeafe;color:#2563eb}
+.faq-ico.tint-green{background:#dcfce7;color:#16a34a}
+.faq-ico.tint-purple{background:#f3e8ff;color:#9333ea}
+.faq-ico.tint-indigo{background:#e0e7ff;color:#4f46e5}
+.faq-ico.tint-orange{background:#ffedd5;color:#ea580c}
+.faq-ico.tint-teal{background:#ccfbf1;color:#0d9488}
+html[data-theme=dark] .faq-ico.tint-rose{background:rgba(225,29,72,.18);color:#fda4af}
+html[data-theme=dark] .faq-ico.tint-amber{background:rgba(217,119,6,.18);color:#fcd34d}
+html[data-theme=dark] .faq-ico.tint-blue{background:rgba(37,99,235,.18);color:#93c5fd}
+html[data-theme=dark] .faq-ico.tint-green{background:rgba(22,163,74,.18);color:#86efac}
+html[data-theme=dark] .faq-ico.tint-purple{background:rgba(147,51,234,.18);color:#d8b4fe}
+html[data-theme=dark] .faq-ico.tint-indigo{background:rgba(79,70,229,.2);color:#a5b4fc}
+html[data-theme=dark] .faq-ico.tint-orange{background:rgba(234,88,12,.18);color:#fdba74}
+html[data-theme=dark] .faq-ico.tint-teal{background:rgba(13,148,136,.18);color:#5eead4}
+
+.faq-q{flex:1;font-size:15px;font-weight:800;color:var(--text);line-height:1.45}
+
+.faq-chev{flex:none;margin-top:2px;color:var(--muted);transition:transform .3s ease}
+.faq-chev svg{width:16px;height:16px;display:block}
+.faq-item.active .faq-chev{transform:rotate(180deg)}
+
+.faq-answer{max-height:0;overflow:hidden;transition:max-height .4s ease-out,padding .4s ease-out}
+.faq-item.active .faq-answer{max-height:640px;padding-bottom:20px}
+
+.faq-a{padding-left:42px;font-size:13.5px;line-height:1.75;color:var(--muted)}
+.faq-a strong{color:var(--text);font-weight:800}
+.faq-a a{color:var(--indigo);font-weight:800;text-decoration:none}
+.faq-a a:hover{text-decoration:underline}
+
+/* Kartu kontak support */
+.faq-cta{margin:22px 0 8px;padding:34px 22px;text-align:center;border:1px solid color-mix(in srgb,var(--indigo) 18%,var(--line));border-radius:22px;background:linear-gradient(180deg,color-mix(in srgb,var(--indigo) 8%,var(--card)),var(--card))}
+.faq-cta-icon{width:54px;height:54px;border-radius:16px;background:var(--indigo);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.faq-cta-icon svg{width:24px;height:24px}
+.faq-cta h2{margin:0 0 6px;font-size:19px;font-weight:900;letter-spacing:-.01em;color:var(--text)}
+.faq-cta p{margin:0 0 18px;font-size:13.5px;color:var(--muted)}
+.faq-cta-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.faq-cta-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:13px;font-size:13.5px;font-weight:850;text-decoration:none;cursor:pointer;border:1px solid transparent;transition:all .15s}
+.faq-cta-btn.primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.faq-cta-btn.primary:hover{background:var(--indigo2);border-color:var(--indigo2)}
+.faq-cta-btn.ghost{background:var(--card);border-color:var(--line);color:var(--text)}
+.faq-cta-btn.ghost:hover{border-color:var(--indigo);color:var(--indigo)}
+.faq-cta-btn svg{width:15px;height:15px}
+
+@media(max-width:639px){
+    .faq-card{padding:4px 16px;border-radius:20px}
+    .faq-q{font-size:14px}
+    .faq-a{padding-left:0}
+    .faq-cta{padding:26px 16px}
+}

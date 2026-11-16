@@ -467,6 +467,8 @@ CREATE TABLE IF NOT EXISTS `product_variants` (
   `flash_discount_pct` DECIMAL(5,2) NOT NULL DEFAULT 0,
   `warranty_label` VARCHAR(100) NOT NULL DEFAULT '',
   `warranty_days` INT NOT NULL DEFAULT 0,
+  `terms_and_conditions` MEDIUMTEXT NULL,
+  `warranty_terms` MEDIUMTEXT NULL,
   `price_delta` DECIMAL(14,2) NOT NULL DEFAULT 0,
   `original_price` DECIMAL(14,2) NOT NULL DEFAULT 0,
   `manual_stock` INT NOT NULL DEFAULT 0,

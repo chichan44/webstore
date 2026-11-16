@@ -1120,6 +1120,7 @@ html[data-theme=dark] .sf-card-grid .product-price-action-row{border-top-color:t
   height:2px;
   border-radius:2px;
   background:currentColor;
+  color:inherit; /* override .head-actions i badge rule (color:#fff) — bars must use button color */
   transition:transform .25s ease,opacity .2s ease,top .25s ease;
 }
 .burger-icon i:nth-child(1){top:0}

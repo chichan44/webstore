@@ -320,8 +320,8 @@ function storefront_nav_links(): array {
     return [
         ['label' => t('Beranda'), 'href' => '/'],
         ['label' => t('Track Order'), 'href' => '/track-order.php'],
-        ['label' => t('Ketentuan Garansi'), 'href' => '/page.php?slug=ketentuan-garansi'],
-        ['label' => t('FAQ'), 'href' => '/page.php?slug=faq'],
+        ['label' => t('Ketentuan Garansi'), 'href' => '/ketentuan-garansi.php'],
+        ['label' => t('FAQ'), 'href' => '/faq.php'],
         ['label' => t('Blog'), 'href' => '/blog.php'],
     ];
 }
@@ -351,6 +351,8 @@ function ui_icon(string $name, string $class = ''): string {
         'search' => '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
         'bell' => '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',
         'help' => '<circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.5 2.5 0 1 1 4.3 1.7c-1.1 1-2.1 1.5-2.1 3.3M12 18h.01"/>',
+        'clock' => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+        'chat' => '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12Z"/>',
         'sun' => '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
         'moon' => '<path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"/>',
         'heart' => '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
@@ -656,6 +658,8 @@ function ensure_product_variant_columns(): void {
             flash_discount_pct DECIMAL(5,2) NOT NULL DEFAULT 0,
             warranty_label VARCHAR(100) NOT NULL DEFAULT '',
             warranty_days INT NOT NULL DEFAULT 0,
+            terms_and_conditions MEDIUMTEXT NULL,
+            warranty_terms MEDIUMTEXT NULL,
             price_delta DECIMAL(14,2) NOT NULL DEFAULT 0,
             original_price DECIMAL(14,2) NOT NULL DEFAULT 0,
             manual_stock INT NOT NULL DEFAULT 0,
@@ -672,6 +676,8 @@ function ensure_product_variant_columns(): void {
         'flash_discount_pct' => "ALTER TABLE product_variants ADD flash_discount_pct DECIMAL(5,2) NOT NULL DEFAULT 0 AFTER discount_pct",
         'warranty_label' => "ALTER TABLE product_variants ADD warranty_label VARCHAR(100) NOT NULL DEFAULT '' AFTER flash_discount_pct",
         'warranty_days' => "ALTER TABLE product_variants ADD warranty_days INT NOT NULL DEFAULT 0 AFTER warranty_label",
+        'terms_and_conditions' => "ALTER TABLE product_variants ADD terms_and_conditions MEDIUMTEXT NULL AFTER warranty_days",
+        'warranty_terms' => "ALTER TABLE product_variants ADD warranty_terms MEDIUMTEXT NULL AFTER terms_and_conditions",
         'price_delta' => "ALTER TABLE product_variants ADD price_delta DECIMAL(14,2) NOT NULL DEFAULT 0 AFTER warranty_days",
         'original_price' => "ALTER TABLE product_variants ADD original_price DECIMAL(14,2) NOT NULL DEFAULT 0 AFTER price_delta",
     ] as $col => $ddl) {
@@ -1704,7 +1710,7 @@ function storefront_product_thumb(string $src, string $label = 'Produk Digital')
 }
 
 function render_storefront_styles(string $page='index'): void {
-    $v = '20261112-ui6';
+    $v = '20261116-ui7';
     echo '<link rel="stylesheet" href="/assets/css/front-mobile-v7.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-grid-v20.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-list-fresh-v1.css?v='.$v.'">' . "\n";

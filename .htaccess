@@ -12,5 +12,11 @@ RewriteRule ^(admin|api|assets|uploads|includes|install|cron|database|lang|css|j
 # Existing PHP entry points at root — serve directly
 RewriteRule ^(index|checkout|wishlist|track-order|product|login)\.php(/|$) - [L]
 
+# Clean URL for the warranty terms page
+RewriteRule ^ketentuan-garansi/?$ ketentuan-garansi.php [L,QSA]
+
+# Clean URL for the FAQ page
+RewriteRule ^faq/?$ faq.php [L,QSA]
+
 # Root-level product slug: /canva -> product.php?slug=canva
 RewriteRule ^([^/]+)/?$ product.php?slug=$1 [L,QSA]

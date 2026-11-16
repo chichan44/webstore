@@ -98,6 +98,8 @@ function admin_parse_variant_rows(array $raw): array {
             'flash_discount_pct'=>max(0.0,min(100.0,(float)($row['flash_discount_pct'] ?? 0))),
             'warranty_label'=>mb_substr($warrantyLabel,0,100),
             'warranty_days'=>$warrantyDays,
+            'terms_and_conditions'=>trim((string)($row['terms_and_conditions'] ?? '')),
+            'warranty_terms'=>trim((string)($row['warranty_terms'] ?? '')),
             'manual_stock'=>max(0,(int)($row['manual_stock'] ?? 0)),
             'sort_order'=>(int)($row['sort_order'] ?? 0),
             'status'=>isset($row['status'])?1:0,
@@ -131,6 +133,8 @@ function admin_variant_row_html(string $vrKey, array $vr, int $vrId): string {
     $sort=e($vr['sort_order'] ?? 0);
     $checked=($vr['status'] ?? 1)?'checked':'';
     $ph=e($vrKey);
+    $terms=e($vr['terms_and_conditions'] ?? '');
+    $warrantyTerms=e($vr['warranty_terms'] ?? '');
     return '<div class="variant-row" data-variant-row>'
         .'<input type="hidden" name="variant_rows['.$ph.'][id]" value="'.$vrId.'">'
         .'<label class="variant-cell variant-cell-name"><span>Nama varian</span>'
@@ -160,6 +164,12 @@ function admin_variant_row_html(string $vrKey, array $vr, int $vrId): string {
         .'</label>'
         .'<label class="variant-check"><input type="checkbox" name="variant_rows['.$ph.'][status]" '.$checked.'> Aktif</label>'
         .'<label class="variant-check variant-remove"><input type="checkbox" name="variant_rows['.$ph.'][remove]" value="1"> Hapus</label>'
+        .'<label class="variant-cell variant-cell-terms" style="grid-column:1/-1"><span>Syarat &amp; Ketentuan varian (satu poin per baris)</span>'
+        .'<textarea name="variant_rows['.$ph.'][terms_and_conditions]" rows="3" maxlength="4000" placeholder="Contoh:&#10;Masa aktif: 1 tahun&#10;Maksimal digunakan di 2 perangkat&#10;**Tidak ada refund** setelah aktivasi">'.$terms.'</textarea>'
+        .'</label>'
+        .'<label class="variant-cell variant-cell-terms" style="grid-column:1/-1"><span>Ketentuan Garansi varian (satu poin per baris)</span>'
+        .'<textarea name="variant_rows['.$ph.'][warranty_terms]" rows="3" maxlength="4000" placeholder="Contoh:&#10;**Garansi 3 bulan** (hanya berlaku untuk kendala backfree)&#10;Garansi dihitung sejak tanggal pembelian&#10;Garansi tidak berlaku apabila akun mengalami banned / suspend">'.$warrantyTerms.'</textarea>'
+        .'</label>'
         .'</div>';
 }
 
@@ -298,8 +308,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             }
 
             /* Variant rows: delete remove-checked, update existing, insert new (skip empty names) */
-            $insertVariant=$pdo->prepare('INSERT INTO product_variants(product_id,name,price,price_usd,discount_pct,flash_discount_pct,warranty_label,warranty_days,manual_stock,sort_order,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,NOW(),NOW())');
-            $updateVariant=$pdo->prepare('UPDATE product_variants SET name=?,price=?,price_usd=?,discount_pct=?,flash_discount_pct=?,warranty_label=?,warranty_days=?,manual_stock=?,sort_order=?,status=?,updated_at=NOW() WHERE id=? AND product_id=?');
+            $insertVariant=$pdo->prepare('INSERT INTO product_variants(product_id,name,price,price_usd,discount_pct,flash_discount_pct,warranty_label,warranty_days,terms_and_conditions,warranty_terms,manual_stock,sort_order,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),NOW())');
+            $updateVariant=$pdo->prepare('UPDATE product_variants SET name=?,price=?,price_usd=?,discount_pct=?,flash_discount_pct=?,warranty_label=?,warranty_days=?,terms_and_conditions=?,warranty_terms=?,manual_stock=?,sort_order=?,status=?,updated_at=NOW() WHERE id=? AND product_id=?');
             $deleteVariant=$pdo->prepare('DELETE FROM product_variants WHERE id=? AND product_id=?');
             $readManualStock=$pdo->prepare('SELECT manual_stock FROM product_variants WHERE id=? AND product_id=?');
             foreach($variantRows as $vr){
@@ -320,7 +330,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                         $manualStock=0;
                     }
                 }
-                $variantData=[$vr['name'],$vr['price'],$vr['price_usd'],$vr['discount_pct'],$vr['flash_discount_pct'],$vr['warranty_label'],$vr['warranty_days'],$manualStock,$vr['sort_order'],$vr['status']];
+                $variantData=[$vr['name'],$vr['price'],$vr['price_usd'],$vr['discount_pct'],$vr['flash_discount_pct'],$vr['warranty_label'],$vr['warranty_days'],$vr['terms_and_conditions'],$vr['warranty_terms'],$manualStock,$vr['sort_order'],$vr['status']];
                 if($vr['id']>0){
                     $updateVariant->execute(array_merge($variantData,[$vr['id'],$productId]));
                 }else{
@@ -596,6 +606,7 @@ body.admin-modern.admin-page-products .variant-row{display:grid;grid-template-co
 body.admin-modern.admin-page-products .variant-cell{display:flex;flex-direction:column;gap:4px;min-width:0}
 body.admin-modern.admin-page-products .variant-cell>span{font-size:10px;font-weight:850;letter-spacing:.04em;text-transform:uppercase;color:#7a879b}
 body.admin-modern.admin-page-products .variant-cell input[type=text],body.admin-modern.admin-page-products .variant-cell input[type=number]{height:36px;border:1px solid var(--adm-border);border-radius:8px;padding:0 9px;font-size:13px;background:#fff;min-width:0;width:100%}
+body.admin-modern.admin-page-products .variant-cell textarea{border:1px solid var(--adm-border);border-radius:8px;padding:8px 9px;font-size:13px;line-height:1.5;background:#fff;min-width:0;width:100%;resize:vertical}
 body.admin-modern.admin-page-products .variant-preview{display:block;font-size:10.5px;font-weight:800;color:#2857c8;line-height:1.35;min-height:14px}
 body.admin-modern.admin-page-products .variant-preview.is-warn{color:#c2410c}
 body.admin-modern.admin-page-products .variant-cell.is-hidden{opacity:.32;pointer-events:none}
@@ -611,7 +622,8 @@ body.admin-modern.admin-page-products .variant-remove{color:#c2410c!important}
 body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-block{background:#142033;border-color:#2b3c53}
 body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-row{background:#18263a;border-color:#2b3c53}
 body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-cell input[type=text],
-body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-cell input[type=number]{background:#101c2e;border-color:#2b3c53;color:#e2e8f0}
+body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-cell input[type=number],
+body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-cell textarea{background:#101c2e;border-color:#2b3c53;color:#e2e8f0}
 body.admin-modern[data-admin-theme="dark"].admin-page-products .variant-preview{color:#93b4ff}
 body.admin-modern[data-admin-theme="dark"].admin-page-products .rating-readonly{background:#101c2e;border-color:#2b3c53}
 body.admin-modern[data-admin-theme="dark"].admin-page-products .rating-readonly b{color:#fbbf24}
