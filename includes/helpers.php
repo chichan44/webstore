@@ -265,6 +265,43 @@ function upload_image($field){
     return '/uploads/products/'.$name;
 }
 
+function upload_blog_cover($field){
+    if(empty($_FILES[$field]['name']) || $_FILES[$field]['error']!==UPLOAD_ERR_OK) return null;
+    if($_FILES[$field]['size'] > 2*1024*1024) throw new Exception('Ukuran gambar maksimal 2MB.');
+
+    $tmp = $_FILES[$field]['tmp_name'];
+    $allowed = ['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp'];
+    $mime = function_exists('finfo_open') ? (new finfo(FILEINFO_MIME_TYPE))->file($tmp) : mime_content_type($tmp);
+    if(!isset($allowed[$mime])) throw new Exception('File gambar tidak valid. Gunakan JPG/PNG/WEBP.');
+
+    $info = @getimagesize($tmp);
+    if(!$info || empty($info[0]) || empty($info[1])) throw new Exception('File gambar rusak atau bukan gambar asli.');
+    if($info[0] > 5000 || $info[1] > 5000) throw new Exception('Dimensi gambar terlalu besar. Maksimal 5000x5000 piksel.');
+
+    $ext = $allowed[$mime];
+    $name='blog-'.date('YmdHis').'-'.bin2hex(random_bytes(4)).'.'.$ext;
+    $dir=__DIR__.'/../uploads/blog';
+    if(!is_dir($dir)) @mkdir($dir,0755,true);
+    $dest=$dir.'/'.$name;
+
+    $reencoded = false;
+    if(function_exists('imagecreatetruecolor')){
+        $img = null;
+        if($mime === 'image/jpeg' && function_exists('imagecreatefromjpeg')) $img = @imagecreatefromjpeg($tmp);
+        if($mime === 'image/png' && function_exists('imagecreatefrompng')) $img = @imagecreatefrompng($tmp);
+        if($mime === 'image/webp' && function_exists('imagecreatefromwebp')) $img = @imagecreatefromwebp($tmp);
+        if($img){
+            if($mime === 'image/jpeg' && function_exists('imagejpeg')) $reencoded = @imagejpeg($img, $dest, 86);
+            if($mime === 'image/png' && function_exists('imagepng')) { imagesavealpha($img, true); $reencoded = @imagepng($img, $dest, 6); }
+            if($mime === 'image/webp' && function_exists('imagewebp')) $reencoded = @imagewebp($img, $dest, 86);
+            imagedestroy($img);
+        }
+    }
+    if(!$reencoded && !move_uploaded_file($tmp,$dest)) throw new Exception('Upload gagal.');
+    @chmod($dest, 0644);
+    return '/uploads/blog/'.$name;
+}
+
 function upload_site_asset(string $field, string $kind='logo'): ?string {
     if (empty($_FILES[$field]['name']) || ($_FILES[$field]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) return null;
     if (($_FILES[$field]['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) throw new Exception('Upload file gagal.');
@@ -338,6 +375,7 @@ function ui_icon(string $name, string $class = ''): string {
         'shopping-cart' => '<circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3.5h2.3l2.1 10.1a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.4L21 8H6"/>',
         'grid' => '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
         'file-text' => '<path d="M6 2.8h8l4 4V21H6z"/><path d="M14 2.8V7h4"/><path d="M9 12h6M9 16h6"/>',
+        'newspaper' => '<path d="M4 5h13v14a1 1 0 0 0 1 1H5a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1Z"/><path d="M17 8h2a1 1 0 0 1 1 1v9a2 2 0 0 1-2 2"/><path d="M7 9h7M7 13h7M7 17h4"/>',
         'tag' => '<path d="M20.5 13.5 13 21l-10-10V3h8l9.5 9.5a1.4 1.4 0 0 1 0 2Z"/><circle cx="7.5" cy="7.5" r="1.2"/>',
         'credit-card' => '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6.5 15h4"/>',
         'telegram' => '<path d="m21 3-7.7 18-4.4-6.4L3 11.2 21 3Z"/><path d="m8.9 14.6 4.1-3.8"/>',
@@ -536,6 +574,61 @@ function ensure_pages_table(): void {
     try { if (!db_column_exists('pages','status')) $pdo->exec("ALTER TABLE pages ADD status TINYINT(1) NOT NULL DEFAULT 1 AFTER sort_order"); } catch (Throwable $e) {}
     try { if (!db_column_exists('pages','created_at')) $pdo->exec("ALTER TABLE pages ADD created_at DATETIME NULL AFTER status"); } catch (Throwable $e) {}
     try { if (!db_column_exists('pages','updated_at')) $pdo->exec("ALTER TABLE pages ADD updated_at DATETIME NULL AFTER created_at"); } catch (Throwable $e) {}
+}
+
+function ensure_blog_tables(): void {
+    global $pdo;
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS blog_categories (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            slug VARCHAR(120) NOT NULL UNIQUE,
+            description VARCHAR(255) NULL,
+            sort_order INT NOT NULL DEFAULT 0,
+            status TINYINT(1) NOT NULL DEFAULT 1,
+            created_at DATETIME NULL,
+            updated_at DATETIME NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    } catch (Throwable $e) {}
+
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS blog_posts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(180) NOT NULL,
+            slug VARCHAR(190) NOT NULL UNIQUE,
+            excerpt VARCHAR(500) NULL,
+            content MEDIUMTEXT NULL,
+            cover_image VARCHAR(500) NULL,
+            cover_color VARCHAR(16) NOT NULL DEFAULT '#6366f1',
+            author VARCHAR(100) NOT NULL DEFAULT 'Admin',
+            read_time INT NOT NULL DEFAULT 3,
+            tags VARCHAR(255) NULL,
+            category_id INT NULL,
+            meta_title VARCHAR(180) NULL,
+            meta_description VARCHAR(300) NULL,
+            meta_keywords VARCHAR(300) NULL,
+            status TINYINT(1) NOT NULL DEFAULT 1,
+            published_at DATETIME NULL,
+            created_at DATETIME NULL,
+            updated_at DATETIME NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    } catch (Throwable $e) {}
+
+    try { if (!db_column_exists('blog_posts','excerpt')) $pdo->exec("ALTER TABLE blog_posts ADD excerpt VARCHAR(500) NULL AFTER slug"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','content')) $pdo->exec("ALTER TABLE blog_posts ADD content MEDIUMTEXT NULL AFTER excerpt"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','cover_image')) $pdo->exec("ALTER TABLE blog_posts ADD cover_image VARCHAR(500) NULL AFTER content"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','cover_color')) $pdo->exec("ALTER TABLE blog_posts ADD cover_color VARCHAR(16) NOT NULL DEFAULT '#6366f1' AFTER cover_image"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','author')) $pdo->exec("ALTER TABLE blog_posts ADD author VARCHAR(100) NOT NULL DEFAULT 'Admin' AFTER cover_color"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','read_time')) $pdo->exec("ALTER TABLE blog_posts ADD read_time INT NOT NULL DEFAULT 3 AFTER author"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','tags')) $pdo->exec("ALTER TABLE blog_posts ADD tags VARCHAR(255) NULL AFTER read_time"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','category_id')) $pdo->exec("ALTER TABLE blog_posts ADD category_id INT NULL AFTER tags"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','meta_title')) $pdo->exec("ALTER TABLE blog_posts ADD meta_title VARCHAR(180) NULL AFTER category_id"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','meta_description')) $pdo->exec("ALTER TABLE blog_posts ADD meta_description VARCHAR(300) NULL AFTER meta_title"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','meta_keywords')) $pdo->exec("ALTER TABLE blog_posts ADD meta_keywords VARCHAR(300) NULL AFTER meta_description"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','status')) $pdo->exec("ALTER TABLE blog_posts ADD status TINYINT(1) NOT NULL DEFAULT 1 AFTER meta_keywords"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','published_at')) $pdo->exec("ALTER TABLE blog_posts ADD published_at DATETIME NULL AFTER status"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','created_at')) $pdo->exec("ALTER TABLE blog_posts ADD created_at DATETIME NULL AFTER published_at"); } catch (Throwable $e) {}
+    try { if (!db_column_exists('blog_posts','updated_at')) $pdo->exec("ALTER TABLE blog_posts ADD updated_at DATETIME NULL AFTER created_at"); } catch (Throwable $e) {}
 }
 
 function ensure_category_icon_column(): void {
@@ -1729,6 +1822,14 @@ function render_storefront_styles(string $page='index'): void {
 
 function safe_footer_html(string $html): string {
     $allowed = '<a><b><strong><i><em><br><p><small><span><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><code><pre><div>';
+    $html = strip_tags($html, $allowed);
+    $html = preg_replace('/\son\w+\s*=\s*(["\']).*?\1/iu', '', $html);
+    $html = preg_replace('/\s(href|src)\s*=\s*(["\'])\s*javascript:.*?\2/iu', ' $1="#"', $html);
+    return $html;
+}
+function safe_blog_html(string $html): string {
+    /* Konten artikel blog: seperti safe_footer_html tapi boleh tabel/gambar/hr ala editor artikel. */
+    $allowed = '<a><b><strong><i><em><u><br><p><small><span><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><code><pre><div><img><table><thead><tbody><tr><th><td><hr><sub><sup><del><figure><figcaption>';
     $html = strip_tags($html, $allowed);
     $html = preg_replace('/\son\w+\s*=\s*(["\']).*?\1/iu', '', $html);
     $html = preg_replace('/\s(href|src)\s*=\s*(["\'])\s*javascript:.*?\2/iu', ' $1="#"', $html);

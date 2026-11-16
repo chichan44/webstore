@@ -580,5 +580,21 @@
     "Masih Ada Pertanyaan?": "Still Have Questions?",
     "Tim support kami siap membantu Anda.": "Our support team is ready to help you.",
     "Hubungi WhatsApp": "Contact via WhatsApp",
-    "Hubungi Telegram": "Contact via Telegram"
+    "Hubungi Telegram": "Contact via Telegram",
+
+    "Blog & Artikel": "Blog & Articles",
+    "Tips, panduan, dan update terbaru seputar produk digital, bot, dan platform kami.": "Tips, guides, and the latest updates about our digital products, bots, and platform.",
+    "Cari artikel…": "Search articles…",
+    "Artikel tidak ditemukan": "Article not found",
+    "Belum ada artikel": "No articles yet",
+    "Coba kata kunci lain atau pilih kategori “Semua”.": "Try another keyword or select the “All” category.",
+    "Artikel terbaru akan tampil di sini.": "The latest articles will appear here.",
+    "{n} min": "{n} min",
+    "{n} min baca": "{n} min read",
+    "Navigasi halaman": "Page navigation",
+    "Sebelumnya": "Previous",
+    "Berikutnya": "Next",
+    "Halaman {page} dari {total}": "Page {page} of {total}",
+    "Semua Artikel": "All Articles",
+    "Artikel Terkait": "Related Articles"
 }

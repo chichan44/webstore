@@ -9,6 +9,7 @@ if (!function_exists('admin_page_start')) {
             ['Pesanan', '/admin/orders.php', 'shopping-cart', 'orders.php'],
             ['Kategori', '/admin/categories.php', 'grid', 'categories.php'],
             ['Halaman', '/admin/pages.php', 'file-text', 'pages.php'],
+            ['Blog', '/admin/blog.php', 'newspaper', 'blog.php'],
             ['Promo', '/admin/promos.php', 'tag', 'promos.php'],
             ['Payment Gateway', '/admin/tokopay.php', 'credit-card', 'tokopay.php'],
             ['Bot Telegram', '/admin/telegram.php', 'telegram', 'telegram.php'],
@@ -26,7 +27,7 @@ if (!function_exists('admin_page_start')) {
         $map = [
             'dashboard.php' => 'chart', 'products.php' => 'package', 'stocks.php' => 'layers',
             'reviews.php' => 'star',
-            'orders.php' => 'shopping-cart', 'categories.php' => 'grid', 'pages.php' => 'file-text',
+            'orders.php' => 'shopping-cart', 'categories.php' => 'grid', 'pages.php' => 'file-text', 'blog.php' => 'newspaper',
             'promos.php' => 'tag', 'tokopay.php' => 'credit-card', 'telegram.php' => 'telegram', 'settings.php' => 'settings',
             'footer.php' => 'layout', 'profile.php' => 'user', 'search.php' => 'search',
         ];
@@ -101,7 +102,7 @@ if (!function_exists('admin_page_start')) {
             <?php $sidebarItems = admin_nav_items(); ?>
             <p class="adm-sidebar-label">Menu Utama</p>
             <nav class="adm-nav" aria-label="Menu admin utama">
-                <?php foreach ($sidebarItems as $item): if(in_array($item[3], ['dashboard.php','products.php','stocks.php','reviews.php','orders.php','categories.php','pages.php','promos.php'], true)): ?>
+                <?php foreach ($sidebarItems as $item): if(in_array($item[3], ['dashboard.php','products.php','stocks.php','reviews.php','orders.php','categories.php','pages.php','blog.php','promos.php'], true)): ?>
                     <a class="<?= $current === $item[3] ? 'active' : '' ?>" href="<?= e($item[1]) ?>" <?= $current === $item[3] ? 'aria-current="page"' : '' ?>>
                         <span><?= admin_icon($item[2]) ?></span><b><?= e($item[0]) ?></b><?php if ($current === $item[3]): ?><i><?= admin_icon('chevron-right') ?></i><?php endif; ?>
                     </a>

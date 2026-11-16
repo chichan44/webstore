@@ -1,0 +1,110 @@
+/* Blog listing + artikel — ala koalastore.digital/blogs.
+   Memakai token front-mobile-v7.css (--bg/--card/--text/--muted/--line/--indigo/--soft)
+   supaya ikut tema terang/gelap storefront. */
+
+.blog-hero h1{display:flex;align-items:center;gap:10px}
+.blog-hero h1 svg{width:26px;height:26px;color:var(--indigo);flex:none}
+
+/* Pencarian */
+.blog-toolbar{display:flex;justify-content:center;margin:4px 0 16px}
+.blog-search{position:relative;display:block;width:100%;max-width:420px}
+.blog-search-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);display:flex}
+.blog-search-ico svg{width:16px;height:16px;display:block}
+.blog-search input{width:100%;padding:11px 14px 11px 38px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--text);font:inherit;font-size:13.5px;outline:none;transition:border-color .15s,box-shadow .15s}
+.blog-search input:focus{border-color:var(--indigo);box-shadow:0 0 0 3px color-mix(in srgb,var(--indigo) 18%,transparent)}
+
+/* Chip kategori */
+.blog-chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 14px;scrollbar-width:none}
+.blog-chips::-webkit-scrollbar{display:none}
+.blog-chip{flex:none;padding:8px 15px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);font-size:12.5px;font-weight:750;text-decoration:none;white-space:nowrap;transition:all .15s}
+.blog-chip:hover{border-color:var(--indigo);color:var(--indigo)}
+.blog-chip.active{background:var(--indigo);border-color:var(--indigo);color:#fff}
+
+/* Grid kartu */
+.blog-grid{display:grid;grid-template-columns:1fr;gap:18px}
+@media(min-width:640px){.blog-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.blog-grid{grid-template-columns:repeat(3,1fr)}}
+
+.blog-card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .2s,box-shadow .2s,transform .2s}
+.blog-card:hover{border-color:var(--indigo);box-shadow:0 18px 50px rgba(15,23,42,.12);transform:translateY(-2px)}
+
+.blog-card-cover{aspect-ratio:16/9;overflow:hidden}
+.blog-card-cover img{width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
+.blog-card:hover .blog-card-cover img{transform:scale(1.06)}
+
+.blog-card-body{display:flex;flex-direction:column;flex:1;padding:16px}
+.blog-pill{align-self:flex-start;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--muted);font-size:11px;font-weight:800;margin-bottom:8px}
+.blog-card h3{margin:0 0 8px;font-size:14px;font-weight:850;line-height:1.45;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.blog-card p{margin:0 0 12px;font-size:12.5px;line-height:1.6;color:var(--muted);flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.blog-card-meta{display:flex;align-items:center;gap:8px;margin-top:auto;font-size:11px;color:var(--muted)}
+.blog-read{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.blog-card-meta .blog-read{margin-left:auto}
+.blog-read svg{width:13px;height:13px;display:block}
+
+/* Empty state */
+.blog-empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:56px 20px;text-align:center;background:var(--card);border:1px dashed var(--line);border-radius:22px}
+.blog-empty-ico{width:52px;height:52px;border-radius:16px;background:var(--soft);color:var(--indigo);display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.blog-empty-ico svg{width:24px;height:24px}
+.blog-empty b{font-size:15px;color:var(--text)}
+.blog-empty small{font-size:12.5px;color:var(--muted);max-width:320px}
+
+/* Paginasi */
+.blog-pagination{display:flex;align-items:center;justify-content:center;gap:14px;margin:26px 0 6px}
+.blog-page-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:12.5px;font-weight:800;text-decoration:none;transition:all .15s}
+.blog-page-btn:hover{border-color:var(--indigo);color:var(--indigo)}
+.blog-page-btn svg{width:14px;height:14px;display:block}
+.blog-page-prev{transform:rotate(90deg)}
+.blog-page-next{transform:rotate(-90deg)}
+.blog-page-info{font-size:12px;color:var(--muted);font-weight:700}
+
+/* ===== Halaman artikel ===== */
+.blog-article{max-width:720px;margin:0 auto}
+.blog-back{display:flex;width:fit-content;align-items:center;gap:4px;font-size:13px;font-weight:750;color:var(--muted);text-decoration:none;margin-bottom:10px;transition:color .15s}
+.blog-back:hover{color:var(--indigo)}
+.blog-back-ico{width:15px;height:15px;display:block;transform:rotate(90deg)}
+
+.blog-article h1{margin:0 0 12px;font-size:clamp(21px,4.6vw,29px);font-weight:900;line-height:1.3;letter-spacing:-.01em;color:var(--text)}
+.blog-article-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-bottom:22px}
+
+.blog-article-cover{aspect-ratio:16/9;border-radius:18px;overflow:hidden;margin-bottom:28px}
+.blog-article-cover img{width:100%;height:100%;object-fit:cover}
+
+.blog-prose{font-size:15px;line-height:1.85;color:var(--text)}
+.blog-prose h1,.blog-prose h2,.blog-prose h3{margin:1.5em 0 .55em;font-weight:850;line-height:1.4;letter-spacing:-.01em;color:var(--text)}
+.blog-prose h1{font-size:21px}
+.blog-prose h2{font-size:18px}
+.blog-prose h3{font-size:16px}
+.blog-prose h1:first-child,.blog-prose h2:first-child,.blog-prose h3:first-child{margin-top:0}
+.blog-prose p{margin:0 0 1.05em}
+.blog-prose a{color:var(--indigo);font-weight:750;text-decoration:none}
+.blog-prose a:hover{text-decoration:underline}
+.blog-prose strong{font-weight:850}
+.blog-prose ul,.blog-prose ol{margin:0 0 1.05em;padding-left:22px}
+.blog-prose li{margin:.28em 0}
+.blog-prose blockquote{margin:1.2em 0;padding:14px 20px;border-left:4px solid var(--indigo);background:var(--soft);border-radius:0 13px 13px 0;font-weight:750}
+.blog-prose blockquote p:last-child{margin-bottom:0}
+.blog-prose code{padding:2px 7px;border-radius:7px;background:var(--soft);font-size:.88em}
+.blog-prose pre{margin:1.2em 0;padding:16px 18px;border-radius:13px;background:var(--soft);overflow-x:auto}
+.blog-prose pre code{padding:0;background:none}
+.blog-prose img{max-width:100%;height:auto;border-radius:13px;margin:.4em 0}
+.blog-prose hr{border:0;border-top:1px solid var(--line);margin:1.8em 0}
+.blog-prose table{width:100%;border-collapse:collapse;margin:1.2em 0;font-size:13.5px}
+.blog-prose th,.blog-prose td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+.blog-prose th{background:var(--soft);font-weight:800}
+
+/* Artikel terkait */
+.blog-related{max-width:720px;margin:44px auto 0;padding-top:28px;border-top:1px solid var(--line)}
+.blog-related h2{margin:0 0 16px;font-size:17px;font-weight:850;color:var(--text)}
+.blog-related-grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:640px){.blog-related-grid{grid-template-columns:repeat(3,1fr)}}
+.blog-related-card{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .2s,box-shadow .2s}
+.blog-related-card:hover{border-color:var(--indigo);box-shadow:0 14px 36px rgba(15,23,42,.1)}
+.blog-related-cover{aspect-ratio:16/9;overflow:hidden}
+.blog-related-cover img{width:100%;height:100%;object-fit:cover}
+.blog-related-card p{margin:0;padding:12px 13px;font-size:12.5px;font-weight:800;line-height:1.5;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+@media(max-width:639px){
+    .blog-card-body{padding:13px}
+    .blog-prose{font-size:14px}
+    .blog-article-cover{border-radius:14px}
+}

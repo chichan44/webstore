@@ -18,5 +18,9 @@ RewriteRule ^ketentuan-garansi/?$ ketentuan-garansi.php [L,QSA]
 # Clean URL for the FAQ page
 RewriteRule ^faq/?$ faq.php [L,QSA]
 
+# Clean URLs for the blog listing + article pages
+RewriteRule ^blog/?$ blog.php [L,QSA]
+RewriteRule ^blog/([^/]+)/?$ blog-article.php?slug=$1 [L,QSA]
+
 # Root-level product slug: /canva -> product.php?slug=canva
 RewriteRule ^([^/]+)/?$ product.php?slug=$1 [L,QSA]
