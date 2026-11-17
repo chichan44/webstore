@@ -64,7 +64,9 @@
 .blog-back-ico{width:15px;height:15px;display:block;transform:rotate(90deg)}
 
 .blog-article h1{margin:0 0 12px;font-size:clamp(21px,4.6vw,29px);font-weight:900;line-height:1.3;letter-spacing:-.01em;color:var(--text)}
-.blog-article-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-bottom:22px}
+.blog-article-meta{display:flex;justify-content:space-between;align-items:center;gap:8px 12px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-bottom:22px}
+.blog-article-meta-main{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.blog-article-meta .blog-pill{margin-left:auto;margin-bottom:0;padding:4px 12px;font-size:11px}
 
 .blog-article-cover{aspect-ratio:16/9;border-radius:18px;overflow:hidden;margin-bottom:28px}
 .blog-article-cover img{width:100%;height:100%;object-fit:cover}
@@ -92,9 +94,30 @@
 .blog-prose th,.blog-prose td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
 .blog-prose th{background:var(--soft);font-weight:800}
 
+/* Bagikan (share) */
+.blog-share{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:30px;padding-top:28px;border-top:1px solid var(--line)}
+.blog-share-label{font-size:11.5px;font-weight:850;letter-spacing:.14em;color:var(--muted)}
+.blog-share-btn{width:50px;height:50px;flex:none;display:grid;place-items:center;border:0;border-radius:15px;color:#fff;cursor:pointer;text-decoration:none;transition:transform .15s,filter .15s}
+.blog-share-btn:hover{filter:brightness(1.08)}
+.blog-share-btn:active{transform:scale(.93)}
+.blog-share-btn svg{width:22px;height:22px;display:block}
+.blog-share-wa{background:#25D366}
+.blog-share-fb{background:#1877F2}
+.blog-share-tg{background:#229ED9}
+.blog-share-x{background:#0f172a}
+html[data-theme=dark] .blog-share-x{background:#fff;color:#0f172a}
+.blog-share-copy{position:relative;background:var(--soft);color:var(--text);border:1px solid var(--line)}
+.blog-share-copy .blog-share-ico-check{display:none}
+.blog-share-copy.copied{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.blog-share-copy.copied .blog-share-ico-link{display:none}
+.blog-share-copy.copied .blog-share-ico-check{display:block}
+.blog-share-copy::after{content:attr(data-copied-label);position:absolute;bottom:calc(100% + 8px);right:0;padding:5px 10px;border-radius:8px;background:var(--text);color:var(--bg);font-size:11px;font-weight:800;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s}
+.blog-share-copy.copied::after{opacity:1}
+
 /* Artikel terkait */
 .blog-related{max-width:720px;margin:44px auto 0;padding-top:28px;border-top:1px solid var(--line)}
-.blog-related h2{margin:0 0 16px;font-size:17px;font-weight:850;color:var(--text)}
+.blog-related h2{display:flex;align-items:center;gap:8px;margin:0 0 16px;font-size:17px;font-weight:850;color:var(--text)}
+.blog-related-ico{width:19px;height:19px;display:block;color:var(--indigo);flex:none}
 .blog-related-grid{display:grid;grid-template-columns:1fr;gap:14px}
 @media(min-width:640px){.blog-related-grid{grid-template-columns:repeat(3,1fr)}}
 .blog-related-card{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .2s,box-shadow .2s}

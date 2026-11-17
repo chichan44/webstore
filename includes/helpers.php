@@ -413,6 +413,9 @@ function ui_icon(string $name, string $class = ''): string {
         'eye' => '<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/>',
         'shield' => '<path d="M12 3 20 6v5c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6z"/><path d="m9 12 2 2 4-4"/>',
         'star' => '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9L12 3Z"/>',
+        'books' => '<rect x="3.5" y="4.5" width="13" height="5" rx="1.5"/><rect x="7.5" y="10.5" width="13" height="5" rx="1.5"/><rect x="3.5" y="16.5" width="13" height="5" rx="1.5"/>',
+        'link' => '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+        'check' => '<path d="m5 12.5 5 5 9-11"/>',
     ];
     $path = $paths[$name] ?? $paths['box'];
     $classAttr = $class !== '' ? ' class="'.e($class).'"' : '';
