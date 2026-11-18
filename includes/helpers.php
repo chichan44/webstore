@@ -1806,7 +1806,7 @@ function storefront_product_thumb(string $src, string $label = 'Produk Digital')
 }
 
 function render_storefront_styles(string $page='index'): void {
-    $v = '20261116-ui7';
+    $v = '20261117-footer2';
     echo '<link rel="stylesheet" href="/assets/css/front-mobile-v7.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-grid-v20.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-list-fresh-v1.css?v='.$v.'">' . "\n";
@@ -1872,7 +1872,7 @@ function render_footer_columns(string $site='', string $desc=''): void {
     $telegram = footer_clean_url((string)setting('footer_telegram_url', '#'));
     $whatsapp = footer_clean_url((string)setting('footer_whatsapp_url', '#'));
 
-    $helpTitle = trim((string)setting('footer_help_title', 'Menu Bantuan')) ?: 'Menu Bantuan';
+    $helpTitle = trim((string)setting('footer_help_title', 'About Us')) ?: 'About Us';
     $helpRaw = (string)setting('footer_help_links', "Syarat Layanan|/page.php?slug=syarat-layanan\nKebijakan Pengembalian|/page.php?slug=kebijakan-pengembalian\nHubungi Kami|/page.php?slug=hubungi-kami");
     $helpLinks = footer_link_lines($helpRaw);
     if (!$helpLinks) {
@@ -1883,7 +1883,7 @@ function render_footer_columns(string $site='', string $desc=''): void {
         ];
     }
 
-    $contactTitle = trim((string)setting('footer_contact_title', 'Kontak Kami')) ?: 'Kontak Kami';
+    $contactTitle = trim((string)setting('footer_contact_title', 'Tools')) ?: 'Tools';
     $contactEmail = trim((string)setting('footer_contact_email', ''));
     $contactHours = trim((string)setting('footer_contact_hours', 'Setiap hari 08:00 - 22:00 WIB'));
     $contactLocation = trim((string)setting('footer_contact_location', 'Indonesia'));
@@ -1899,18 +1899,20 @@ function render_footer_columns(string $site='', string $desc=''): void {
     echo '<a href="'.e($whatsapp).'" target="_blank" rel="noopener"><span>☘</span><b>WhatsApp</b></a>';
     echo '</div></section>';
 
-    echo '<section class="znl-footer-col" aria-label="Menu bantuan"><h3>'.e($helpTitle).'</h3><div class="znl-footer-links">';
+    echo '<div class="znl-footer-cols">';
+    echo '<section class="znl-footer-col" aria-label="About Us"><h3>'.e($helpTitle).'</h3><div class="znl-footer-links">';
     $icons = ['◷','↻','◌','•'];
     foreach ($helpLinks as $idx => $link) {
         echo '<a href="'.e($link['url']).'"><span>'.e($icons[$idx] ?? '•').'</span><b>'.e($link['label']).'</b></a>';
     }
     echo '</div></section>';
 
-    echo '<section class="znl-footer-col" aria-label="Kontak kami"><h3>'.e($contactTitle).'</h3><div class="znl-footer-contact">';
+    echo '<section class="znl-footer-col" aria-label="Tools"><h3>'.e($contactTitle).'</h3><div class="znl-footer-contact">';
     if ($contactEmail !== '') echo '<a href="mailto:'.e($contactEmail).'"><span>✉</span><b>'.e($contactEmail).'</b></a>';
     if ($contactHours !== '') echo '<p><span>◷</span><b>'.e($contactHours).'</b></p>';
     if ($contactLocation !== '') echo '<p><span>⌖</span><b>'.e($contactLocation).'</b></p>';
     echo '</div></section>';
+    echo '</div>';
 
     echo '</div>';
     echo '<div class="znl-footer-bottom"><span>© '.$year.' '.$siteSafe.'. All rights reserved.</span><span>Digital commerce platform</span></div>';

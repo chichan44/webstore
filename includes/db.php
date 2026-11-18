@@ -113,6 +113,19 @@ function migrate_sensitive_settings_encryption(): void {
 
 migrate_sensitive_settings_encryption();
 
+function migrate_footer_title_settings(): void {
+    /* Judul kolom footer berganti nama (Menu Bantuan -> About Us, Kontak Kami -> Tools).
+       Nilai tersimpan yang masih memakai nama lama ikut diganti supaya storefront dan admin tetap sinkron. */
+    global $pdo;
+    try {
+        $st = $pdo->prepare('UPDATE settings SET `value`=? WHERE `key`=? AND `value`=?');
+        $st->execute(['About Us', 'footer_help_title', 'Menu Bantuan']);
+        $st->execute(['Tools', 'footer_contact_title', 'Kontak Kami']);
+    } catch (Throwable $e) {}
+}
+
+migrate_footer_title_settings();
+
 function setting(string $key, $default='') {
     global $pdo;
     static $cache = null;

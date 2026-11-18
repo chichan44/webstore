@@ -13,9 +13,9 @@ $defaults = [
     'footer_facebook_url' => '',
     'footer_telegram_url' => '',
     'footer_whatsapp_url' => '',
-    'footer_help_title' => 'Menu Bantuan',
+    'footer_help_title' => 'About Us',
     'footer_help_links' => "Syarat Layanan|/page.php?slug=syarat-layanan\nKebijakan Pengembalian|/page.php?slug=kebijakan-pengembalian\nHubungi Kami|/page.php?slug=hubungi-kami",
-    'footer_contact_title' => 'Kontak Kami',
+    'footer_contact_title' => 'Tools',
     'footer_contact_email' => '',
     'footer_contact_hours' => 'Setiap hari 08:00 - 22:00 WIB',
     'footer_contact_location' => 'Indonesia',
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-admin_page_start('Footer', 'Atur informasi brand, menu bantuan, tautan sosial, dan kontak pada footer website.');
+admin_page_start('Footer', 'Atur informasi brand, tautan sosial, serta kolom About Us dan Tools pada footer website.');
 ?>
 <?php if ($err !== ''): ?><div class="alert err" role="alert"><span>!</span><div><?=e($err)?></div><button type="button" data-dismiss-alert aria-label="Tutup">×</button></div><?php endif; ?>
 
@@ -90,14 +90,14 @@ admin_page_start('Footer', 'Atur informasi brand, menu bantuan, tautan sosial, d
         </section>
 
         <section class="znl-footer-admin-card">
-            <div class="znl-footer-admin-card-head"><span>2</span><h4>Menu Bantuan</h4></div>
-            <div class="field"><label>Judul Kolom</label><input type="text" name="footer_help_title" maxlength="100" value="<?=e(footer_admin_value('footer_help_title',$defaults,$values))?>" placeholder="Menu Bantuan"></div>
+            <div class="znl-footer-admin-card-head"><span>2</span><h4>About Us</h4></div>
+            <div class="field"><label>Judul Kolom</label><input type="text" name="footer_help_title" maxlength="100" value="<?=e(footer_admin_value('footer_help_title',$defaults,$values))?>" placeholder="About Us"></div>
             <div class="field"><label>Daftar Link</label><textarea class="znl-footer-link-textarea" name="footer_help_links" rows="10" spellcheck="false" placeholder="Syarat Layanan|/page.php?slug=syarat-layanan&#10;Hubungi Kami|/page.php?slug=hubungi-kami"><?=e(footer_admin_value('footer_help_links',$defaults,$values))?></textarea><small>Format: <b>Nama Menu|URL</b>, satu menu per baris. URL boleh relatif atau alamat HTTPS lengkap.</small></div>
         </section>
 
         <section class="znl-footer-admin-card">
-            <div class="znl-footer-admin-card-head"><span>3</span><h4>Kontak</h4></div>
-            <div class="field"><label>Judul Kolom</label><input type="text" name="footer_contact_title" maxlength="100" value="<?=e(footer_admin_value('footer_contact_title',$defaults,$values))?>" placeholder="Kontak Kami"></div>
+            <div class="znl-footer-admin-card-head"><span>3</span><h4>Tools</h4></div>
+            <div class="field"><label>Judul Kolom</label><input type="text" name="footer_contact_title" maxlength="100" value="<?=e(footer_admin_value('footer_contact_title',$defaults,$values))?>" placeholder="Tools"></div>
             <div class="field"><label>Email</label><input type="email" name="footer_contact_email" value="<?=e(footer_admin_value('footer_contact_email',$defaults,$values))?>" placeholder="support@domainanda.com"></div>
             <div class="field"><label>Jam Layanan</label><input type="text" name="footer_contact_hours" maxlength="160" value="<?=e(footer_admin_value('footer_contact_hours',$defaults,$values))?>" placeholder="Setiap hari 08:00 - 22:00 WIB"></div>
             <div class="field"><label>Lokasi</label><input type="text" name="footer_contact_location" maxlength="160" value="<?=e(footer_admin_value('footer_contact_location',$defaults,$values))?>" placeholder="Indonesia"></div>
