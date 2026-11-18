@@ -1022,6 +1022,14 @@ html[data-theme=dark] .sf-card-grid .product-price-action-row{border-top-color:t
 }
 .moon{border-radius:12px}
 .moon span{font-size:17px}
+/* Theme toggle: ikon berputar & fade saat berpindah tema */
+.head-chip.moon svg{transform-origin:50% 50%}
+.head-chip.moon.theme-flip svg{animation:theme-icon-flip .32s ease-in-out}
+@keyframes theme-icon-flip{
+  0%{transform:rotate(0deg) scale(1);opacity:1}
+  45%{transform:rotate(170deg) scale(.55);opacity:.15}
+  100%{transform:rotate(360deg) scale(1);opacity:1}
+}
 /* ⌕ sits slightly low in the em box after chip centering — nudge up a hair */
 .head-search-toggle span{transform:translateY(-1px)}
 

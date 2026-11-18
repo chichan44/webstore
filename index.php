@@ -394,5 +394,5 @@ html[data-theme="dark"] .znl-voucher-section{background:linear-gradient(135deg,r
   });
 })();
 </script>
-<script src="/assets/js/front-mobile-v7.js?v=20261112-feat1"></script>
+<script src="/assets/js/front-mobile-v7.js?v=20261118-theme1"></script>
 </body></html>

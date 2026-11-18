@@ -85,7 +85,7 @@ if (!function_exists('admin_page_start')) {
     <title><?= e($title) ?> - <?= e($brandName) ?></title>
     <?php if ($favicon !== ''): ?><link rel="icon" href="<?= e($favicon) ?>"><?php endif; ?>
     <link rel="stylesheet" href="/assets/css/admin-v9.css?v=20260811-order-pin-removed">
-    <link rel="stylesheet" href="/admin/admin-modern.css?v=20261029-ui-fixes">
+    <link rel="stylesheet" href="/admin/admin-modern.css?v=20261118-toast1">
 </head>
 <body class="admin-modern admin-page-<?= e($pageSlug) ?>" data-admin-page="<?= e($pageSlug) ?>">
 <div class="adm-overlay" id="admOverlay"></div>
@@ -208,7 +208,7 @@ if (!function_exists('admin_page_start')) {
     </section>
 </div>
 <script>window.adminCsrf=<?=json_encode(csrf_token())?>;window.adminIconSun=<?=json_encode(admin_icon('sun'))?>;window.adminIconMoon=<?=json_encode(admin_icon('moon'))?>;</script>
-<script src="/admin/admin-modern.js?v=20261029-ui-fixes"></script>
+<script src="/admin/admin-modern.js?v=20261118-toast1"></script>
 </body>
 </html>
         <?php

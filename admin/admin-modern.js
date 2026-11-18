@@ -27,6 +27,15 @@
     }
   }
 
+  /* Success toasts auto-dismiss after 4s; the × still closes them instantly */
+  doc.querySelectorAll('.alert.ok').forEach(el => {
+    window.setTimeout(() => {
+      if (!el.isConnected) return;
+      el.classList.add('is-leaving');
+      window.setTimeout(() => el.remove(), 260);
+    }, 4000);
+  });
+
   function openSidebar(){
     if (!sidebar) return;
     sidebar.classList.add('open');

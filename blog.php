@@ -111,4 +111,4 @@ $clockIcon=ui_icon('clock');
 <?php render_footer_columns($site,$desc); ?>
 <?php render_storefront_mobile_menu($site,$desc,$cats); ?>
 <div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" data-close-cart></div><aside><div class="drawer-top"><b>Keranjang Belanja (<span data-cart-count>0</span>)</b><button data-close-cart>×</button></div><div class="cart-items" id="cartItems"></div><div class="drawer-foot"><p><span>Subtotal</span><b data-cart-total><?=e(format_money(0))?></b></p><a href="/checkout.php" class="btn primary">Lanjut Checkout</a></div></aside></div>
-<script id="productsJson" type="application/json">[]</script><script src="/assets/js/front-mobile-v7.js?v=20261112-feat1"></script><script src="/assets/js/blog-v1.js?v=20261117-share1"></script></body></html>
+<script id="productsJson" type="application/json">[]</script><script src="/assets/js/front-mobile-v7.js?v=20261118-theme1"></script><script src="/assets/js/blog-v1.js?v=20261117-share1"></script></body></html>

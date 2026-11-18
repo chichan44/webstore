@@ -599,10 +599,10 @@ $hasMultipleVariants=count($variantCards)>1;
     'shareCopied'=>t('Tautan produk disalin'),
     'shareFailed'=>t('Gagal membagikan tautan'),
 ], JSON_UNESCAPED_UNICODE)?></script>
-<script src="/assets/js/front-mobile-v7.js?v=20261112-feat1"></script>
+<script src="/assets/js/front-mobile-v7.js?v=20261118-theme1"></script>
 <script src="/assets/js/product-page.js?v=20261112-disc2"></script>
 <?php else: ?>
 <script id="productsJson" type="application/json">[]</script>
-<script src="/assets/js/front-mobile-v7.js?v=20261112-feat1"></script>
+<script src="/assets/js/front-mobile-v7.js?v=20261118-theme1"></script>
 <?php endif; ?>
 </body></html>

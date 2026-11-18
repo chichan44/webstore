@@ -472,7 +472,7 @@ function render_storefront_header(string $site='', string $desc='', array $cats=
   <span aria-hidden="true">🛒</span>
   <i data-cart-count>0</i>
 </button>
-<script>window.dsCurrency=<?=json_encode(currency_js_config(), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;</script>
+<script>window.dsCurrency=<?=json_encode(currency_js_config(), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;window.dsThemeIcons={moon:<?=json_encode(ui_icon('moon'))?>,sun:<?=json_encode(ui_icon('sun'))?>};</script>
 <?php
 }
 
@@ -1806,7 +1806,7 @@ function storefront_product_thumb(string $src, string $label = 'Produk Digital')
 }
 
 function render_storefront_styles(string $page='index'): void {
-    $v = '20261117-footer2';
+    $v = '20261118-ui1';
     echo '<link rel="stylesheet" href="/assets/css/front-mobile-v7.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-grid-v20.css?v='.$v.'">' . "\n";
     echo '<link rel="stylesheet" href="/assets/css/product-list-fresh-v1.css?v='.$v.'">' . "\n";

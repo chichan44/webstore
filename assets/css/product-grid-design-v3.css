@@ -327,7 +327,7 @@ html[data-theme="dark"] .wishlist-product-grid .card-bottom button:disabled{back
 .wishlist-page-head h1{margin:0 0 6px;font-size:26px;line-height:1.2}.wishlist-page-head p{margin:0;color:var(--muted)}
 .wishlist-page-head a{color:var(--indigo);text-decoration:none;font-weight:850}
 .wishlist-empty{display:none;text-align:center;padding:64px 20px;border:1px dashed var(--line);border-radius:20px;background:var(--card)}
-.wishlist-empty.is-visible{display:block}.wishlist-empty span{display:block;font-size:44px;margin-bottom:12px}.wishlist-empty h2{margin:0 0 8px}.wishlist-empty p{margin:0 0 18px;color:var(--muted)}
+.wishlist-empty.is-visible{display:block}.wishlist-empty .wishlist-empty-ico{display:grid;place-items:center;margin:0 auto 16px;color:var(--muted)}.wishlist-empty .wishlist-empty-ico svg{width:64px;height:64px;display:block}.wishlist-empty h2{margin:0 0 8px}.wishlist-empty p{margin:0 0 18px;color:var(--muted)}
 .wishlist-product-grid.is-empty{display:none!important}
 
 @media(max-width:1279px){

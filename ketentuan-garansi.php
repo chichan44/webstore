@@ -102,6 +102,6 @@ $wtPayload=['products'=>$wtProducts,'categories'=>$wtCategories];
 <script id="productsJson" type="application/json">[]</script>
 <script id="wtData" type="application/json"><?=json_encode($wtPayload,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_HEX_TAG|JSON_HEX_AMP)?></script>
 <script id="wtI18n" type="application/json"><?=json_encode($wtI18n,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_HEX_TAG|JSON_HEX_AMP)?></script>
-<script src="/assets/js/front-mobile-v7.js?v=20261112-feat1"></script>
+<script src="/assets/js/front-mobile-v7.js?v=20261118-theme1"></script>
 <script src="/assets/js/warranty-terms-v1.js?v=20261113-wt1"></script>
 </body></html>

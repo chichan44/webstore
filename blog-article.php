@@ -66,14 +66,21 @@ $clockIcon=ui_icon('clock');
         'mainEntityOfPage'=>seo_url('/blog/'.$post['slug']),
     ]],
 ]); render_storefront_styles('page'); ?>
-<link rel="stylesheet" href="/assets/css/blog-v1.css?v=20261117-share1">
+<link rel="stylesheet" href="/assets/css/blog-v1.css?v=20261118-4041">
 </head><body>
 <?php render_storefront_header($site,$desc,$cats); ?>
 <main class="ds-shell page-wrap">
     <article class="blog-article">
         <a class="blog-back" href="/blog.php"><?=ui_icon('chevron-down','blog-back-ico')?> <?=e(t('Semua Artikel'))?></a>
+        <?php if($is404): ?>
+        <section class="blog-404">
+            <span class="blog-404-ico" aria-hidden="true"><?=ui_icon('newspaper')?></span>
+            <h1><?=e($post['title'])?></h1>
+            <p><?=e(t('Artikel yang kamu cari belum tersedia atau sudah dinonaktifkan.'))?></p>
+            <a class="btn primary" href="/blog.php"><?=e(t('Kembali ke Blog'))?></a>
+        </section>
+        <?php else: ?>
         <h1><?=e($post['title'])?></h1>
-        <?php if(!$is404): ?>
         <div class="blog-article-meta">
             <div class="blog-article-meta-main">
                 <span><?=e($post['author'])?></span><span>·</span><span><?=e(date('d M Y',$pub))?></span>
@@ -81,11 +88,11 @@ $clockIcon=ui_icon('clock');
             </div>
             <?php if(!empty($post['category_name'])): ?><span class="blog-pill blog-pill-cat"><?=e($post['category_name'])?></span><?php endif; ?>
         </div>
-        <?php endif; ?>
         <div class="blog-article-cover" style="background-color:<?=e($color)?>">
             <?php if($cover!==''): ?><img src="<?=e($cover)?>" alt="<?=e($post['title'])?>"><?php endif; ?>
         </div>
         <div class="blog-prose"><?=safe_blog_html((string)$post['content'])?></div>
+        <?php endif; ?>
 
         <?php if(!$is404): ?>
         <!-- Bagikan -->
@@ -132,4 +139,4 @@ $clockIcon=ui_icon('clock');
 <?php render_footer_columns($site,$desc); ?>
 <?php render_storefront_mobile_menu($site,$desc,$cats); ?>
 <div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" data-close-cart></div><aside><div class="drawer-top"><b>Keranjang Belanja (<span data-cart-count>0</span>)</b><button data-close-cart>×</button></div><div class="cart-items" id="cartItems"></div><div class="drawer-foot"><p><span>Subtotal</span><b data-cart-total><?=e(format_money(0))?></b></p><a href="/checkout.php" class="btn primary">Lanjut Checkout</a></div></aside></div>
-<script id="productsJson" type="application/json">[]</script><script src="/assets/js/front-mobile-v7.js?v=20261112-feat1"></script><script src="/assets/js/blog-v1.js?v=20261117-share1"></script></body></html>
+<script id="productsJson" type="application/json">[]</script><script src="/assets/js/front-mobile-v7.js?v=20261118-theme1"></script><script src="/assets/js/blog-v1.js?v=20261117-share1"></script></body></html>

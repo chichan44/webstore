@@ -686,6 +686,10 @@ body.admin-modern .alert.ok{color:#167353;border:1px solid #cbeadd;background:#e
 body.admin-modern .alert.ok>span:first-child{color:#fff;background:#22a873}
 body.admin-modern .alert.err{color:#a9324c;border:1px solid #f0ced6;background:#fff2f5}
 body.admin-modern .alert.err>span:first-child{color:#fff;background:#dd4c69}
+/* Success toasts fade out before auto-dismiss (see admin-modern.js) */
+body.admin-modern .alert{transition:opacity .25s ease,transform .25s ease}
+body.admin-modern .alert.is-leaving{opacity:0;pointer-events:none;transform:translateX(-50%) translateY(-8px)}
+body.admin-modern .alert-stack .alert.is-leaving{transform:translateY(-8px)}
 
 
 body.admin-modern .table-wrap{

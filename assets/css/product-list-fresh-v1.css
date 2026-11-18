@@ -2539,6 +2539,36 @@ html[data-theme=dark] .table-stock-out.is-manual{background:rgba(124,58,237,.16)
 .static-page-card code,.static-page-card pre{background:var(--soft);border:1px solid var(--line);border-radius:10px;color:var(--text);}
 .static-page-card code{padding:2px 6px;}.static-page-card pre{padding:12px;overflow:auto;}
 
+/* Halaman CMS (Syarat & Ketentuan, dll.) — tata letak artikel bacaan ala blog modern */
+.static-page-article{max-width:720px;margin:0 auto;padding-bottom:8px}
+.static-page-head{display:flex;align-items:center;gap:14px;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.static-page-ico{width:46px;height:46px;flex:0 0 46px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,var(--indigo) 12%,var(--card));color:var(--indigo)}
+.static-page-ico svg{width:22px;height:22px;display:block}
+.static-page-head h1{margin:0;font-size:clamp(22px,5vw,30px);font-weight:900;letter-spacing:-.02em;line-height:1.25;color:var(--text)}
+.static-page-meta{display:flex;align-items:center;gap:7px;margin:0 0 24px;font-size:13px;color:var(--muted)}
+.static-page-meta svg{width:15px;height:15px;display:block;flex:0 0 auto}
+.static-page-prose{font-size:15.5px;line-height:1.85;color:var(--muted)}
+.static-page-prose h1,.static-page-prose h2,.static-page-prose h3,.static-page-prose h4,.static-page-prose h5,.static-page-prose h6{margin:1.8em 0 .6em;font-weight:850;line-height:1.35;letter-spacing:-.01em;color:var(--text)}
+.static-page-prose h2{font-size:22px}
+.static-page-prose h3{font-size:18px}
+.static-page-prose h4{font-size:16px}
+.static-page-prose h2:first-child,.static-page-prose h3:first-child{margin-top:0}
+.static-page-prose p{margin:0 0 1.15em}
+.static-page-prose a{color:var(--indigo);font-weight:750;text-decoration:underline;text-underline-offset:3px}
+.static-page-prose strong,.static-page-prose b{color:var(--text);font-weight:850}
+.static-page-prose ul,.static-page-prose ol{margin:0 0 1.25em;padding-left:24px}
+.static-page-prose li{margin:.45em 0;line-height:1.75}
+.static-page-prose li::marker{color:var(--indigo);font-weight:700}
+.static-page-prose blockquote{margin:1.3em 0;padding:12px 18px;border-left:4px solid var(--indigo);background:var(--soft);border-radius:0 13px 13px 0}
+.static-page-prose blockquote p:last-child{margin-bottom:0}
+@media(max-width:640px){
+  .static-page-head{gap:11px;padding-bottom:14px}
+  .static-page-ico{width:40px;height:40px;flex-basis:40px;border-radius:12px}
+  .static-page-ico svg{width:19px;height:19px}
+  .static-page-prose{font-size:14.5px;line-height:1.8}
+  .static-page-prose h2{font-size:19px}
+}
+
 #productModal .product-modal-card{
   max-height:calc(100dvh - 28px)!important;
   overflow:hidden!important;
